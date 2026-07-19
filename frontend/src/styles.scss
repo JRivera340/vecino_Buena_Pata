@@ -1,1 +1,14 @@
-/* You can add global styles to this file, and also import other style files */
+@use 'styles/tokens';
+@import url('https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600;9..144,700&family=Inter:wght@400;500;600&display=swap');
+
+html, body {
+  margin: 0;
+  padding: 0;
+  background-color: var(--color-fondo);
+  color: var(--color-tinta);
+  font-family: var(--font-cuerpo);
+}
+
+h1, h2, h3 {
+  font-family: var(--font-titulos);
+}
