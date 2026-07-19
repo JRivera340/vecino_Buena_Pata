@@ -34,6 +34,18 @@ services:
     networks:
       - vbp-net
 
+  frontend:
+    build: ./frontend
+    ports:
+      - "4200:4200"
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules
+    depends_on:
+      - backend
+    networks:
+      - vbp-net
+
 networks:
   vbp-net:
 
