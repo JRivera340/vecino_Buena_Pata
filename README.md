@@ -37,3 +37,10 @@ docker compose exec backend pytest -v
 ```
 
 Los tests usan la misma base de datos configurada por `DATABASE_URL` y limpian las tablas que tocan al terminar. Por eso deben correrse **antes** de cargar el seed, no después: si ya hay datos semilla cargados, los tests pueden chocar con usuarios existentes y el fixture de tests puede vaciar tablas que la aplicación está usando. Orden recomendado: migrar, correr tests, luego cargar el seed para trabajar con datos de demostración.
+
+Después de correr los tests, la tabla `alembic_version` queda marcada como si estuviera al día pero las tablas de dominio ya no existen (el fixture las borró). Un `alembic upgrade head` normal no hace nada en ese caso porque Alembic cree que ya aplicó la migración. Para restaurar el esquema hay que resetear el registro de versión primero:
+
+```bash
+docker compose exec backend alembic stamp base
+docker compose exec backend alembic upgrade head
+```
