@@ -11,6 +11,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
 from app.core.config import get_settings
 from app.core.db import Base
+from app import models  # noqa: F401  registra todas las tablas en Base.metadata
 
 # this is the Alembic Config object, which provides
 # access to the values within the .ini file in use.
@@ -21,7 +22,6 @@ config = context.config
 if config.config_file_name is not None:
     fileConfig(config.config_file_name)
 
-# noqa: import de modelos futuro va aquí en Fase 2 para que autogenerate los detecte
 target_metadata = Base.metadata
 
 config.set_main_option("sqlalchemy.url", get_settings().database_url)
