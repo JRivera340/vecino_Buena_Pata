@@ -1,4 +1,3 @@
-import pytest
 from fastapi.testclient import TestClient
 
 from app.core.security import hash_password
@@ -47,7 +46,6 @@ def test_login_con_password_incorrecta_devuelve_401(db_session):
     assert respuesta.status_code == 401
 
 
-@pytest.mark.xfail(reason="endpoint de comunidades llega en Task 10", strict=False)
 def test_endpoint_protegido_sin_token_devuelve_401(db_session):
     respuesta = client.get("/api/v1/comunidades")
     assert respuesta.status_code == 401
