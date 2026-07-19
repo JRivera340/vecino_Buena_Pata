@@ -21,6 +21,19 @@ El comando anterior iniciará todos los servicios del proyecto.
 - Backend: `http://localhost:8000`
 - Documentación de API: `http://localhost:8000/docs`
 
-## Nota
+## Migraciones y datos semilla
 
-El seed inicial de datos se agrega en fases posteriores del desarrollo.
+```bash
+docker compose exec backend alembic upgrade head
+docker compose exec backend python -m app.seed
+```
+
+Usuarios de prueba (contraseña `vbp2026` para todos): `maria.comunidad`, `dr.rojas`, `lider.campo`, `unidad.especial`, `admin`.
+
+## Correr los tests del backend
+
+```bash
+docker compose exec backend pytest -v
+```
+
+Los tests usan la misma base de datos configurada por `DATABASE_URL` y limpian las tablas que tocan al terminar. Por eso deben correrse **antes** de cargar el seed, no después: si ya hay datos semilla cargados, los tests pueden chocar con usuarios existentes y el fixture de tests puede vaciar tablas que la aplicación está usando. Orden recomendado: migrar, correr tests, luego cargar el seed para trabajar con datos de demostración.
