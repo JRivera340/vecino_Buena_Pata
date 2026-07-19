@@ -2,12 +2,15 @@ from fastapi import APIRouter, FastAPI
 from fastapi.staticfiles import StaticFiles
 
 from app.core.config import get_settings
+from app.routers import auth as auth_router
 
 settings = get_settings()
 
 app = FastAPI(title="Vecino Buena Pata")
 
 api_router = APIRouter(prefix="/api/v1")
+
+api_router.include_router(auth_router.router)
 
 
 @api_router.get("/salud")
