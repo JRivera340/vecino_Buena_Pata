@@ -1,0 +1,42 @@
+services:
+  db:
+    image: postgres:16
+    environment:
+      POSTGRES_USER: vbp
+      POSTGRES_PASSWORD: vbp
+      POSTGRES_DB: vbp
+    ports:
+      - "5432:5432"
+    volumes:
+      - vbp-db-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U vbp"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+    networks:
+      - vbp-net
+
+  backend:
+    build: ./backend
+    environment:
+      DATABASE_URL: postgresql+psycopg://vbp:vbp@db:5432/vbp
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./backend:/app
+      - vbp-media:/app/media
+    depends_on:
+      db:
+        condition: service_healthy
+    command: >
+      sh -c "alembic upgrade head && uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload"
+    networks:
+      - vbp-net
+
+networks:
+  vbp-net:
+
+volumes:
+  vbp-db-data:
+  vbp-media:
