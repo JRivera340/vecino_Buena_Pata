@@ -5,6 +5,7 @@ from app.core.config import get_settings
 from app.routers import animales as animales_router
 from app.routers import auth as auth_router
 from app.routers import comunidades as comunidades_router
+from app.routers import validaciones as validaciones_router
 
 settings = get_settings()
 
@@ -15,6 +16,7 @@ api_router = APIRouter(prefix="/api/v1")
 api_router.include_router(auth_router.router)
 api_router.include_router(comunidades_router.router)
 api_router.include_router(animales_router.router)
+api_router.include_router(validaciones_router.router)
 
 
 @api_router.get("/salud")
