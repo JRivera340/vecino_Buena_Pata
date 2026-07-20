@@ -10,6 +10,7 @@ from app.routers import formalizacion as formalizacion_router
 from app.routers import media as media_router
 from app.routers import publico as publico_router
 from app.routers import reactivacion as reactivacion_router
+from app.routers import reportes as reportes_router
 from app.routers import salida as salida_router
 from app.routers import validaciones as validaciones_router
 from app.routers import visitas as visitas_router
@@ -31,6 +32,7 @@ api_router.include_router(publico_router.router)
 api_router.include_router(visitas_router.router)
 api_router.include_router(salida_router.router)
 api_router.include_router(reactivacion_router.router)
+api_router.include_router(reportes_router.router)
 
 
 @api_router.get("/salud")
