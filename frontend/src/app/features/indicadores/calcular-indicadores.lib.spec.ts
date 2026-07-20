@@ -1,6 +1,6 @@
 import { Animal } from '../../core/models/animal.model';
 import { Reporte } from '../../core/reportes/reportes.service';
-import { calcularIndicadores } from './calcular-indicadores.lib';
+import { calcularIndicadores, ConteoEstado } from './calcular-indicadores.lib';
 
 function crearAnimal(datos: Partial<Animal>): Animal {
   return {
@@ -93,6 +93,6 @@ describe('calcularIndicadores', () => {
     expect(resultado.totalAnimales).toBe(0);
     expect(resultado.totalVbpActivos).toBe(0);
     expect(resultado.totalReportesAbiertos).toBe(0);
-    expect(resultado.conteoPorEstado.every((c: any) => c.cantidad === 0)).toBe(true);
+    expect(resultado.conteoPorEstado.every((c: ConteoEstado) => c.cantidad === 0)).toBe(true);
   });
 });
