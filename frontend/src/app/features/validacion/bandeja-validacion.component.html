@@ -1,0 +1,84 @@
+<div class="bandeja">
+  <aside class="lista-pendientes">
+    <h1>Validacion veterinaria</h1>
+    @if (animalesPendientes().length === 0) {
+      <p class="mensaje-vacio">No hay animales pendientes de validacion.</p>
+    } @else {
+      <ul>
+        @for (animal of animalesPendientes(); track animal.id) {
+          <li [class.seleccionado]="animalSeleccionadoId() === animal.id" (click)="seleccionarAnimal(animal.id)">
+            <p class="nombre">{{ animal.nombre }}</p>
+            <p class="detalle">{{ animal.estado }} - {{ animal.barrio }}</p>
+          </li>
+        }
+      </ul>
+    }
+  </aside>
+
+  <main class="panel-formulario">
+    @if (animalSeleccionado(); as animal) {
+      <h2>Validar a {{ animal.nombre }}</h2>
+
+      <label>Veredicto</label>
+      <div class="opciones-veredicto">
+        <label>
+          <input
+            type="radio"
+            name="veredicto"
+            value="APROBADO"
+            [ngModel]="veredicto()"
+            (ngModelChange)="veredicto.set($event)"
+          />
+          Aprobado
+        </label>
+        <label>
+          <input
+            type="radio"
+            name="veredicto"
+            value="CON_PENDIENTES"
+            [ngModel]="veredicto()"
+            (ngModelChange)="veredicto.set($event)"
+          />
+          Con pendientes
+        </label>
+      </div>
+
+      @if (veredicto() === 'CON_PENDIENTES') {
+        <label>Pendientes</label>
+        <div class="opciones-pendientes">
+          @for (opcion of opcionesPendientes; track opcion) {
+            <label>
+              <input
+                type="checkbox"
+                [checked]="pendientesSeleccionados().includes(opcion)"
+                (change)="alternarPendiente(opcion)"
+              />
+              {{ opcion }}
+            </label>
+          }
+        </div>
+      }
+
+      <label for="observaciones">Observaciones</label>
+      <textarea id="observaciones" [ngModel]="observaciones()" (ngModelChange)="observaciones.set($event)"></textarea>
+
+      <label>
+        <input type="checkbox" [ngModel]="esterilizado()" (ngModelChange)="esterilizado.set($event)" />
+        Confirmar esterilizado
+      </label>
+
+      <label for="chip">Numero de microchip (si aplica)</label>
+      <input id="chip" type="text" [ngModel]="numeroMicrochip()" (ngModelChange)="numeroMicrochip.set($event)" />
+
+      @if (mensaje()) {
+        <p class="mensaje">{{ mensaje() }}</p>
+      }
+
+      <button type="button" [disabled]="enviando()" (click)="registrarValidacion()">
+        {{ enviando() ? 'Guardando...' : 'Registrar validacion' }}
+      </button>
+    } @else {
+      <p class="mensaje-vacio">Selecciona un animal de la lista para validarlo.</p>
+    }
+  </main>
+</div>
