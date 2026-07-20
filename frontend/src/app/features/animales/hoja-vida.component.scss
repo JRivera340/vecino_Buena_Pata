@@ -1,0 +1,88 @@
+.pantalla-hoja-vida {
+  padding: 2rem;
+  max-width: 720px;
+  margin: 0 auto;
+  height: 100%;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.tarjeta-animal {
+  display: flex;
+  gap: 1rem;
+  background: white;
+  border: 1px solid var(--color-neutro-300);
+  border-radius: var(--radio-borde-md);
+  padding: 1rem;
+  box-shadow: var(--sombra-suave);
+
+  .foto {
+    width: 140px;
+    height: 140px;
+    object-fit: cover;
+    border-radius: var(--radio-borde-sm);
+  }
+
+  h1 {
+    font-family: var(--font-titulos);
+    color: var(--color-primario);
+    margin: 0 0 0.4rem;
+  }
+
+  .descripcion {
+    color: var(--color-tinta);
+  }
+
+  .detalle-tecnico {
+    color: var(--color-neutro-600);
+    font-size: 0.875rem;
+  }
+}
+
+.sello-estado {
+  display: inline-block;
+  padding: 0.2rem 0.6rem;
+  border-radius: var(--radio-borde-sm);
+  color: white;
+  font-size: 0.75rem;
+  font-weight: 600;
+  margin-bottom: 0.4rem;
+}
+
+.seccion {
+  h2 {
+    font-family: var(--font-titulos);
+    color: var(--color-tinta);
+    font-size: 1.1rem;
+  }
+
+  ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+  }
+
+  li {
+    display: flex;
+    gap: 0.75rem;
+    padding: 0.5rem;
+    border: 1px solid var(--color-neutro-300);
+    border-radius: var(--radio-borde-sm);
+    background: white;
+    font-size: 0.875rem;
+
+    .fecha {
+      color: var(--color-neutro-600);
+      min-width: 140px;
+    }
+  }
+}
+
+.mensaje-vacio {
+  color: var(--color-neutro-600);
+}

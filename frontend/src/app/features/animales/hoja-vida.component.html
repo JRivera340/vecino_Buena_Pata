@@ -1,0 +1,78 @@
+<div class="pantalla-hoja-vida">
+  @if (animal(); as animal) {
+    <div class="tarjeta-animal">
+      @if (urlFoto(animal.foto_principal); as foto) {
+        <img class="foto" [src]="foto" alt="Foto de {{ animal.nombre }}" />
+      }
+      <div class="datos">
+        <h1>{{ animal.nombre }}</h1>
+        <span class="sello-estado" [style.backgroundColor]="estadoVisualDe(animal).color">
+          {{ estadoVisualDe(animal).etiqueta }}
+        </span>
+        <p>{{ animal.sexo }} - {{ animal.tamano }} - {{ animal.barrio }}</p>
+        @if (animal.descripcion) {
+          <p class="descripcion">{{ animal.descripcion }}</p>
+        }
+        <p class="detalle-tecnico">
+          Esterilizado: {{ animal.esterilizado ? 'Si' : 'No' }}
+          @if (animal.numero_microchip) {
+            - Microchip: {{ animal.numero_microchip }}
+          }
+        </p>
+      </div>
+    </div>
+
+    <section class="seccion">
+      <h2>Historial</h2>
+      @if (historial().length === 0) {
+        <p class="mensaje-vacio">Sin eventos registrados todavia.</p>
+      } @else {
+        <ul class="linea-tiempo">
+          @for (evento of historial(); track evento.id) {
+            <li>
+              <span class="fecha">{{ evento.fecha }}</span>
+              <span class="tipo">{{ evento.tipo_evento }}</span>
+              <span class="usuario">{{ evento.usuario }}</span>
+            </li>
+          }
+        </ul>
+      }
+    </section>
+
+    <section class="seccion">
+      <h2>Visitas de seguimiento</h2>
+      @if (visitas().length === 0) {
+        <p class="mensaje-vacio">Sin visitas registradas todavia.</p>
+      } @else {
+        <ul>
+          @for (visita of visitas(); track visita.id) {
+            <li>
+              <span class="fecha">{{ visita.fecha }}</span>
+              <span>{{ visita.estado_salud }} - {{ visita.estado_comportamiento }}</span>
+              <span>{{ visita.responsable }}</span>
+            </li>
+          }
+        </ul>
+      }
+    </section>
+
+    <section class="seccion">
+      <h2>Validaciones</h2>
+      @if (validaciones().length === 0) {
+        <p class="mensaje-vacio">Sin validaciones registradas todavia.</p>
+      } @else {
+        <ul>
+          @for (validacion of validaciones(); track validacion.id) {
+            <li>
+              <span class="fecha">{{ validacion.fecha }}</span>
+              <span>{{ validacion.veredicto }}</span>
+              <span>{{ validacion.veterinario }}</span>
+            </li>
+          }
+        </ul>
+      }
+    </section>
+  } @else if (!cargando()) {
+    <p class="mensaje-vacio">No se encontro el animal.</p>
+  }
+</div>
