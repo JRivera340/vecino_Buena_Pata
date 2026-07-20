@@ -1,0 +1,32 @@
+<div class="pantalla-formalizacion">
+  <h1>Formalizacion de Vecinos Buena Pata</h1>
+
+  @if (mensaje()) {
+    <p class="mensaje">{{ mensaje() }}</p>
+  }
+
+  @if (urlQr(); as url) {
+    <div class="tarjeta-qr">
+      <p>Codigo del collar: {{ codigoCollarGenerado() }}</p>
+      <img [src]="url" alt="Codigo QR del collar" />
+    </div>
+  }
+
+  @if (animalesListos().length === 0) {
+    <p class="mensaje-vacio">No hay animales candidatos o en proceso todavia.</p>
+  } @else {
+    <ul class="lista-animales">
+      @for (animal of animalesListos(); track animal.id) {
+        <li>
+          <div>
+            <p class="nombre">{{ animal.nombre }}</p>
+            <p class="detalle">{{ animal.estado }} - {{ animal.barrio }}</p>
+          </div>
+          <button type="button" [disabled]="enviandoId() === animal.id" (click)="formalizar(animal)">
+            {{ enviandoId() === animal.id ? 'Formalizando...' : 'Formalizar' }}
+          </button>
+        </li>
+      }
+    </ul>
+  }
+</div>
