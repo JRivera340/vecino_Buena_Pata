@@ -56,6 +56,8 @@ def test_lider_registra_salida_por_adopcion(db_session):
     )
     assert respuesta.status_code == 201
     cuerpo = respuesta.json()
+    assert cuerpo["causal_salida"] == "ADOPCION"
+    assert cuerpo["notas_salida"] == "Familia del barrio."
     assert cuerpo["estado"] == "ADOPTADO"
 
 
