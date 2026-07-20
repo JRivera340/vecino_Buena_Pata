@@ -1,0 +1,109 @@
+.pantalla-publica {
+  min-height: 100vh;
+  background-color: var(--color-fondo);
+  padding: 2rem 1rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1.5rem;
+}
+
+.tarjeta-publica,
+.tarjeta-reporte {
+  width: min(480px, 100%);
+  background: white;
+  border: 1px solid var(--color-neutro-300);
+  border-radius: var(--radio-borde-md);
+  padding: 1.5rem;
+  box-shadow: var(--sombra-suave);
+}
+
+.tarjeta-publica {
+  text-align: center;
+
+  img {
+    width: 160px;
+    height: 160px;
+    object-fit: cover;
+    border-radius: var(--radio-borde-md);
+    margin-bottom: 0.75rem;
+  }
+
+  h1 {
+    font-family: var(--font-titulos);
+    color: var(--color-primario);
+    margin: 0 0 0.4rem;
+  }
+
+  .etiqueta-vbp {
+    color: var(--color-secundario);
+    font-weight: 600;
+    font-size: 0.875rem;
+    margin-top: 0.75rem;
+  }
+}
+
+.tarjeta-reporte {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+
+  h2 {
+    font-family: var(--font-titulos);
+    color: var(--color-tinta);
+    margin: 0;
+  }
+
+  .ayuda {
+    color: var(--color-neutro-600);
+    font-size: 0.875rem;
+    margin: 0;
+  }
+
+  label {
+    font-size: 0.875rem;
+    color: var(--color-tinta);
+  }
+
+  input,
+  textarea {
+    padding: 0.5rem 0.75rem;
+    border: 1px solid var(--color-neutro-300);
+    border-radius: var(--radio-borde-sm);
+    font-family: var(--font-cuerpo);
+  }
+
+  textarea {
+    min-height: 4rem;
+    resize: vertical;
+  }
+
+  .mensaje-error {
+    color: var(--color-rojo-ladrillo);
+    margin: 0;
+    font-size: 0.875rem;
+  }
+
+  .mensaje-exito {
+    color: var(--color-secundario);
+    font-weight: 600;
+  }
+
+  button {
+    margin-top: 0.5rem;
+    padding: 0.6rem 1rem;
+    background-color: var(--color-primario);
+    color: white;
+    border: none;
+    border-radius: var(--radio-borde-sm);
+    font-family: var(--font-cuerpo);
+    font-weight: 600;
+    cursor: pointer;
+    align-self: flex-start;
+
+    &:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+    }
+  }
+}
