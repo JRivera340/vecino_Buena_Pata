@@ -19,3 +19,16 @@ export interface Animal {
   fecha_inscripcion: string;
   inscrito_por: string;
 }
+
+export interface AnimalCrear {
+  nombre: string;
+  sexo: Sexo;
+  tamano: Tamano;
+  edad_estimada: number | null;
+  descripcion: string | null;
+  foto_principal: string | null;
+  barrio: string;
+  latitud: number;
+  longitud: number;
+  comunidad_id: number;
+}

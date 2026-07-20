@@ -3,7 +3,7 @@ import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 
 import { environment } from '../../../environments/environment';
-import { Animal } from '../models/animal.model';
+import { Animal, AnimalCrear } from '../models/animal.model';
 
 @Injectable({ providedIn: 'root' })
 export class AnimalesService {
@@ -11,5 +11,9 @@ export class AnimalesService {
 
   listar(): Observable<Animal[]> {
     return this.http.get<Animal[]>(`${environment.apiBaseUrl}/animales`);
+  }
+
+  crear(datos: AnimalCrear): Observable<Animal> {
+    return this.http.post<Animal>(`${environment.apiBaseUrl}/animales`, datos);
   }
 }
