@@ -96,6 +96,23 @@ def test_validacion_en_estado_ilegal_devuelve_409(db_session):
     assert respuesta.status_code == 409
 
 
+def test_admin_tambien_puede_validar(db_session):
+    usuario = Usuario(
+        nombre="Admin", rol=RolUsuarioEnum.ADMIN, username="admin", password_hash=hash_password("vbp2026")
+    )
+    db_session.add(usuario)
+    db_session.commit()
+    token = create_access_token(subject="admin", rol=RolUsuarioEnum.ADMIN.value)
+    animal_id = _crear_animal(db_session)
+
+    respuesta = client.post(
+        f"/api/v1/animales/{animal_id}/validaciones",
+        json={"veredicto": "APROBADO", "pendientes": [], "observaciones": ""},
+        headers={"Authorization": f"Bearer {token}"},
+    )
+    assert respuesta.status_code == 201
+
+
 def test_comunidad_no_puede_validar(db_session):
     usuario = Usuario(
         nombre="Maria", rol=RolUsuarioEnum.COMUNIDAD, username="maria.comunidad", password_hash=hash_password("vbp2026")

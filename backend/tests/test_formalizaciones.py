@@ -97,6 +97,17 @@ def test_formalizacion_falla_sin_cumplir_criterios(db_session):
     assert respuesta.status_code == 409
 
 
+def test_admin_tambien_puede_formalizar(db_session):
+    token = _token(db_session, "admin", RolUsuarioEnum.ADMIN)
+    animal_id = _crear_animal_listo_para_formalizar(db_session)
+
+    respuesta = client.post(
+        f"/api/v1/animales/{animal_id}/formalizacion",
+        headers={"Authorization": f"Bearer {token}"},
+    )
+    assert respuesta.status_code == 201
+
+
 def test_veterinario_no_puede_formalizar(db_session):
     token = _token(db_session, "dr.rojas", RolUsuarioEnum.VETERINARIO)
     animal_id = _crear_animal_listo_para_formalizar(db_session)

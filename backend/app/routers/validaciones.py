@@ -17,7 +17,7 @@ def crear_validacion(
     animal_id: int,
     datos: ValidacionCrear,
     db: Session = Depends(get_db),
-    usuario: Usuario = Depends(requiere_rol(RolUsuarioEnum.VETERINARIO)),
+    usuario: Usuario = Depends(requiere_rol(RolUsuarioEnum.VETERINARIO, RolUsuarioEnum.ADMIN)),
 ) -> Validacion:
     try:
         return registrar_validacion(

@@ -11,7 +11,11 @@ import { BandejaValidacionComponent } from './features/validacion/bandeja-valida
 export const routes: Routes = [
   { path: 'ingreso', component: LoginComponent },
   { path: '', component: MapaComponent, canActivate: [authGuard] },
-  { path: 'animales/inscribir', component: InscribirAnimalComponent, canActivate: [authGuard] },
+  {
+    path: 'animales/inscribir',
+    component: InscribirAnimalComponent,
+    canActivate: [crearGuardDeRol('COMUNIDAD', 'VETERINARIO', 'LIDER', 'ADMIN')],
+  },
   {
     path: 'validacion',
     component: BandejaValidacionComponent,

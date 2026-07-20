@@ -3,7 +3,9 @@
     <a routerLink="/" class="marca">Vecino Buena Pata</a>
     <nav>
       <a routerLink="/">Mapa</a>
-      <a routerLink="/animales/inscribir">Inscribir</a>
+      @if (auth.sesionActual()?.rol !== 'UNIDAD_ESPECIAL') {
+        <a routerLink="/animales/inscribir">Inscribir</a>
+      }
       @if (auth.sesionActual()?.rol === 'VETERINARIO' || auth.sesionActual()?.rol === 'ADMIN') {
         <a routerLink="/validacion">Validar</a>
       }

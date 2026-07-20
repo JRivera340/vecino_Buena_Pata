@@ -15,7 +15,7 @@ router = APIRouter(prefix="/animales/{animal_id}/formalizacion", tags=["formaliz
 def crear_formalizacion(
     animal_id: int,
     db: Session = Depends(get_db),
-    usuario: Usuario = Depends(requiere_rol(RolUsuarioEnum.LIDER)),
+    usuario: Usuario = Depends(requiere_rol(RolUsuarioEnum.LIDER, RolUsuarioEnum.ADMIN)),
 ) -> FormalizacionRespuesta:
     try:
         animal, collar = formalizar_vbp(db, animal_id=animal_id, lider=usuario.username)
