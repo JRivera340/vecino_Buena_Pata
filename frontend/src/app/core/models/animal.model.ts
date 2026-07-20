@@ -1,9 +1,9 @@
-import { EstadoAnimal, Sexo, Tamano } from './enums';
+import { Especie, EstadoAnimal, Sexo, Tamano } from './enums';
 
 export interface Animal {
   id: number;
   nombre: string;
-  especie: string;
+  especie: Especie;
   sexo: Sexo;
   edad_estimada: number | null;
   tamano: Tamano;
