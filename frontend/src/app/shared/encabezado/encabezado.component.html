@@ -1,0 +1,19 @@
+@if (auth.estaAutenticado()) {
+  <header class="encabezado">
+    <a routerLink="/" class="marca">Vecino Buena Pata</a>
+    <nav>
+      <a routerLink="/">Mapa</a>
+      <a routerLink="/animales/inscribir">Inscribir</a>
+      @if (auth.sesionActual()?.rol === 'VETERINARIO' || auth.sesionActual()?.rol === 'ADMIN') {
+        <a routerLink="/validacion">Validar</a>
+      }
+      @if (auth.sesionActual()?.rol === 'LIDER' || auth.sesionActual()?.rol === 'ADMIN') {
+        <a routerLink="/formalizacion">Formalizar</a>
+      }
+    </nav>
+    <div class="usuario">
+      <span>{{ auth.sesionActual()?.nombre }}</span>
+      <button type="button" (click)="salir()">Salir</button>
+    </div>
+  </header>
+}

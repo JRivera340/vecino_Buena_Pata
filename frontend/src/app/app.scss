@@ -1,0 +1,11 @@
+.contenedor-app {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+}
+
+.contenido-app {
+  flex: 1;
+  min-height: 0;
+  overflow: auto;
+}
