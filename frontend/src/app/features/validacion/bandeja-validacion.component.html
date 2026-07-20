@@ -16,6 +16,10 @@
   </aside>
 
   <main class="panel-formulario">
+    @if (mensaje()) {
+      <p class="mensaje">{{ mensaje() }}</p>
+    }
+
     @if (animalSeleccionado(); as animal) {
       <h2>Validar a {{ animal.nombre }}</h2>
 
@@ -69,10 +73,6 @@
 
       <label for="chip">Numero de microchip (si aplica)</label>
       <input id="chip" type="text" [ngModel]="numeroMicrochip()" (ngModelChange)="numeroMicrochip.set($event)" />
-
-      @if (mensaje()) {
-        <p class="mensaje">{{ mensaje() }}</p>
-      }
 
       <button type="button" [disabled]="enviando()" (click)="registrarValidacion()">
         {{ enviando() ? 'Guardando...' : 'Registrar validacion' }}
