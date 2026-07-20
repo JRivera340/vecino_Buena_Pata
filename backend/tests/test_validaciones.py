@@ -57,6 +57,29 @@ def test_veterinario_registra_validacion_con_pendientes(db_session):
     assert respuesta.json()["veredicto"] == "CON_PENDIENTES"
 
 
+def test_validacion_aprobada_actualiza_esterilizado_y_chip_del_animal(db_session):
+    token = _token_veterinario(db_session)
+    animal_id = _crear_animal(db_session)
+
+    respuesta = client.post(
+        f"/api/v1/animales/{animal_id}/validaciones",
+        json={
+            "veredicto": "APROBADO",
+            "pendientes": [],
+            "observaciones": "Cumple todo.",
+            "esterilizado": True,
+            "numero_microchip": "985141900099",
+        },
+        headers={"Authorization": f"Bearer {token}"},
+    )
+    assert respuesta.status_code == 201
+
+    db_session.expire_all()
+    animal = db_session.get(Animal, animal_id)
+    assert animal.esterilizado is True
+    assert animal.numero_microchip == "985141900099"
+
+
 def test_validacion_en_estado_ilegal_devuelve_409(db_session):
     token = _token_veterinario(db_session)
     animal_id = _crear_animal(db_session)
