@@ -12,6 +12,7 @@ class Settings(BaseSettings):
     jwt_secret: str = "dev-secret-cambiar-en-produccion"
     jwt_algorithm: str = "HS256"
     jwt_expire_minutes: int = 480
+    frontend_base_url: str = "http://localhost:4200"
 
 
 @lru_cache
