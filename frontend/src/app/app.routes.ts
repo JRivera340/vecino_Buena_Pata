@@ -8,6 +8,7 @@ import { InscribirAnimalComponent } from './features/animales/inscribir-animal.c
 import { BandejaFormalizacionComponent } from './features/formalizacion/bandeja-formalizacion.component';
 import { MapaComponent } from './features/mapa/mapa.component';
 import { AnimalPublicoComponent } from './features/publico/animal-publico.component';
+import { BandejaReportesComponent } from './features/reportes/bandeja-reportes.component';
 import { BandejaValidacionComponent } from './features/validacion/bandeja-validacion.component';
 
 export const routes: Routes = [
@@ -29,5 +30,10 @@ export const routes: Routes = [
     path: 'formalizacion',
     component: BandejaFormalizacionComponent,
     canActivate: [crearGuardDeRol('LIDER', 'ADMIN')],
+  },
+  {
+    path: 'reportes',
+    component: BandejaReportesComponent,
+    canActivate: [authGuard],
   },
 ];

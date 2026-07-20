@@ -12,6 +12,7 @@
       @if (auth.sesionActual()?.rol === 'LIDER' || auth.sesionActual()?.rol === 'ADMIN') {
         <a routerLink="/formalizacion">Formalizar</a>
       }
+      <a routerLink="/reportes">Reportes</a>
     </nav>
     <div class="usuario">
       <span>{{ auth.sesionActual()?.nombre }}</span>

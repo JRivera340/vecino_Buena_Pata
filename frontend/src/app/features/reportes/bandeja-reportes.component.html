@@ -1,0 +1,46 @@
+<div class="bandeja">
+  <aside class="lista-pendientes">
+    <h1>Reportes de novedad</h1>
+    @if (reportesAbiertos().length === 0) {
+      <p class="mensaje-vacio">No hay reportes abiertos.</p>
+    } @else {
+      <ul>
+        @for (reporte of reportesAbiertos(); track reporte.id) {
+          <li [class.seleccionado]="reporteSeleccionadoId() === reporte.id" (click)="seleccionarReporte(reporte.id)">
+            <p class="nombre">{{ reporte.reportante_nombre }}</p>
+            <p class="detalle">{{ reporte.fecha }} - {{ reporte.estado }}</p>
+            <p class="detalle">{{ reporte.descripcion }}</p>
+          </li>
+        }
+      </ul>
+    }
+  </aside>
+
+  @if (puedeAtender()) {
+    <main class="panel-formulario">
+      @if (mensaje()) {
+        <p class="mensaje">{{ mensaje() }}</p>
+      }
+
+      @if (reporteSeleccionado(); as reporte) {
+        <h2>Atender reporte de {{ reporte.reportante_nombre }}</h2>
+
+        <label for="acciones">Acciones realizadas</label>
+        <textarea
+          id="acciones"
+          [ngModel]="accionesRealizadas()"
+          (ngModelChange)="accionesRealizadas.set($event)"
+        ></textarea>
+
+        <label for="resultado">Resultado</label>
+        <textarea id="resultado" [ngModel]="resultado()" (ngModelChange)="resultado.set($event)"></textarea>
+
+        <button type="button" [disabled]="enviando()" (click)="registrarAtencion()">
+          {{ enviando() ? 'Guardando...' : 'Cerrar reporte' }}
+        </button>
+      } @else {
+        <p class="mensaje-vacio">Selecciona un reporte de la lista para atenderlo.</p>
+      }
+    </main>
+  }
+</div>
