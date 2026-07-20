@@ -77,6 +77,9 @@
                   <p class="tarjeta-animal__nombre">{{ animal.nombre }}</p>
                   <p class="tarjeta-animal__detalle">{{ estadoVisualDe(animal).etiqueta }} - {{ animal.barrio }}</p>
                 </div>
+                <a class="enlace-detalle" [routerLink]="['/animales', animal.id]" (click)="$event.stopPropagation()">
+                  Ver mas
+                </a>
               </li>
             }
           </ul>

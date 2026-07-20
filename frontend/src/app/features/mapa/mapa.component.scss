@@ -114,6 +114,18 @@ select {
     font-size: 0.75rem;
     color: var(--color-neutro-600);
   }
+
+  .enlace-detalle {
+    margin-left: auto;
+    font-size: 0.75rem;
+    color: var(--color-primario);
+    text-decoration: none;
+    white-space: nowrap;
+
+    &:hover {
+      text-decoration: underline;
+    }
+  }
 }
 
 .sello-estado {

@@ -1,5 +1,6 @@
 import { Component, OnInit, computed, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
+import { RouterLink } from '@angular/router';
 
 import { AnimalesService } from '../../core/animales/animales.service';
 import { ComunidadesService } from '../../core/comunidades/comunidades.service';
@@ -13,7 +14,7 @@ import { filtrarAnimales } from './filtrar-animales.lib';
 @Component({
   selector: 'app-mapa',
   standalone: true,
-  imports: [FormsModule, MapaTerritorioComponent],
+  imports: [FormsModule, RouterLink, MapaTerritorioComponent],
   templateUrl: './mapa.component.html',
   styleUrl: './mapa.component.scss',
 })
