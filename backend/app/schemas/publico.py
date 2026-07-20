@@ -1,6 +1,6 @@
 from datetime import datetime
 
-from pydantic import BaseModel, ConfigDict
+from pydantic import BaseModel, ConfigDict, Field
 
 from app.models.enums import EspecieEnum, EstadoAnimalEnum, EstadoReporteEnum, SexoEnum, TamanoEnum
 
@@ -23,9 +23,9 @@ class AnimalPublicoSchema(BaseModel):
 
 
 class ReporteNovedadCrear(BaseModel):
-    reportante_nombre: str
-    descripcion: str
-    foto: str | None = None
+    reportante_nombre: str = Field(max_length=120)
+    descripcion: str = Field(max_length=1000)
+    foto: str | None = Field(default=None, max_length=255)
     latitud: float | None = None
     longitud: float | None = None
 

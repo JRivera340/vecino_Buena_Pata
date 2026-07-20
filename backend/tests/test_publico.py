@@ -43,6 +43,10 @@ def test_consultar_animal_publico_sin_token(db_session):
     assert respuesta.status_code == 200
     cuerpo = respuesta.json()
     assert cuerpo["nombre"] == "Rocky"
+    assert "inscrito_por" not in cuerpo
+    assert "numero_microchip" not in cuerpo
+    assert "esterilizado" not in cuerpo
+    assert "comunidad_id" not in cuerpo
 
 
 def test_consultar_codigo_inexistente_devuelve_404(db_session):
@@ -61,3 +65,13 @@ def test_crear_reporte_publico_sin_token(db_session):
     cuerpo = respuesta.json()
     assert cuerpo["animal_id"] == animal_id
     assert cuerpo["estado"] == "NUEVO"
+
+
+def test_crear_reporte_con_descripcion_demasiado_larga_devuelve_422(db_session):
+    _, codigo = _crear_animal_con_collar(db_session)
+
+    respuesta = client.post(
+        f"/api/v1/publico/animales/{codigo}/reportes",
+        json={"reportante_nombre": "Vecino anonimo", "descripcion": "x" * 1001},
+    )
+    assert respuesta.status_code == 422
