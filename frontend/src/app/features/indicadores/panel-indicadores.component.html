@@ -1,0 +1,41 @@
+<div class="pantalla-indicadores">
+  <h1>Panel de indicadores</h1>
+
+  @if (cargando()) {
+    <p class="mensaje-vacio">Cargando...</p>
+  } @else {
+    <div class="tarjetas">
+      <div class="tarjeta">
+        <p class="numero">{{ indicadores().totalAnimales }}</p>
+        <p class="etiqueta">Animales registrados</p>
+      </div>
+      <div class="tarjeta">
+        <p class="numero">{{ indicadores().totalVbpActivos }}</p>
+        <p class="etiqueta">Vecinos Buena Pata activos</p>
+      </div>
+      <div class="tarjeta">
+        <p class="numero">{{ indicadores().totalReportesAbiertos }}</p>
+        <p class="etiqueta">Reportes abiertos</p>
+      </div>
+    </div>
+
+    <section class="seccion">
+      <h2>Animales por estado</h2>
+      <ul class="barras">
+        @for (conteo of indicadores().conteoPorEstado; track conteo.estado) {
+          <li>
+            <span class="etiqueta-barra">{{ etiquetaDe(conteo.estado) }}</span>
+            <div class="pista-barra">
+              <div
+                class="relleno-barra"
+                [style.width.%]="anchoBarra(conteo.cantidad)"
+                [style.backgroundColor]="colorDe(conteo.estado)"
+              ></div>
+            </div>
+            <span class="valor-barra">{{ conteo.cantidad }}</span>
+          </li>
+        }
+      </ul>
+    </section>
+  }
+</div>
