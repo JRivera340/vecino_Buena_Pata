@@ -7,6 +7,7 @@ from app.models.animal import Animal
 from app.models.enums import RolUsuarioEnum
 from app.models.usuario import Usuario
 from app.schemas.animal import AnimalCrear, AnimalSchema
+from app.services.inscripcion import inscribir_animal as inscribir_animal_servicio
 
 router = APIRouter(prefix="/animales", tags=["animales"])
 
@@ -37,8 +38,4 @@ def inscribir_animal(
     db: Session = Depends(get_db),
     usuario: Usuario = Depends(requiere_rol(*_ROLES_INSCRIBEN)),
 ) -> Animal:
-    animal = Animal(**datos.model_dump(), inscrito_por=usuario.username)
-    db.add(animal)
-    db.commit()
-    db.refresh(animal)
-    return animal
+    return inscribir_animal_servicio(db, datos=datos.model_dump(), inscrito_por=usuario.username)
