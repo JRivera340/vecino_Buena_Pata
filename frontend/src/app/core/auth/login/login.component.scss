@@ -1,0 +1,65 @@
+.pantalla-ingreso {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: var(--color-fondo);
+}
+
+.tarjeta-ingreso {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  width: min(360px, 90vw);
+  padding: 2rem;
+  background: white;
+  border: 1px solid var(--color-neutro-300);
+  border-radius: var(--radio-borde-md);
+  box-shadow: var(--sombra-suave);
+
+  h1 {
+    font-family: var(--font-titulos);
+    color: var(--color-primario);
+    margin: 0;
+  }
+
+  .subtitulo {
+    margin: 0 0 0.5rem;
+    color: var(--color-neutro-600);
+  }
+
+  label {
+    font-size: 0.875rem;
+    color: var(--color-tinta);
+  }
+
+  input {
+    padding: 0.5rem 0.75rem;
+    border: 1px solid var(--color-neutro-300);
+    border-radius: var(--radio-borde-sm);
+    font-family: var(--font-cuerpo);
+  }
+
+  .mensaje-error {
+    color: var(--color-rojo-ladrillo);
+    margin: 0;
+    font-size: 0.875rem;
+  }
+
+  button {
+    margin-top: 0.5rem;
+    padding: 0.6rem;
+    background-color: var(--color-primario);
+    color: white;
+    border: none;
+    border-radius: var(--radio-borde-sm);
+    font-family: var(--font-cuerpo);
+    font-weight: 600;
+    cursor: pointer;
+
+    &:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+    }
+  }
+}
