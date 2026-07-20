@@ -27,6 +27,7 @@
         <input
           id="reportante"
           type="text"
+          maxlength="120"
           [ngModel]="reportanteNombre()"
           (ngModelChange)="reportanteNombre.set($event)"
         />
@@ -34,6 +35,7 @@
         <label for="descripcion">Que observaste</label>
         <textarea
           id="descripcion"
+          maxlength="1000"
           [ngModel]="descripcionReporte()"
           (ngModelChange)="descripcionReporte.set($event)"
         ></textarea>
