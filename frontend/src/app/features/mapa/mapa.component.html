@@ -51,9 +51,9 @@
         </select>
 
         <select [ngModel]="filtroComunidadId()" (ngModelChange)="filtroComunidadId.set($event)">
-          <option value="TODOS">Todas las comunidades</option>
+          <option [ngValue]="'TODOS'">Todas las comunidades</option>
           @for (comunidad of comunidades(); track comunidad.id) {
-            <option [value]="comunidad.id">{{ comunidad.nombre }}</option>
+            <option [ngValue]="comunidad.id">{{ comunidad.nombre }}</option>
           }
         </select>
 
