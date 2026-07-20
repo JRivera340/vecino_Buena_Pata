@@ -19,8 +19,130 @@
             - Microchip: {{ animal.numero_microchip }}
           }
         </p>
+        @if (animal.causal_salida) {
+          <p class="detalle-tecnico">
+            Causal de salida: {{ animal.causal_salida }}
+            @if (animal.notas_salida) {
+              - {{ animal.notas_salida }}
+            }
+          </p>
+        }
       </div>
     </div>
+
+    @if (puedeVisitar(animal) || puedeSalir(animal) || puedeReactivarAnimal(animal)) {
+      <section class="seccion acciones">
+        <h2>Acciones</h2>
+
+        @if (mensajeAccion()) {
+          <p class="mensaje">{{ mensajeAccion() }}</p>
+        }
+
+        <div class="botones-accion">
+          @if (puedeVisitar(animal)) {
+            <button type="button" (click)="mostrarAccion('visita')">Registrar visita</button>
+          }
+          @if (puedeSalir(animal)) {
+            <button type="button" (click)="mostrarAccion('salida')">Registrar salida</button>
+          }
+          @if (puedeReactivarAnimal(animal)) {
+            <button type="button" (click)="mostrarAccion('reactivacion')">Reactivar</button>
+          }
+        </div>
+
+        @if (accionActiva() === 'visita') {
+          <div class="formulario-accion">
+            <label>
+              Estado de salud
+              <select [ngModel]="estadoSalud()" (ngModelChange)="estadoSalud.set($event)">
+                <option value="BUENO">Bueno</option>
+                <option value="REGULAR">Regular</option>
+                <option value="MALO">Malo</option>
+              </select>
+            </label>
+            <label>
+              Estado de comportamiento
+              <input
+                type="text"
+                [ngModel]="estadoComportamiento()"
+                (ngModelChange)="estadoComportamiento.set($event)"
+              />
+            </label>
+            <label>
+              Peso (kg)
+              <input type="number" [ngModel]="pesoKg()" (ngModelChange)="pesoKg.set($event)" />
+            </label>
+            <label>
+              Observaciones
+              <textarea
+                [ngModel]="observacionesVisita()"
+                (ngModelChange)="observacionesVisita.set($event)"
+              ></textarea>
+            </label>
+            <div class="botones-formulario">
+              <button type="button" [disabled]="enviando()" (click)="registrarVisita()">
+                {{ enviando() ? 'Guardando...' : 'Guardar visita' }}
+              </button>
+              <button type="button" (click)="accionActiva.set(null)">Cancelar</button>
+            </div>
+          </div>
+        }
+
+        @if (accionActiva() === 'salida') {
+          <div class="formulario-accion">
+            <label>
+              Causal
+              <select [ngModel]="causalSalida()" (ngModelChange)="causalSalida.set($event)">
+                <option value="ADOPCION">Adopcion</option>
+                <option value="PERDIDA">Perdida</option>
+                <option value="FALLECIMIENTO">Fallecimiento</option>
+              </select>
+            </label>
+            <label>
+              Fecha
+              <input type="date" [ngModel]="fechaSalida()" (ngModelChange)="fechaSalida.set($event)" />
+            </label>
+            <label>
+              Notas
+              <textarea [ngModel]="notasSalida()" (ngModelChange)="notasSalida.set($event)"></textarea>
+            </label>
+            <div class="botones-formulario">
+              <button type="button" [disabled]="enviando()" (click)="registrarSalida()">
+                {{ enviando() ? 'Guardando...' : 'Guardar salida' }}
+              </button>
+              <button type="button" (click)="accionActiva.set(null)">Cancelar</button>
+            </div>
+          </div>
+        }
+
+        @if (accionActiva() === 'reactivacion') {
+          <div class="formulario-accion">
+            <label>
+              Estado de salud
+              <select [ngModel]="estadoSalud()" (ngModelChange)="estadoSalud.set($event)">
+                <option value="BUENO">Bueno</option>
+                <option value="REGULAR">Regular</option>
+                <option value="MALO">Malo</option>
+              </select>
+            </label>
+            <label>
+              Estado de comportamiento
+              <input
+                type="text"
+                [ngModel]="estadoComportamiento()"
+                (ngModelChange)="estadoComportamiento.set($event)"
+              />
+            </label>
+            <div class="botones-formulario">
+              <button type="button" [disabled]="enviando()" (click)="reactivarAnimal()">
+                {{ enviando() ? 'Guardando...' : 'Confirmar reactivacion' }}
+              </button>
+              <button type="button" (click)="accionActiva.set(null)">Cancelar</button>
+            </div>
+          </div>
+        }
+      </section>
+    }
 
     <section class="seccion">
       <h2>Historial</h2>

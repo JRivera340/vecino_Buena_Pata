@@ -86,3 +86,67 @@
 .mensaje-vacio {
   color: var(--color-neutro-600);
 }
+
+.acciones {
+  .botones-accion {
+    display: flex;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+  }
+
+  button {
+    background-color: var(--color-primario);
+    color: white;
+    border: none;
+    border-radius: var(--radio-borde-sm);
+    padding: 0.5rem 1rem;
+    font-family: var(--font-cuerpo);
+    font-weight: 600;
+    cursor: pointer;
+
+    &:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+    }
+  }
+
+  .botones-formulario {
+    display: flex;
+    gap: 0.5rem;
+
+    button[type='button']:last-child {
+      background-color: var(--color-neutro-300);
+      color: var(--color-tinta);
+    }
+  }
+
+  .formulario-accion {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+    margin-top: 1rem;
+    max-width: 360px;
+
+    label {
+      display: flex;
+      flex-direction: column;
+      gap: 0.25rem;
+      font-size: 0.875rem;
+      color: var(--color-tinta);
+    }
+
+    select,
+    input,
+    textarea {
+      padding: 0.5rem 0.75rem;
+      border: 1px solid var(--color-neutro-300);
+      border-radius: var(--radio-borde-sm);
+      font-family: var(--font-cuerpo);
+    }
+  }
+
+  .mensaje {
+    color: var(--color-secundario);
+    font-weight: 600;
+  }
+}
