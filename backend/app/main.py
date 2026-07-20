@@ -7,6 +7,7 @@ from app.routers import auth as auth_router
 from app.routers import collar as collar_router
 from app.routers import comunidades as comunidades_router
 from app.routers import formalizacion as formalizacion_router
+from app.routers import media as media_router
 from app.routers import validaciones as validaciones_router
 
 settings = get_settings()
@@ -21,6 +22,7 @@ api_router.include_router(animales_router.router)
 api_router.include_router(validaciones_router.router)
 api_router.include_router(formalizacion_router.router)
 api_router.include_router(collar_router.router)
+api_router.include_router(media_router.router)
 
 
 @api_router.get("/salud")
