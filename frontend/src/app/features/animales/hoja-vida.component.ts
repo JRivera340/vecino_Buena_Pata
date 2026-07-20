@@ -133,11 +133,17 @@ export class HojaVidaComponent implements OnInit {
   }
 
   registrarSalida(): void {
+    const fecha = new Date(this.fechaSalida());
+    if (Number.isNaN(fecha.getTime())) {
+      this.mensajeAccion.set('Ingresa una fecha valida.');
+      return;
+    }
+
     this.enviando.set(true);
     this.seguimientoService
       .registrarSalida(this.animalId, {
         causal: this.causalSalida(),
-        fecha: new Date(this.fechaSalida()).toISOString(),
+        fecha: fecha.toISOString(),
         notas: this.notasSalida() || null,
       })
       .subscribe({
