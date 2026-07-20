@@ -6,3 +6,4 @@ export type Tamano = 'PEQUENO' | 'MEDIANO' | 'GRANDE';
 export type RolUsuario = 'COMUNIDAD' | 'VETERINARIO' | 'LIDER' | 'UNIDAD_ESPECIAL' | 'ADMIN';
 
 export type VeredictoValidacion = 'APROBADO' | 'CON_PENDIENTES';
+export type EstadoSalud = 'BUENO' | 'REGULAR' | 'MALO';
