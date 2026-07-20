@@ -8,8 +8,7 @@ import { Comunidad } from '../../core/models/comunidad.model';
 import { EstadoAnimal } from '../../core/models/enums';
 import { estadoVisual } from '../../shared/estado-visual/estado-visual.lib';
 import { MapaTerritorioComponent, MarcadorMapa } from '../../shared/mapa/mapa-territorio.component';
-
-const ESTADOS_VISIBLES_POR_DEFECTO: EstadoAnimal[] = ['CANDIDATO', 'EN_PROCESO', 'VBP_ACTIVO'];
+import { filtrarAnimales } from './filtrar-animales.lib';
 
 @Component({
   selector: 'app-mapa',
@@ -30,27 +29,15 @@ export class MapaComponent implements OnInit {
   animalSeleccionadoId = signal<number | null>(null);
   panelAbierto = signal(true);
 
-  animalesFiltrados = computed(() => {
-    const texto = this.busqueda().trim().toLowerCase();
-    return this.animales().filter((animal) => {
-      if (!this.mostrarSalidos() && !ESTADOS_VISIBLES_POR_DEFECTO.includes(animal.estado)) {
-        return false;
-      }
-      if (texto && !animal.nombre.toLowerCase().includes(texto)) {
-        return false;
-      }
-      if (this.filtroEstado() !== 'TODOS' && animal.estado !== this.filtroEstado()) {
-        return false;
-      }
-      if (this.filtroBarrio() !== 'TODOS' && animal.barrio !== this.filtroBarrio()) {
-        return false;
-      }
-      if (this.filtroComunidadId() !== 'TODOS' && animal.comunidad_id !== this.filtroComunidadId()) {
-        return false;
-      }
-      return true;
-    });
-  });
+  animalesFiltrados = computed(() =>
+    filtrarAnimales(this.animales(), {
+      busqueda: this.busqueda(),
+      estado: this.filtroEstado(),
+      barrio: this.filtroBarrio(),
+      comunidadId: this.filtroComunidadId(),
+      mostrarSalidos: this.mostrarSalidos(),
+    }),
+  );
 
   marcadores = computed<MarcadorMapa[]>(() =>
     this.animalesFiltrados().map((animal) => ({
