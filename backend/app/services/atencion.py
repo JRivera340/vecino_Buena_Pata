@@ -3,6 +3,7 @@ from sqlalchemy.orm import Session
 from app.models.atencion_especial import AtencionEspecial
 from app.models.enums import EstadoReporteEnum
 from app.models.reporte_novedad import ReporteNovedad
+from app.services.historial import registrar_evento
 
 
 def registrar_atencion(
@@ -28,4 +29,13 @@ def registrar_atencion(
     reporte.estado = EstadoReporteEnum.CERRADO
     db.commit()
     db.refresh(atencion)
+
+    registrar_evento(
+        db,
+        animal_id=reporte.animal_id,
+        tipo_evento="ATENCION_ESPECIAL",
+        usuario=responsable,
+        detalle={"reporte_id": reporte_id, "resultado": resultado},
+    )
+
     return atencion
