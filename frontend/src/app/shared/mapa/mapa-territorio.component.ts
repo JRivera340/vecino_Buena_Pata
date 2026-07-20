@@ -68,7 +68,9 @@ export class MapaTerritorioComponent implements AfterViewInit, OnChanges, OnDest
     this.capaMarcadores.clearLayers();
     for (const marcador of this.marcadores) {
       const icono = crearIconoMarcador(marcador.visual);
-      const punto = L.marker([marcador.lat, marcador.lng], { icon: icono }).bindPopup(marcador.etiqueta);
+      const contenidoPopup = document.createElement('span');
+      contenidoPopup.textContent = marcador.etiqueta;
+      const punto = L.marker([marcador.lat, marcador.lng], { icon: icono }).bindPopup(contenidoPopup);
       punto.on('click', () => this.marcadorClick.emit(marcador.id));
       this.capaMarcadores.addLayer(punto);
     }
