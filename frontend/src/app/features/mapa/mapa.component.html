@@ -1,0 +1,91 @@
+<div class="vista-mapa">
+  <aside class="panel-lateral" [class.panel-lateral--cerrado]="!panelAbierto()">
+    <button type="button" class="boton-alternar" (click)="alternarPanel()">
+      {{ panelAbierto() ? 'Ocultar panel' : 'Mostrar panel' }}
+    </button>
+
+    @if (panelAbierto()) {
+      <div class="contenido-panel">
+        <div class="contadores">
+          <div class="contador">
+            <span class="contador__numero">{{ contadores().total }}</span>
+            <span class="contador__etiqueta">Total</span>
+          </div>
+          <div class="contador">
+            <span class="contador__numero">{{ contadores().vbpActivos }}</span>
+            <span class="contador__etiqueta">VBP activos</span>
+          </div>
+          <div class="contador">
+            <span class="contador__numero">{{ contadores().candidatos }}</span>
+            <span class="contador__etiqueta">Candidatos</span>
+          </div>
+          <div class="contador">
+            <span class="contador__numero">{{ contadores().enProceso }}</span>
+            <span class="contador__etiqueta">En proceso</span>
+          </div>
+        </div>
+
+        <input
+          type="text"
+          class="campo-busqueda"
+          placeholder="Buscar por nombre"
+          [ngModel]="busqueda()"
+          (ngModelChange)="busqueda.set($event)"
+        />
+
+        <select [ngModel]="filtroEstado()" (ngModelChange)="filtroEstado.set($event)">
+          <option value="TODOS">Todos los estados</option>
+          <option value="CANDIDATO">Candidato</option>
+          <option value="EN_PROCESO">En proceso</option>
+          <option value="VBP_ACTIVO">Vecino Buena Pata activo</option>
+          <option value="ADOPTADO">Adoptado</option>
+          <option value="PERDIDO">Perdido</option>
+          <option value="FALLECIDO">Fallecido</option>
+        </select>
+
+        <select [ngModel]="filtroBarrio()" (ngModelChange)="filtroBarrio.set($event)">
+          <option value="TODOS">Todos los barrios</option>
+          @for (barrio of barriosDisponibles(); track barrio) {
+            <option [value]="barrio">{{ barrio }}</option>
+          }
+        </select>
+
+        <select [ngModel]="filtroComunidadId()" (ngModelChange)="filtroComunidadId.set($event)">
+          <option value="TODOS">Todas las comunidades</option>
+          @for (comunidad of comunidades(); track comunidad.id) {
+            <option [value]="comunidad.id">{{ comunidad.nombre }}</option>
+          }
+        </select>
+
+        <label class="opcion-salidos">
+          <input type="checkbox" [ngModel]="mostrarSalidos()" (ngModelChange)="mostrarSalidos.set($event)" />
+          Mostrar animales que ya salieron del programa
+        </label>
+
+        @if (animalesFiltrados().length === 0) {
+          <p class="mensaje-vacio">No hay animales que coincidan con estos filtros.</p>
+        } @else {
+          <ul class="lista-animales">
+            @for (animal of animalesFiltrados(); track animal.id) {
+              <li
+                class="tarjeta-animal"
+                [class.tarjeta-animal--seleccionada]="animalSeleccionadoId() === animal.id"
+                (click)="seleccionarAnimal(animal.id)"
+              >
+                <span class="sello-estado" [style.backgroundColor]="estadoVisualDe(animal).color"></span>
+                <div>
+                  <p class="tarjeta-animal__nombre">{{ animal.nombre }}</p>
+                  <p class="tarjeta-animal__detalle">{{ estadoVisualDe(animal).etiqueta }} - {{ animal.barrio }}</p>
+                </div>
+              </li>
+            }
+          </ul>
+        }
+      </div>
+    }
+  </aside>
+
+  <main class="contenedor-mapa">
+    <app-mapa-territorio [marcadores]="marcadores()" (marcadorClick)="seleccionarAnimal($event)"></app-mapa-territorio>
+  </main>
+</div>
