@@ -1,59 +1,48 @@
-# Frontend
+# Vecino Buena Pata — Frontend
 
-This project was generated using [Angular CLI](https://github.com/angular/angular-cli) version 21.2.19.
+Aplicacion Angular del programa Vecino Buena Pata para la Alcaldia de Santa Fe.
 
-## Development server
+## Ejecutar con Docker (recomendado)
 
-To start a local development server, run:
+Ver el `README.md` de la raiz del proyecto para levantar el stack completo (`docker compose up`). El frontend queda disponible en `http://localhost:4200`.
 
-```bash
-ng serve
-```
+## Ejecutar el frontend solo
 
-Once the server is running, open your browser and navigate to `http://localhost:4200/`. The application will automatically reload whenever you modify any of the source files.
-
-## Code scaffolding
-
-Angular CLI includes powerful code scaffolding tools. To generate a new component, run:
+Requiere el backend corriendo por separado (ver `README.md` de la raiz).
 
 ```bash
-ng generate component component-name
+npm install
+npm start
 ```
 
-For a complete list of available schematics (such as `components`, `directives`, or `pipes`), run:
+El servidor de desarrollo queda en `http://localhost:4200`.
 
-```bash
-ng generate --help
-```
+## Configuracion
 
-## Building
+La URL del backend esta fija en `src/environments/environment.ts` (`apiBaseUrl: 'http://localhost:8000/api/v1'`). No hay un archivo de entorno de produccion separado — el proyecto usa una unica configuracion para todos los builds.
 
-To build the project run:
+## Iniciar sesion
 
-```bash
-ng build
-```
+Los usuarios de prueba (creados por el seed del backend, ver `README.md` de la raiz) usan la contrasena `vbp2026`:
 
-This will compile your project and store the build artifacts in the `dist/` directory. By default, the production build optimizes your application for performance and speed.
+- `maria.comunidad` — rol Comunidad
+- `dr.rojas` — rol Veterinario
+- `lider.campo` — rol Lider
+- `unidad.especial` — rol Unidad especial
+- `admin` — rol Administrador
 
-## Running unit tests
+Algunas rutas estan restringidas por rol: `/validacion` (Veterinario/Administrador), `/formalizacion` (Lider/Administrador), `/animales/inscribir` (Comunidad/Veterinario/Lider/Administrador). `/reportes` e `/indicadores` estan disponibles para cualquier usuario autenticado.
 
-To execute unit tests with the [Vitest](https://vitest.dev/) test runner, use the following command:
+## Tests
 
 ```bash
 ng test
 ```
 
-## Running end-to-end tests
+Usa Vitest. Solo los archivos `.lib.ts` (logica pura) y `AuthService` tienen tests unitarios, siguiendo la convencion del proyecto de mantener la logica de negocio fuera de los componentes de Angular.
 
-For end-to-end (e2e) testing, run:
+## Build de produccion
 
 ```bash
-ng e2e
+ng build
 ```
-
-Angular CLI does not come with an end-to-end testing framework by default. You can choose one that suits your needs.
-
-## Additional Resources
-
-For more information on using the Angular CLI, including detailed command references, visit the [Angular CLI Overview and Command Reference](https://angular.dev/tools/cli) page.
