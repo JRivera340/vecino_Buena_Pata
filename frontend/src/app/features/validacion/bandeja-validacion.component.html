@@ -1,7 +1,9 @@
 <div class="bandeja">
   <aside class="lista-pendientes">
     <h1>Validacion veterinaria</h1>
-    @if (animalesPendientes().length === 0) {
+    @if (cargando()) {
+      <p class="mensaje-vacio">Cargando...</p>
+    } @else if (animalesPendientes().length === 0) {
       <p class="mensaje-vacio">No hay animales pendientes de validacion.</p>
     } @else {
       <ul>

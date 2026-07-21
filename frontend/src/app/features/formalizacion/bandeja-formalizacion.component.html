@@ -12,7 +12,9 @@
     </div>
   }
 
-  @if (animalesListos().length === 0) {
+  @if (cargando()) {
+    <p class="mensaje-vacio">Cargando...</p>
+  } @else if (animalesListos().length === 0) {
     <p class="mensaje-vacio">No hay animales candidatos o en proceso todavia.</p>
   } @else {
     <ul class="lista-animales">

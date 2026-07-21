@@ -18,6 +18,7 @@ const OPCIONES_PENDIENTES = ['SIN_CHIP', 'SIN_ESTERILIZAR', 'COMPORTAMIENTO', 'S
 })
 export class BandejaValidacionComponent implements OnInit {
   animales = signal<Animal[]>([]);
+  cargando = signal(true);
   animalSeleccionadoId = signal<number | null>(null);
 
   veredicto = signal<VeredictoValidacion>('APROBADO');
@@ -49,7 +50,13 @@ export class BandejaValidacionComponent implements OnInit {
   }
 
   private cargarAnimales(): void {
-    this.animalesService.listar().subscribe((animales) => this.animales.set(animales));
+    this.animalesService.listar().subscribe({
+      next: (animales) => {
+        this.animales.set(animales);
+        this.cargando.set(false);
+      },
+      error: () => this.cargando.set(false),
+    });
   }
 
   seleccionarAnimal(id: number): void {

@@ -15,6 +15,7 @@ const ESTADOS_FORMALIZABLES: EstadoAnimal[] = ['CANDIDATO', 'EN_PROCESO'];
 })
 export class BandejaFormalizacionComponent implements OnInit {
   animales = signal<Animal[]>([]);
+  cargando = signal(true);
   enviandoId = signal<number | null>(null);
   mensaje = signal<string | null>(null);
   codigoCollarGenerado = signal<string | null>(null);
@@ -32,7 +33,13 @@ export class BandejaFormalizacionComponent implements OnInit {
   }
 
   private cargarAnimales(): void {
-    this.animalesService.listar().subscribe((animales) => this.animales.set(animales));
+    this.animalesService.listar().subscribe({
+      next: (animales) => {
+        this.animales.set(animales);
+        this.cargando.set(false);
+      },
+      error: () => this.cargando.set(false),
+    });
   }
 
   formalizar(animal: Animal): void {

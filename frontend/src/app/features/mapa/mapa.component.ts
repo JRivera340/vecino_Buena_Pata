@@ -21,6 +21,7 @@ import { filtrarAnimales } from './filtrar-animales.lib';
 export class MapaComponent implements OnInit {
   animales = signal<Animal[]>([]);
   comunidades = signal<Comunidad[]>([]);
+  cargando = signal(true);
 
   busqueda = signal('');
   filtroEstado = signal<EstadoAnimal | 'TODOS'>('TODOS');
@@ -68,7 +69,13 @@ export class MapaComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
-    this.animalesService.listar().subscribe((animales) => this.animales.set(animales));
+    this.animalesService.listar().subscribe({
+      next: (animales) => {
+        this.animales.set(animales);
+        this.cargando.set(false);
+      },
+      error: () => this.cargando.set(false),
+    });
     this.comunidadesService.listar().subscribe((comunidades) => this.comunidades.set(comunidades));
   }
 

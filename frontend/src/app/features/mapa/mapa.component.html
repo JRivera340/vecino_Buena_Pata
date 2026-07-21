@@ -62,7 +62,9 @@
           Mostrar animales que ya salieron del programa
         </label>
 
-        @if (animalesFiltrados().length === 0) {
+        @if (cargando()) {
+          <p class="mensaje-vacio">Cargando...</p>
+        } @else if (animalesFiltrados().length === 0) {
           <p class="mensaje-vacio">No hay animales que coincidan con estos filtros.</p>
         } @else {
           <ul class="lista-animales">
