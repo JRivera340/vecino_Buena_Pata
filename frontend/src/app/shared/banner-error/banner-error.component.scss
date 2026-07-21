@@ -1,0 +1,21 @@
+.banner-error {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 0.6rem 1.2rem;
+  background-color: var(--color-rojo-ladrillo);
+  color: white;
+  font-family: var(--font-cuerpo);
+  font-size: 0.875rem;
+
+  button {
+    background: none;
+    border: 1px solid white;
+    color: white;
+    border-radius: var(--radio-borde-sm);
+    padding: 0.2rem 0.6rem;
+    cursor: pointer;
+    font-family: var(--font-cuerpo);
+  }
+}
