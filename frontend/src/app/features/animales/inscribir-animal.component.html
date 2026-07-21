@@ -50,8 +50,8 @@
           }
         </select>
 
-        <label>Foto (obligatoria)</label>
-        <input type="file" accept="image/*" (change)="seleccionarFoto($event)" />
+        <label for="foto">Foto (obligatoria)</label>
+        <input id="foto" type="file" accept="image/*" (change)="seleccionarFoto($event)" />
 
         <label>Ubicacion en el territorio (haz clic en el mapa)</label>
         <app-mapa-territorio

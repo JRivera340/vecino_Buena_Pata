@@ -25,8 +25,8 @@
     @if (animalSeleccionado(); as animal) {
       <h2>Validar a {{ animal.nombre }}</h2>
 
-      <label>Veredicto</label>
-      <div class="opciones-veredicto">
+      <fieldset class="opciones-veredicto">
+        <legend>Veredicto</legend>
         <label>
           <input
             type="radio"
@@ -47,11 +47,11 @@
           />
           Con pendientes
         </label>
-      </div>
+      </fieldset>
 
       @if (veredicto() === 'CON_PENDIENTES') {
-        <label>Pendientes</label>
-        <div class="opciones-pendientes">
+        <fieldset class="opciones-pendientes">
+          <legend>Pendientes</legend>
           @for (opcion of opcionesPendientes; track opcion) {
             <label>
               <input
@@ -62,7 +62,7 @@
               {{ opcion }}
             </label>
           }
-        </div>
+        </fieldset>
       }
 
       <label for="observaciones">Observaciones</label>
