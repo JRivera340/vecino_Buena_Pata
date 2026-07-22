@@ -1,4 +1,5 @@
 from fastapi import APIRouter, FastAPI
+from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 
 from app.core.config import get_settings
@@ -18,6 +19,14 @@ from app.routers import visitas as visitas_router
 settings = get_settings()
 
 app = FastAPI(title="Vecino Buena Pata")
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=[settings.frontend_base_url],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 api_router = APIRouter(prefix="/api/v1")
 
