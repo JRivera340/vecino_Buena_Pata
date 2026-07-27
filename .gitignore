@@ -18,3 +18,9 @@ frontend/.angular/
 
 # Editor / OS
 .DS_Store
+
+# Temporales
+*.log
+tmp/
+scratch/
+.screenshots/
