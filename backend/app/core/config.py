@@ -1,6 +1,7 @@
 from functools import lru_cache
 from pathlib import Path
 
+from pydantic import field_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
@@ -13,6 +14,17 @@ class Settings(BaseSettings):
     jwt_algorithm: str = "HS256"
     jwt_expire_minutes: int = 480
     frontend_base_url: str = "http://localhost:4200"
+    cors_origins: list[str] | None = None
+
+    @field_validator("cors_origins", mode="before")
+    @classmethod
+    def _parse_cors_origins(cls, value: object) -> object:
+        if isinstance(value, str):
+            return [origen.strip() for origen in value.split(",") if origen.strip()]
+        return value
+
+    def resolved_cors_origins(self) -> list[str]:
+        return self.cors_origins or [self.frontend_base_url]
 
 
 @lru_cache

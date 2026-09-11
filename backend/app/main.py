@@ -22,7 +22,7 @@ app = FastAPI(title="Vecino Buena Pata")
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=[settings.frontend_base_url],
+    allow_origins=settings.resolved_cors_origins(),
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
