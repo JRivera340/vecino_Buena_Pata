@@ -5,10 +5,15 @@ que los primeros usuarios de cada rol se cargan a mano con este script:
 
     railway run --service vbp-backend python -m app.seed.crear_usuario \
         --nombre "Nombre Apellido" --username usuario --rol ADMIN
+
+La contrasena se pide por prompt interactivo. Para correrlo sin
+interaccion (ej. desde un pipeline), pasar VBP_NUEVA_PASSWORD por entorno
+en vez del prompt.
 """
 
 import argparse
 import getpass
+import os
 
 from app.core.db import SessionLocal
 from app.core.security import hash_password
@@ -42,10 +47,12 @@ def main() -> None:
     parser.add_argument("--rol", required=True, choices=[r.value for r in RolUsuarioEnum])
     args = parser.parse_args()
 
-    password = getpass.getpass("Contrasena para el nuevo usuario: ")
-    confirmacion = getpass.getpass("Repetir contrasena: ")
-    if password != confirmacion:
-        raise SystemExit("Las contrasenas no coinciden.")
+    password = os.environ.get("VBP_NUEVA_PASSWORD")
+    if password is None:
+        password = getpass.getpass("Contrasena para el nuevo usuario: ")
+        confirmacion = getpass.getpass("Repetir contrasena: ")
+        if password != confirmacion:
+            raise SystemExit("Las contrasenas no coinciden.")
 
     crear_usuario(args.nombre, args.username, RolUsuarioEnum(args.rol), password)
 
