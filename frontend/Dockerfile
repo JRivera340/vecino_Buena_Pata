@@ -21,6 +21,11 @@ RUN npx ng build --configuration production
 
 FROM nginx:alpine
 COPY --from=build /app/dist/frontend/browser /usr/share/nginx/html
-COPY nginx.conf /etc/nginx/conf.d/default.conf
-EXPOSE 80
+COPY nginx.conf.template /etc/nginx/templates/default.conf.template
+# Railway asigna el puerto en runtime via $PORT, no siempre 80 -- el
+# entrypoint oficial de la imagen sustituye ${PORT} en el template con
+# envsubst antes de arrancar. ENV da un valor por defecto para correr
+# el contenedor localmente sin Railway.
+ENV PORT=8080
+EXPOSE 8080
 CMD ["nginx", "-g", "daemon off;"]
