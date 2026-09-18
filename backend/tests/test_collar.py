@@ -62,3 +62,12 @@ def test_qr_de_animal_sin_collar_devuelve_404(db_session):
 
     respuesta = client.get(f"/api/v1/animales/{animal_id}/collar/qr.png", headers={"Authorization": f"Bearer {token}"})
     assert respuesta.status_code == 404
+
+
+def test_qr_de_collar_inactivo_devuelve_409(db_session):
+    token, animal_id = _token_y_animal(db_session, con_collar=False)
+    db_session.add(CollarQr(animal_id=animal_id, codigo="vbp-abc123", activo=False))
+    db_session.commit()
+
+    respuesta = client.get(f"/api/v1/animales/{animal_id}/collar/qr.png", headers={"Authorization": f"Bearer {token}"})
+    assert respuesta.status_code == 409

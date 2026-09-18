@@ -54,6 +54,16 @@ def test_consultar_codigo_inexistente_devuelve_404(db_session):
     assert respuesta.status_code == 404
 
 
+def test_consultar_collar_inactivo_devuelve_404(db_session):
+    animal_id, codigo = _crear_animal_con_collar(db_session)
+    collar = db_session.query(CollarQr).filter_by(animal_id=animal_id).first()
+    collar.activo = False
+    db_session.commit()
+
+    respuesta = client.get(f"/api/v1/publico/animales/{codigo}")
+    assert respuesta.status_code == 404
+
+
 def test_crear_reporte_publico_sin_token(db_session):
     animal_id, codigo = _crear_animal_con_collar(db_session)
 

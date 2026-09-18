@@ -11,7 +11,7 @@ router = APIRouter(prefix="/publico", tags=["publico"])
 
 
 def _buscar_animal_por_codigo(db: Session, codigo: str) -> Animal:
-    collar = db.query(CollarQr).filter_by(codigo=codigo).first()
+    collar = db.query(CollarQr).filter_by(codigo=codigo, activo=True).first()
     if collar is None:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Codigo no encontrado.")
     animal = db.get(Animal, collar.animal_id)

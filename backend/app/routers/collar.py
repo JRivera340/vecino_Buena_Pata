@@ -14,5 +14,7 @@ def obtener_qr(animal_id: int, db: Session = Depends(get_db), _=Depends(get_curr
     collar = db.query(CollarQr).filter_by(animal_id=animal_id).first()
     if collar is None:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Este animal no tiene collar QR.")
+    if not collar.activo:
+        raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail="El collar de este animal esta inactivo.")
     imagen = generar_imagen_qr(collar.codigo)
     return Response(content=imagen, media_type="image/png")

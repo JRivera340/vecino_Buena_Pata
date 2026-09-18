@@ -14,7 +14,7 @@ _ESTADOS_FORMALIZABLES = (EstadoAnimalEnum.CANDIDATO, EstadoAnimalEnum.EN_PROCES
 
 def generar_codigo_qr(db: Session) -> str:
     while True:
-        candidato = f"vbp-{secrets.token_hex(3)}"
+        candidato = f"vbp-{secrets.token_hex(8)}"
         existe = db.query(CollarQr).filter_by(codigo=candidato).first()
         if existe is None:
             return candidato
