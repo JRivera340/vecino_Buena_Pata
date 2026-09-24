@@ -30,27 +30,24 @@ docker compose exec backend python -m app.seed
 
 Usuarios de prueba (contraseña `vbp2026` para todos): `maria.comunidad`, `dr.rojas`, `lider.campo`, `unidad.especial`, `admin`.
 
-## Correr los tests del backend
+## Pruebas
+
+Frontend: `cd frontend && npx ng test --watch=false`.
+
+Backend: las pruebas borran todas las tablas de la base con la que corren, por eso exigen la variable `VBP_TEST_DATABASE_URL` apuntando a una base cuyo nombre termine en `_test` (por ejemplo `postgresql+psycopg://vbp:vbp@localhost:5432/vbp_test`). Si no está definida, o si el nombre no termina en `_test`, la corrida se aborta. Nunca apuntar esta variable a la base de la aplicación ni a la de producción.
 
 ```bash
-docker compose exec backend pytest -v
+cd backend
+VBP_TEST_DATABASE_URL=postgresql+psycopg://vbp:vbp@localhost:5432/vbp_test python -m pytest -v
 ```
 
-Los tests usan la misma base de datos configurada por `DATABASE_URL` y limpian las tablas que tocan al terminar. Por eso deben correrse **antes** de cargar el seed, no después: si ya hay datos semilla cargados, los tests pueden chocar con usuarios existentes y el fixture de tests puede vaciar tablas que la aplicación está usando. Orden recomendado: migrar, correr tests, luego cargar el seed para trabajar con datos de demostración.
-
-Después de correr los tests, la tabla `alembic_version` queda marcada como si estuviera al día pero las tablas de dominio ya no existen (el fixture las borró). Un `alembic upgrade head` normal no hace nada en ese caso porque Alembic cree que ya aplicó la migración.
-
-La receta para restaurar el esquema depende de si las tablas siguen existiendo físicamente o no:
-
-- **Si las tablas ya fueron borradas** (justo después de correr los tests): `alembic stamp base` seguido de `alembic upgrade head` funciona, porque no hay nada que limpiar.
-- **Si las tablas siguen presentes con datos** (por ejemplo, después de correr un script manual que usó `Base.metadata.create_all` en vez de las migraciones): ese mismo comando falla con `type "..." already exists`, porque `stamp` solo reescribe el registro de versión, nunca ejecuta DDL.
-
-La receta que funciona en ambos casos, sin necesitar saber cuál es el estado actual:
+Con Docker Compose, se crea una base aparte dentro del mismo servicio `db` y se pasa la variable al contenedor:
 
 ```bash
-docker compose exec backend alembic stamp head
-docker compose exec backend alembic downgrade base
-docker compose exec backend alembic upgrade head
+docker compose exec db createdb -U vbp vbp_test
+docker compose exec -e VBP_TEST_DATABASE_URL=postgresql+psycopg://vbp:vbp@db:5432/vbp_test backend pytest -v
 ```
 
-`stamp head` resincroniza el registro de versión con la migración real del proyecto, `downgrade base` ejecuta el DROP real (tablas y tipos ENUM) sin importar si ya estaban vacías o no, y `upgrade head` recrea el esquema limpio.
+Como las pruebas nunca tocan la base de la aplicación, ya no importa el orden entre correr las pruebas y cargar el seed.
+
+El flujo `.github/workflows/pruebas.yml` corre ambas suites en cada push con un Postgres desechable.
