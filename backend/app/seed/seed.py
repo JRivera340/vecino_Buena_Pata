@@ -23,6 +23,7 @@ from app.models.usuario import Usuario
 from app.models.validacion import Validacion
 from app.models.visita_seguimiento import VisitaSeguimiento
 from app.seed.silueta import generar_silueta_placeholder
+from app.services.formalizacion import generar_codigo_qr
 
 _PASSWORD_SEMILLA = "vbp2026"
 
@@ -134,7 +135,7 @@ def ejecutar_seed() -> None:
                     observaciones="Cumple los cuatro criterios de formalizacion.",
                 )
             )
-            db.add(CollarQr(animal_id=animal.id, codigo=f"vbp-{animal.id:04d}{nombre[:2].lower()}", fecha_entrega=_ahora_menos(90)))
+            db.add(CollarQr(animal_id=animal.id, codigo=generar_codigo_qr(db), fecha_entrega=_ahora_menos(90)))
             for visita_indice in range(2):
                 db.add(
                     VisitaSeguimiento(
