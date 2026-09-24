@@ -1,0 +1,77 @@
+<div class="vista-mapa">
+  <aside class="panel-lateral" [class.panel-lateral--cerrado]="!panelAbierto()">
+    <button type="button" class="boton-alternar" (click)="alternarPanel()">
+      {{ panelAbierto() ? 'Ocultar panel' : 'Mostrar panel' }}
+    </button>
+
+    @if (panelAbierto()) {
+      <div class="contenido-panel">
+        <h1 class="titulo-panel">Vecinos Buena Pata activos</h1>
+        <p class="contador-total">{{ animales().length }} en el mapa</p>
+
+        <input
+          type="text"
+          class="campo-busqueda"
+          placeholder="Buscar por nombre"
+          aria-label="Buscar por nombre"
+          [ngModel]="busqueda()"
+          (ngModelChange)="busqueda.set($event)"
+        />
+
+        <select aria-label="Filtrar por especie" [ngModel]="filtroEspecie()" (ngModelChange)="filtroEspecie.set($event)">
+          <option value="TODAS">Todas las especies</option>
+          <option value="PERRO">Perros</option>
+          <option value="GATO">Gatos</option>
+        </select>
+
+        <select aria-label="Filtrar por barrio" [ngModel]="filtroBarrio()" (ngModelChange)="filtroBarrio.set($event)">
+          <option value="TODOS">Todos los barrios</option>
+          @for (barrio of barriosDisponibles(); track barrio) {
+            <option [value]="barrio">{{ barrio }}</option>
+          }
+        </select>
+
+        @if (animalSeleccionado(); as animal) {
+          <div class="tarjeta-seleccion">
+            @if (urlFoto(animal.foto_principal); as foto) {
+              <img [src]="foto" alt="Foto de {{ animal.nombre }}" />
+            }
+            <p class="tarjeta-seleccion__nombre">{{ animal.nombre }}</p>
+            <p class="tarjeta-seleccion__detalle">{{ animal.especie }} - {{ animal.barrio }}</p>
+            <a class="enlace-hoja" [routerLink]="['/vbp', animal.id]">Ver hoja de vida</a>
+          </div>
+        }
+
+        @if (cargando()) {
+          <p class="mensaje-vacio">Cargando...</p>
+        } @else if (animales().length === 0) {
+          <p class="mensaje-vacio">Aun no hay animales activos en el mapa.</p>
+        } @else if (animalesFiltrados().length === 0) {
+          <p class="mensaje-vacio">No hay animales que coincidan con estos filtros.</p>
+        } @else {
+          <ul class="lista-animales">
+            @for (animal of animalesFiltrados(); track animal.id) {
+              <li
+                class="tarjeta-animal"
+                [class.tarjeta-animal--seleccionada]="animalSeleccionadoId() === animal.id"
+                (click)="seleccionarAnimal(animal.id)"
+              >
+                <div>
+                  <p class="tarjeta-animal__nombre">{{ animal.nombre }}</p>
+                  <p class="tarjeta-animal__detalle">{{ animal.especie }} - {{ animal.barrio }}</p>
+                </div>
+                <a class="enlace-detalle" [routerLink]="['/vbp', animal.id]" (click)="$event.stopPropagation()">
+                  Ver hoja de vida
+                </a>
+              </li>
+            }
+          </ul>
+        }
+      </div>
+    }
+  </aside>
+
+  <main class="contenedor-mapa">
+    <app-mapa-territorio [marcadores]="marcadores()" (marcadorClick)="seleccionarAnimal($event)"></app-mapa-territorio>
+  </main>
+</div>
