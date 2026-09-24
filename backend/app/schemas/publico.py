@@ -2,7 +2,14 @@ from datetime import datetime
 
 from pydantic import BaseModel, ConfigDict, Field
 
-from app.models.enums import EspecieEnum, EstadoAnimalEnum, EstadoReporteEnum, SexoEnum, TamanoEnum
+from app.models.enums import (
+    EspecieEnum,
+    EstadoAnimalEnum,
+    EstadoReporteEnum,
+    EstadoSaludEnum,
+    SexoEnum,
+    TamanoEnum,
+)
 
 
 class AnimalPublicoSchema(BaseModel):
@@ -32,6 +39,32 @@ class AnimalMapaPublicoSchema(BaseModel):
     barrio: str
     latitud: float
     longitud: float
+
+
+class UltimaVisitaPublicaSchema(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+
+    fecha: datetime
+    estado_salud: EstadoSaludEnum
+    peso_kg: float | None
+
+
+class HojaVidaPublicaSchema(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+
+    id: int
+    nombre: str
+    especie: EspecieEnum
+    sexo: SexoEnum
+    tamano: TamanoEnum
+    edad_estimada: int | None
+    descripcion: str | None
+    foto_principal: str | None
+    barrio: str
+    fecha_inscripcion: datetime
+    esterilizado: bool
+    tiene_microchip: bool
+    ultima_visita: UltimaVisitaPublicaSchema | None
 
 
 class ReporteNovedadCrear(BaseModel):
