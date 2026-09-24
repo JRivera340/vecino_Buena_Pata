@@ -1,0 +1,50 @@
+<div class="pantalla-hoja">
+  @if (cargando()) {
+    <p class="mensaje-vacio">Cargando...</p>
+  } @else if (noDisponible()) {
+    <p class="mensaje-vacio">Este animal no esta disponible.</p>
+    <a routerLink="/" class="enlace-volver">Volver al mapa</a>
+  } @else if (hoja(); as hoja) {
+    <article class="tarjeta-hoja">
+      @if (urlFoto(hoja.foto_principal); as foto) {
+        <img [src]="foto" alt="Foto de {{ hoja.nombre }}" />
+      }
+      <h1>{{ hoja.nombre }}</h1>
+      <p class="detalle">{{ hoja.especie }} - {{ hoja.sexo }} - {{ hoja.tamano }}</p>
+      <p class="detalle">{{ hoja.barrio }}</p>
+      @if (hoja.edad_estimada !== null) {
+        <p class="detalle">Edad estimada: {{ hoja.edad_estimada }} anos</p>
+      }
+      @if (hoja.descripcion) {
+        <p class="descripcion">{{ hoja.descripcion }}</p>
+      }
+
+      <ul class="sellos">
+        <li class="sello" [class.sello--si]="hoja.esterilizado">
+          {{ hoja.esterilizado ? 'Esterilizado' : 'Sin esterilizar' }}
+        </li>
+        <li class="sello" [class.sello--si]="hoja.tiene_microchip">
+          {{ hoja.tiene_microchip ? 'Con microchip' : 'Sin microchip' }}
+        </li>
+      </ul>
+
+      <section class="seccion-visita">
+        <h2>Ultima visita de seguimiento</h2>
+        @if (hoja.ultima_visita; as visita) {
+          <p>Fecha: {{ visita.fecha | date: 'dd/MM/yyyy' }}</p>
+          <p>Salud: {{ etiquetaSalud(visita.estado_salud) }}</p>
+          @if (visita.peso_kg !== null) {
+            <p>Peso: {{ visita.peso_kg }} kg</p>
+          }
+        } @else {
+          <p>Aun no tiene visitas de seguimiento registradas.</p>
+        }
+      </section>
+
+      <p class="etiqueta-vbp">Vecino Buena Pata del programa de la Alcaldia de Santa Fe</p>
+    </article>
+
+    <p class="nota-reporte">Para reportar una novedad, escanea el QR del collar.</p>
+    <a routerLink="/" class="enlace-volver">Volver al mapa</a>
+  }
+</div>
