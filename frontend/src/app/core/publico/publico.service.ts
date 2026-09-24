@@ -3,6 +3,7 @@ import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 
 import { environment } from '../../../environments/environment';
+import { AnimalMapaPublico, HojaVidaPublica } from '../models/publico.model';
 
 export interface AnimalPublico {
   id: number;
@@ -14,8 +15,6 @@ export interface AnimalPublico {
   foto_principal: string | null;
   estado: string;
   barrio: string;
-  latitud: number;
-  longitud: number;
   fecha_inscripcion: string;
 }
 
@@ -40,6 +39,14 @@ export class PublicoService {
 
   obtenerAnimal(codigo: string): Observable<AnimalPublico> {
     return this.http.get<AnimalPublico>(`${environment.apiBaseUrl}/publico/animales/${codigo}`);
+  }
+
+  listarMapa(): Observable<AnimalMapaPublico[]> {
+    return this.http.get<AnimalMapaPublico[]>(`${environment.apiBaseUrl}/publico/mapa`);
+  }
+
+  obtenerHojaVida(id: number): Observable<HojaVidaPublica> {
+    return this.http.get<HojaVidaPublica>(`${environment.apiBaseUrl}/publico/animales/${id}/hoja-vida`);
   }
 
   crearReporte(codigo: string, datos: ReporteNovedadCrear): Observable<ReporteNovedadRespuesta> {
