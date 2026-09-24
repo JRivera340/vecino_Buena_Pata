@@ -24,8 +24,6 @@ class AnimalPublicoSchema(BaseModel):
     foto_principal: str | None
     estado: EstadoAnimalEnum
     barrio: str
-    latitud: float
-    longitud: float
     fecha_inscripcion: datetime
 
 
