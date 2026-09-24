@@ -22,6 +22,18 @@ class AnimalPublicoSchema(BaseModel):
     fecha_inscripcion: datetime
 
 
+class AnimalMapaPublicoSchema(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+
+    id: int
+    nombre: str
+    especie: EspecieEnum
+    foto_principal: str | None
+    barrio: str
+    latitud: float
+    longitud: float
+
+
 class ReporteNovedadCrear(BaseModel):
     reportante_nombre: str = Field(max_length=120)
     descripcion: str = Field(max_length=1000)
