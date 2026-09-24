@@ -28,7 +28,7 @@ export class LoginComponent {
     this.auth.iniciarSesion(this.username(), this.password()).subscribe({
       next: () => {
         this.cargando.set(false);
-        this.router.navigate(['/']);
+        this.router.navigate(['/mapa']);
       },
       error: () => {
         this.cargando.set(false);

@@ -15,7 +15,7 @@ export function crearGuardDeRol(...roles: RolUsuario[]): CanActivateFn {
       return false;
     }
     if (!roles.includes(sesion.rol as RolUsuario)) {
-      router.navigate(['/']);
+      router.navigate(['/mapa']);
       return false;
     }
     return true;

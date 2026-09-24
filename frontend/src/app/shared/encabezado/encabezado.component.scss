@@ -33,6 +33,10 @@
     }
   }
 
+  &--publico nav {
+    justify-content: flex-end;
+  }
+
   .usuario {
     display: flex;
     align-items: center;

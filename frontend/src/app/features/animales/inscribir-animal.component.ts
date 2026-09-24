@@ -108,6 +108,6 @@ export class InscribirAnimalComponent {
   }
 
   volverAlMapa(): void {
-    this.router.navigate(['/']);
+    this.router.navigate(['/mapa']);
   }
 }

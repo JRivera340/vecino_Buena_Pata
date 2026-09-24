@@ -1,8 +1,8 @@
 @if (auth.estaAutenticado()) {
   <header class="encabezado">
-    <a routerLink="/" class="marca">Vecino Buena Pata</a>
+    <a routerLink="/mapa" class="marca">Vecino Buena Pata</a>
     <nav>
-      <a routerLink="/">Mapa</a>
+      <a routerLink="/mapa">Mapa</a>
       @if (auth.sesionActual()?.rol !== 'UNIDAD_ESPECIAL') {
         <a routerLink="/animales/inscribir">Inscribir</a>
       }
@@ -19,5 +19,12 @@
       <span>{{ auth.sesionActual()?.nombre }}</span>
       <button type="button" (click)="salir()">Salir</button>
     </div>
+  </header>
+} @else {
+  <header class="encabezado encabezado--publico">
+    <a routerLink="/" class="marca">Vecino Buena Pata</a>
+    <nav>
+      <a routerLink="/ingreso">Ingresar</a>
+    </nav>
   </header>
 }
