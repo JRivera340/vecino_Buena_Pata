@@ -68,6 +68,7 @@ export class MapaPublicoComponent implements OnInit {
 
   seleccionarAnimal(id: number): void {
     this.animalSeleccionadoId.set(id);
+    this.panelAbierto.set(true);
   }
 
   alternarPanel(): void {
