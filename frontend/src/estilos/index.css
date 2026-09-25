@@ -1,0 +1,46 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  html {
+    scroll-behavior: smooth;
+    -webkit-text-size-adjust: 100%;
+  }
+
+  body {
+    @apply bg-lienzo-gris font-sans text-cuerpo text-tinta antialiased;
+  }
+
+  :focus-visible {
+    outline: 2px solid theme('colors.verde.DEFAULT');
+    outline-offset: 2px;
+  }
+
+  ::selection {
+    background-color: theme('colors.verde.suave');
+    color: theme('colors.verde.tinta');
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+      scroll-behavior: auto !important;
+    }
+  }
+}
+
+@layer components {
+  .contenedor {
+    @apply mx-auto w-full max-w-[1200px] px-4 sm:px-6 lg:px-12;
+  }
+
+  .solo-lectores {
+    @apply absolute -m-px h-px w-px overflow-hidden whitespace-nowrap border-0 p-0;
+    clip: rect(0, 0, 0, 0);
+  }
+}
