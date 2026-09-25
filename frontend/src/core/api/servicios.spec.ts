@@ -59,6 +59,7 @@ describe('servicios de la API', () => {
 
     await crearAnimal({
       nombre: 'Rocky',
+      especie: 'PERRO',
       sexo: 'MACHO',
       tamano: 'MEDIANO',
       edad_estimada: null,
