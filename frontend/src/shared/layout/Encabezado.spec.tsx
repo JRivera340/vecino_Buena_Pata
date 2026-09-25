@@ -8,7 +8,7 @@ const principal = () => screen.getAllByRole('navigation', { name: 'Principal' })
 
 describe('Encabezado', () => {
   beforeEach(() => {
-    localStorage.clear();
+    sessionStorage.clear();
     useSesion.getState().cerrar();
   });
 

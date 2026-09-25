@@ -4,7 +4,7 @@ const SESION = { token: 'token-falso', rol: 'VETERINARIO', nombre: 'Dr. Rojas' }
 
 describe('useSesion', () => {
   beforeEach(() => {
-    localStorage.clear();
+    sessionStorage.clear();
     useSesion.getState().cerrar();
   });
 
@@ -16,7 +16,7 @@ describe('useSesion', () => {
     useSesion.getState().iniciar({ ...SESION });
 
     expect(useSesion.getState().sesion?.token).toBe('token-falso');
-    expect(JSON.parse(localStorage.getItem(CLAVE_SESION) ?? '{}').rol).toBe('VETERINARIO');
+    expect(JSON.parse(sessionStorage.getItem(CLAVE_SESION) ?? '{}').rol).toBe('VETERINARIO');
   });
 
   it('cierra la sesión y limpia el almacenamiento', () => {
@@ -25,6 +25,6 @@ describe('useSesion', () => {
     useSesion.getState().cerrar();
 
     expect(useSesion.getState().sesion).toBeNull();
-    expect(localStorage.getItem(CLAVE_SESION)).toBeNull();
+    expect(sessionStorage.getItem(CLAVE_SESION)).toBeNull();
   });
 });

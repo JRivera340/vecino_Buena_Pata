@@ -27,7 +27,7 @@ describe('solicitar', () => {
   beforeEach(() => {
     fetchFalso.mockReset();
     vi.stubGlobal('fetch', fetchFalso);
-    localStorage.clear();
+    sessionStorage.clear();
     useSesion.getState().cerrar();
     useAviso.getState().limpiar();
   });

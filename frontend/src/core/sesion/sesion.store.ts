@@ -11,7 +11,7 @@ export interface Sesion {
 
 function leerSesionGuardada(): Sesion | null {
   try {
-    const guardada = localStorage.getItem(CLAVE_SESION);
+    const guardada = sessionStorage.getItem(CLAVE_SESION);
     return guardada ? (JSON.parse(guardada) as Sesion) : null;
   } catch {
     return null;
@@ -28,7 +28,7 @@ export const useSesion = create<EstadoSesion>((set) => ({
   sesion: leerSesionGuardada(),
   iniciar: (sesion) => {
     try {
-      localStorage.setItem(CLAVE_SESION, JSON.stringify(sesion));
+      sessionStorage.setItem(CLAVE_SESION, JSON.stringify(sesion));
     } catch {
       // Sin almacenamiento disponible la sesión dura solo mientras la página siga abierta.
     }
@@ -36,7 +36,7 @@ export const useSesion = create<EstadoSesion>((set) => ({
   },
   cerrar: () => {
     try {
-      localStorage.removeItem(CLAVE_SESION);
+      sessionStorage.removeItem(CLAVE_SESION);
     } catch {
       // Nada que limpiar si el almacenamiento no está disponible.
     }

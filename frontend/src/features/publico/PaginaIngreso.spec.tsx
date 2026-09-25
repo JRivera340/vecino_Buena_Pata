@@ -30,7 +30,7 @@ async function escribirCredenciales(usuario = 'dr.rojas', clave = 'secreto') {
 describe('PaginaIngreso', () => {
   beforeEach(() => {
     ingresoMock.mockReset();
-    localStorage.clear();
+    sessionStorage.clear();
     useSesion.getState().cerrar();
   });
 

@@ -24,7 +24,7 @@ function montar(ruta: string, roles?: Parameters<typeof RutaProtegida>[0]['roles
 
 describe('RutaProtegida', () => {
   beforeEach(() => {
-    localStorage.clear();
+    sessionStorage.clear();
     useSesion.getState().cerrar();
   });
 

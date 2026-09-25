@@ -30,7 +30,7 @@ describe('servicios de la API', () => {
     fetchFalso.mockReset();
     fetchFalso.mockImplementation(async () => respuesta([]));
     vi.stubGlobal('fetch', fetchFalso);
-    localStorage.clear();
+    sessionStorage.clear();
     useSesion.getState().cerrar();
   });
 
