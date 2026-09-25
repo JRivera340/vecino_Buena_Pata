@@ -39,6 +39,14 @@ export function Pie() {
 
         <div>
           <h2 className="text-h6 text-white">Quién lo hace posible</h2>
+          <img
+            src="/alcaldia-santa-fe.png"
+            alt="Alcaldía Local de Santa Fe, Bogotá"
+            width={220}
+            height={82}
+            loading="lazy"
+            className="mt-3 h-auto w-[220px]"
+          />
           <p className="mt-3 text-pequeno text-white/90">
             Alcaldía Local de Santa Fe
             <br />

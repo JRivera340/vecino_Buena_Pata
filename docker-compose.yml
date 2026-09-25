@@ -35,12 +35,13 @@ services:
       - vbp-net
 
   frontend:
-    build: ./frontend
+    build:
+      context: ./frontend
+      args:
+        API_BASE_URL: http://localhost:8000/api/v1
+        MEDIA_BASE_URL: http://localhost:8000/media
     ports:
-      - "4200:4200"
-    volumes:
-      - ./frontend:/app
-      - /app/node_modules
+      - "4200:8080"
     depends_on:
       - backend
     networks:

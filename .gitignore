@@ -10,7 +10,6 @@ backend/.pytest_cache/
 # Frontend
 frontend/node_modules/
 frontend/dist/
-frontend/.angular/
 
 # Entorno
 .env
@@ -19,8 +18,12 @@ frontend/.angular/
 # Editor / OS
 .DS_Store
 
-# Temporales
+# Temporales y archivos de trabajo
 *.log
+*.xlsx
 tmp/
 scratch/
 .screenshots/
+docs/superpowers/
+CLAUDE.md
+.claude/
