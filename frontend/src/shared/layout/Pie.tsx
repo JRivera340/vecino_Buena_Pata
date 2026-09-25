@@ -6,7 +6,7 @@ const ENLACE_PIE =
 
 export function Pie() {
   return (
-    <footer className="mt-16 bg-verde-profundo text-white">
+    <footer className="mt-14 bg-verde-profundo text-white">
       <div className="contenedor grid gap-10 py-12 lg:grid-cols-[1.4fr_1fr_1fr]">
         <div className="max-w-[46ch]">
           <Marca claro />

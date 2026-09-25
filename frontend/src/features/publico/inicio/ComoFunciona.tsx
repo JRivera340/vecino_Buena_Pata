@@ -49,7 +49,7 @@ export function ComoFunciona() {
                 {indice < PASOS.length - 1 && (
                   <span
                     aria-hidden="true"
-                    className="absolute left-[21px] top-12 hidden h-[calc(100%+1.5rem)] w-px bg-verde/40 max-lg:block lg:left-14 lg:top-[22px] lg:h-px lg:w-[calc(100%-3.5rem)]"
+                    className="absolute left-[21px] top-12 block h-[calc(100%+1.5rem)] w-px bg-verde/40 lg:left-14 lg:top-[22px] lg:h-px lg:w-[calc(100%-3.5rem)]"
                   />
                 )}
               </div>

@@ -1,4 +1,4 @@
-import { CircleAlert, CircleCheck, QrCode } from 'lucide-react';
+import { CircleAlert, CircleCheck } from 'lucide-react';
 import { useParams } from 'react-router-dom';
 import { ErrorApi } from '@/core/api/cliente';
 import { obtenerHojaVida } from '@/core/api/publico';
@@ -133,13 +133,8 @@ function Ficha({ hoja }: { hoja: HojaVidaPublica }) {
           </section>
 
           <Alerta tipo="info">
-            <span className="flex items-start gap-2">
-              <QrCode className="mt-0.5 h-5 w-5 shrink-0" aria-hidden="true" />
-              <span>
-                ¿Notas algo raro en {hoja.nombre}? Para reportar una novedad, escanea el código QR de su
+            ¿Notas algo raro en {hoja.nombre}? Para reportar una novedad, escanea el código QR de su
                 collar.
-              </span>
-            </span>
           </Alerta>
         </div>
       </article>

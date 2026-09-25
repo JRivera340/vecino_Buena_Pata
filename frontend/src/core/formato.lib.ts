@@ -33,3 +33,16 @@ const TAMANOS: Record<string, string> = { PEQUENO: 'Pequeño', MEDIANO: 'Mediano
 export const etiquetaEspecie = (valor: string): string => ESPECIES[valor] ?? valor;
 export const etiquetaSexo = (valor: string): string => SEXOS[valor] ?? valor;
 export const etiquetaTamano = (valor: string): string => TAMANOS[valor] ?? valor;
+
+const CAUSALES: Record<string, string> = { ADOPCION: 'adopción', PERDIDA: 'pérdida', FALLECIMIENTO: 'fallecimiento' };
+const PENDIENTES: Record<string, string> = {
+  SIN_CHIP: 'sin microchip',
+  SIN_ESTERILIZAR: 'sin esterilizar',
+  COMPORTAMIENTO: 'comportamiento',
+  SALUD: 'salud',
+};
+const SALUD: Record<string, string> = { BUENO: 'bueno', REGULAR: 'regular', MALO: 'malo' };
+
+export const etiquetaCausal = (valor: string): string => CAUSALES[valor] ?? valor;
+export const etiquetaPendiente = (valor: string): string => PENDIENTES[valor] ?? valor;
+export const etiquetaSaludMinuscula = (valor: string): string => SALUD[valor] ?? valor;

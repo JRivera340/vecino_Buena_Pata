@@ -25,6 +25,7 @@ export interface Animal {
 
 export interface AnimalCrear {
   nombre: string;
+  especie: Especie;
   sexo: Sexo;
   tamano: Tamano;
   edad_estimada: number | null;
