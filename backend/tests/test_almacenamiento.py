@@ -82,3 +82,54 @@ def test_guardar_una_foto_png_sigue_siendo_una_imagen_valida(tmp_path):
     guardada = Image.open(tmp_path / nombre)
     assert guardada.format == "PNG"
     assert guardada.size == (6, 6)
+
+
+class _ClienteS3Falso:
+    def __init__(self):
+        self.subidas = []
+
+    def put_object(self, **argumentos):
+        self.subidas.append(argumentos)
+
+
+def test_r2_sube_la_foto_al_bucket_sin_metadatos():
+    from app.services.almacenamiento import AlmacenamientoR2
+
+    cliente = _ClienteS3Falso()
+    almacenamiento = AlmacenamientoR2(cliente, "fotos")
+
+    nombre = almacenamiento.guardar(UploadFile(filename="Foto.JPG", file=io.BytesIO(_jpeg_con_gps())))
+
+    subida = cliente.subidas[0]
+    assert subida["Bucket"] == "fotos"
+    assert subida["Key"] == nombre
+    assert nombre.endswith(".jpg")
+    assert subida["ContentType"] == "image/jpeg"
+    assert not Image.open(io.BytesIO(subida["Body"])).getexif().get_ifd(_ETIQUETA_GPS)
+
+
+def test_la_fabrica_usa_disco_local_si_r2_no_esta_configurado(tmp_path):
+    from app.core.config import Settings
+    from app.services.almacenamiento import crear_almacenamiento
+
+    almacenamiento = crear_almacenamiento(Settings(media_root=tmp_path, r2_bucket="fotos"))
+
+    assert isinstance(almacenamiento, AlmacenamientoLocal)
+
+
+def test_la_fabrica_usa_r2_cuando_estan_todas_las_variables(tmp_path):
+    from app.core.config import Settings
+    from app.services.almacenamiento import AlmacenamientoR2, crear_almacenamiento
+
+    settings = Settings(
+        media_root=tmp_path,
+        r2_endpoint_url="https://cuenta.r2.cloudflarestorage.com",
+        r2_bucket="fotos",
+        r2_access_key_id="clave",
+        r2_secret_access_key="secreto",
+    )
+
+    almacenamiento = crear_almacenamiento(settings)
+
+    assert isinstance(almacenamiento, AlmacenamientoR2)
+    assert almacenamiento.bucket == "fotos"

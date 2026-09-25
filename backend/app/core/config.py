@@ -15,6 +15,13 @@ class Settings(BaseSettings):
     jwt_expire_minutes: int = 480
     frontend_base_url: str = "http://localhost:4200"
     cors_origins: list[str] | None = None
+    r2_endpoint_url: str | None = None
+    r2_bucket: str | None = None
+    r2_access_key_id: str | None = None
+    r2_secret_access_key: str | None = None
+
+    def r2_configurado(self) -> bool:
+        return all([self.r2_endpoint_url, self.r2_bucket, self.r2_access_key_id, self.r2_secret_access_key])
 
     @field_validator("cors_origins", mode="before")
     @classmethod
