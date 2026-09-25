@@ -3,7 +3,7 @@ import type { ButtonHTMLAttributes, ReactNode } from 'react';
 import { Link, type LinkProps } from 'react-router-dom';
 import { cx } from './clases';
 
-export type VarianteBoton = 'primario' | 'secundario' | 'fantasma' | 'peligro';
+export type VarianteBoton = 'primario' | 'secundario' | 'fantasma' | 'peligro' | 'claro' | 'contornoClaro';
 export type TamanoBoton = 'pequeno' | 'mediano' | 'grande';
 
 const BASE =
@@ -19,6 +19,8 @@ const VARIANTES: Record<VarianteBoton, string> = {
     'hover:bg-verde-profundo hover:text-white',
   fantasma: 'bg-transparent text-azul hover:bg-azul/10',
   peligro: 'bg-peligro text-white hover:bg-peligro-oscuro',
+  claro: 'bg-white text-verde-tinta hover:bg-verde-tenue',
+  contornoClaro: 'border-2 border-white bg-transparent text-white hover:bg-white hover:text-verde-tinta',
 };
 
 const TAMANOS: Record<TamanoBoton, string> = {
