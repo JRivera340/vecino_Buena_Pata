@@ -7,6 +7,7 @@ from app.models.enums import CausalSalidaEnum, EspecieEnum, EstadoAnimalEnum, Se
 
 class AnimalCrear(BaseModel):
     nombre: str
+    especie: EspecieEnum = EspecieEnum.PERRO
     sexo: SexoEnum
     tamano: TamanoEnum
     edad_estimada: int | None = None
