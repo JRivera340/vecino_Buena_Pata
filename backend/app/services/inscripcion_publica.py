@@ -11,6 +11,7 @@ from app.schemas.inscripcion_publica import AnimalDeInscriptorSchema
 from app.services.almacenamiento import crear_almacenamiento
 from app.services.inscripcion import inscribir_animal
 from app.services.inscriptores import obtener_o_crear_persona
+from app.services.localidades import localidad_de_punto
 
 MAXIMO_FOTO_BYTES = 10 * 1024 * 1024
 _CORREO = re.compile(r"^[^@\s]+@[^@\s]+\.[^@\s]+$")
@@ -45,6 +46,7 @@ def a_animal_de_inscriptor(animal: Animal) -> AnimalDeInscriptorSchema:
         esterilizado=animal.esterilizado,
         tiene_microchip=bool(animal.numero_microchip),
         barrio=animal.barrio,
+        localidad=animal.localidad,
         fecha_inscripcion=animal.fecha_inscripcion,
     )
 
@@ -81,6 +83,8 @@ def inscribir_desde_publico(
     comunidad = db.get(Comunidad, comunidad_id)
     if comunidad is None or not comunidad.activa:
         raise InscripcionInvalida("La comunidad elegida no existe o no esta activa.")
+    if localidad_de_punto(latitud, longitud) is None:
+        raise InscripcionInvalida("El punto marcado esta fuera de Bogota. Marca un lugar dentro de la ciudad.")
     validar_foto(foto)
 
     try:

@@ -49,7 +49,9 @@ describe('PaginaQr', () => {
 
     expect(await screen.findByRole('heading', { level: 1, name: 'Lulú' })).toBeInTheDocument();
     expect(animalMock).toHaveBeenCalledWith('vbp-abc123');
-    expect(screen.getByText('Perro hembra de tamaño mediano, del barrio Teusaquillo.')).toBeInTheDocument();
+    expect(
+      screen.getByText('Perro hembra de tamaño mediano, del barrio Teusaquillo.'),
+    ).toBeInTheDocument();
   });
 
   it('no muestra coordenadas ni datos internos del animal', async () => {
@@ -87,7 +89,12 @@ describe('PaginaQr', () => {
 
   it('envía el reporte al código del collar y confirma', async () => {
     animalMock.mockResolvedValue(ANIMAL);
-    reporteMock.mockResolvedValue({ id: 1, animal_id: 2, fecha: '2026-09-25T15:00:00Z', estado: 'NUEVO' });
+    reporteMock.mockResolvedValue({
+      id: 1,
+      animal_id: 2,
+      fecha: '2026-09-25T15:00:00Z',
+      estado: 'NUEVO',
+    });
     montar();
     await screen.findByRole('heading', { level: 1, name: 'Lulú' });
 
@@ -147,7 +154,9 @@ describe('PaginaQr', () => {
     animalMock.mockRejectedValue(new ErrorApi(404, 'Codigo no encontrado.'));
     montar();
 
-    expect(await screen.findByRole('heading', { name: 'No encontramos este código' })).toBeInTheDocument();
+    expect(
+      await screen.findByRole('heading', { name: 'No encontramos este código' }),
+    ).toBeInTheDocument();
     expect(screen.queryByRole('textbox')).not.toBeInTheDocument();
   });
 
@@ -155,6 +164,8 @@ describe('PaginaQr', () => {
     animalMock.mockRejectedValue(new ErrorApi(503, null));
     montar();
 
-    expect(await screen.findByRole('heading', { name: 'No pudimos abrir la ficha' })).toBeInTheDocument();
+    expect(
+      await screen.findByRole('heading', { name: 'No pudimos abrir la ficha' }),
+    ).toBeInTheDocument();
   });
 });

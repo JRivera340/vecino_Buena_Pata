@@ -35,6 +35,7 @@ class AnimalMapaPublicoSchema(BaseModel):
     especie: EspecieEnum
     foto_principal: str | None
     barrio: str
+    localidad: str | None = None
     latitud: float
     longitud: float
 
@@ -59,6 +60,7 @@ class HojaVidaPublicaSchema(BaseModel):
     descripcion: str | None
     foto_principal: str | None
     barrio: str
+    localidad: str | None = None
     fecha_inscripcion: datetime
     esterilizado: bool
     tiene_microchip: bool

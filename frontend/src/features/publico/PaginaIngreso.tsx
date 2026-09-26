@@ -73,7 +73,9 @@ export default function PaginaIngreso() {
         <form onSubmit={ingresar} noValidate className="space-y-5 p-6 sm:p-10">
           <div>
             <h1 className="text-h2">Ingresa a tu cuenta</h1>
-            <p className="mt-1 text-pequeno text-tinta-suave">Usa el usuario que te dio el equipo del programa.</p>
+            <p className="mt-1 text-pequeno text-tinta-suave">
+              Usa el usuario que te dio el equipo del programa.
+            </p>
           </div>
 
           <Campo id="usuario" etiqueta="Usuario" obligatorio error={vacios.usuario}>

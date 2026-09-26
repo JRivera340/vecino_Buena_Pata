@@ -23,7 +23,11 @@ import { Tarjeta, TarjetaCuerpo } from '@/shared/ui/Tarjeta';
 import { useTitulo } from '@/shared/ui/useTitulo';
 import { etiquetaSalud } from './etiqueta-salud.lib';
 
-const TONO_SALUD: Record<EstadoSalud, TonoEtiqueta> = { BUENO: 'exito', REGULAR: 'aviso', MALO: 'error' };
+const TONO_SALUD: Record<EstadoSalud, TonoEtiqueta> = {
+  BUENO: 'exito',
+  REGULAR: 'aviso',
+  MALO: 'error',
+};
 
 function Dato({ etiqueta, valor }: { etiqueta: string; valor: string }) {
   return (
@@ -43,7 +47,9 @@ function Sello({ cumple, si, no }: { cumple: boolean; si: string; no: string }) 
           className={cumple ? 'h-6 w-6 text-verde-profundo' : 'h-6 w-6 text-tinta-suave'}
           aria-hidden="true"
         />
-        <span className={cumple ? 'font-semibold text-verde-tinta' : 'font-medium text-tinta-suave'}>
+        <span
+          className={cumple ? 'font-semibold text-verde-tinta' : 'font-medium text-tinta-suave'}
+        >
           {cumple ? si : no}
         </span>
       </TarjetaCuerpo>
@@ -67,7 +73,9 @@ function UltimaVisita({ hoja }: { hoja: HojaVidaPublica }) {
         <p className="font-medium">{formatearFecha(visita.fecha)}</p>
         <div className="flex flex-wrap items-center gap-3">
           <span className="text-pequeno text-tinta-suave">Estado de salud</span>
-          <Etiqueta tono={TONO_SALUD[visita.estado_salud]}>{etiquetaSalud(visita.estado_salud)}</Etiqueta>
+          <Etiqueta tono={TONO_SALUD[visita.estado_salud]}>
+            {etiquetaSalud(visita.estado_salud)}
+          </Etiqueta>
           {peso && <span className="text-pequeno text-tinta-suave">Pesó {peso}</span>}
         </div>
       </TarjetaCuerpo>
@@ -111,7 +119,10 @@ function Ficha({ hoja }: { hoja: HojaVidaPublica }) {
               <Dato etiqueta="Tamaño" valor={etiquetaTamano(hoja.tamano)} />
               <Dato etiqueta="Edad estimada" valor={formatearEdad(hoja.edad_estimada)} />
               <Dato etiqueta="Barrio" valor={hoja.barrio} />
-              <Dato etiqueta="En el programa desde" valor={formatearFecha(hoja.fecha_inscripcion)} />
+              <Dato
+                etiqueta="En el programa desde"
+                valor={formatearFecha(hoja.fecha_inscripcion)}
+              />
             </dl>
           </section>
 
@@ -134,7 +145,7 @@ function Ficha({ hoja }: { hoja: HojaVidaPublica }) {
 
           <Alerta tipo="info">
             ¿Notas algo raro en {hoja.nombre}? Para reportar una novedad, escanea el código QR de su
-                collar.
+            collar.
           </Alerta>
         </div>
       </article>
@@ -144,7 +155,11 @@ function Ficha({ hoja }: { hoja: HojaVidaPublica }) {
 
 function Cargando() {
   return (
-    <div className="grid gap-10 lg:grid-cols-[minmax(0,420px)_1fr]" role="status" aria-label="Cargando la ficha">
+    <div
+      className="grid gap-10 lg:grid-cols-[minmax(0,420px)_1fr]"
+      role="status"
+      aria-label="Cargando la ficha"
+    >
       <Esqueleto className="aspect-[4/5] w-full" />
       <div className="space-y-4">
         <Esqueleto className="h-6 w-40" />
@@ -176,8 +191,8 @@ export default function PaginaFicha() {
       <div className="max-w-[56ch] space-y-4 py-8">
         <h1 className="text-h1">Este animal no está disponible</h1>
         <p className="text-tinta-suave">
-          Puede que ya no haga parte del programa o que el enlace tenga un error. Vuelve al mapa para
-          ver a los Vecinos Buena Pata activos.
+          Puede que ya no haga parte del programa o que el enlace tenga un error. Vuelve al mapa
+          para ver a los Vecinos Buena Pata activos.
         </p>
         <BotonEnlace to="/" tamano="grande">
           Volver al mapa

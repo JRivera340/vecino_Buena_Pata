@@ -32,7 +32,10 @@ export function MapaVecinos({ animales, cargando, hayError, alReintentar }: Prop
     [todos, busqueda, especie, barrio],
   );
   const barrios = useMemo(
-    () => Array.from(new Set(todos.map((animal) => animal.barrio))).sort((a, b) => a.localeCompare(b, 'es')),
+    () =>
+      Array.from(new Set(todos.map((animal) => animal.barrio))).sort((a, b) =>
+        a.localeCompare(b, 'es'),
+      ),
     [todos],
   );
   const marcadores = useMemo<MarcadorMapa[]>(() => {
@@ -77,8 +80,8 @@ export function MapaVecinos({ animales, cargando, hayError, alReintentar }: Prop
   } else if (todos.length === 0) {
     lista = (
       <p className="rounded border border-dashed border-lienzo-borde p-6 text-pequeno text-tinta-suave">
-        Aún no hay animales activos en el mapa. Cuando el programa formalice a los primeros, los verás
-        aquí.
+        Aún no hay animales activos en el mapa. Cuando el programa formalice a los primeros, los
+        verás aquí.
       </p>
     );
   } else if (filtrados.length === 0) {
@@ -153,7 +156,11 @@ export function MapaVecinos({ animales, cargando, hayError, alReintentar }: Prop
                 </Campo>
                 <Campo id="filtro-barrio" etiqueta="Barrio">
                   {(p) => (
-                    <Selector {...p} value={barrio} onChange={(evento) => setBarrio(evento.target.value)}>
+                    <Selector
+                      {...p}
+                      value={barrio}
+                      onChange={(evento) => setBarrio(evento.target.value)}
+                    >
                       <option value="TODOS">Todos</option>
                       {barrios.map((nombre) => (
                         <option key={nombre} value={nombre}>
@@ -192,8 +199,8 @@ export function MapaVecinos({ animales, cargando, hayError, alReintentar }: Prop
             />
           </div>
           <p className="mt-3 max-w-[70ch] text-pequeno text-tinta-suave">
-            Los puntos son aproximados, con unos 300 metros de margen. Así protegemos a las personas que
-            cuidan a cada animal.
+            Los puntos son aproximados, con unos 300 metros de margen. Así protegemos a las personas
+            que cuidan a cada animal.
           </p>
         </div>
       </div>

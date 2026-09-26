@@ -209,3 +209,24 @@ def test_el_limite_usa_la_ultima_ip_del_encabezado_del_proxy(db_session, monkeyp
         ).status_code
 
     assert [con_ip("1.1.1.1"), con_ip("1.1.1.1"), con_ip("2.2.2.2")] == [200, 429, 200]
+
+
+def test_rechaza_un_punto_fuera_de_bogota(db_session):
+    comunidad = crear_comunidad(db_session)
+
+    respuesta = _inscribir(comunidad.id, {"latitud": "6.2442", "longitud": "-75.5812"})
+
+    assert respuesta.status_code == 422
+    assert "fuera de Bogota" in respuesta.json()["detail"]
+    assert db_session.query(Animal).count() == 0
+
+
+def test_la_localidad_calculada_sale_en_la_lista_del_inscriptor(db_session):
+    comunidad = crear_comunidad(db_session)
+    _inscribir(comunidad.id, {"latitud": "4.6021", "longitud": "-74.0691"})
+
+    respuesta = client.post(
+        "/api/v1/publico/inscriptores/verificar", json={"tipo_documento": "CC", "numero_documento": "1234567"}
+    )
+
+    assert respuesta.json()["animales"][0]["localidad"] == "Santa Fe"

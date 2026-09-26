@@ -35,6 +35,8 @@ export function validarInscripcion(formulario: FormularioInscripcion): ErroresIn
   }
   if (formulario.ubicacion === null) {
     errores.ubicacion = 'Toca el mapa para marcar dónde vive.';
+  } else if (formulario.ubicacion.localidad === null) {
+    errores.ubicacion = 'El punto está fuera de Bogotá. Marca un lugar dentro de la ciudad.';
   }
 
   if (formulario.foto === null) {

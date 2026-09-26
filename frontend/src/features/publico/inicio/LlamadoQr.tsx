@@ -6,7 +6,11 @@ export function LlamadoQr() {
     <section aria-labelledby="titulo-qr" className="contenedor pt-14">
       <Tarjeta destacada>
         <TarjetaCuerpo className="flex flex-col gap-4 sm:flex-row sm:items-center">
-          <QrCode className="h-12 w-12 shrink-0 text-verde-profundo" aria-hidden="true" strokeWidth={1.5} />
+          <QrCode
+            className="h-12 w-12 shrink-0 text-verde-profundo"
+            aria-hidden="true"
+            strokeWidth={1.5}
+          />
           <div>
             <h2 id="titulo-qr" className="text-h4">
               ¿Viste un collar con código QR?

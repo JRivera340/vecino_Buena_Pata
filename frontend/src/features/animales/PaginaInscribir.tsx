@@ -6,6 +6,7 @@ import { subirArchivo } from '@/core/api/medios';
 import { mensajeError } from '@/core/api/mensaje-error';
 import { useCarga } from '@/core/api/useCarga';
 import type { Especie, Sexo, Tamano } from '@/core/modelos/enums';
+import { ChipLocalidad } from '@/shared/mapa/ChipLocalidad';
 import { MapaTerritorio, type UbicacionSeleccionada } from '@/shared/mapa/MapaTerritorio';
 import { Alerta } from '@/shared/ui/Alerta';
 import { Boton } from '@/shared/ui/Boton';
@@ -35,7 +36,14 @@ export default function PaginaInscribir() {
 
   async function enviar(evento: FormEvent) {
     evento.preventDefault();
-    const nuevos = validarInscripcion({ nombre, barrio, comunidadId, ubicacion, foto, edadEstimada: edad });
+    const nuevos = validarInscripcion({
+      nombre,
+      barrio,
+      comunidadId,
+      ubicacion,
+      foto,
+      edadEstimada: edad,
+    });
     setErrores(nuevos);
     if (Object.keys(nuevos).length > 0 || !foto || !ubicacion || comunidadId === null) {
       return;
@@ -75,12 +83,18 @@ export default function PaginaInscribir() {
       <form onSubmit={enviar} noValidate className="grid gap-10 lg:grid-cols-2">
         <div className="space-y-4">
           <Campo id="ins-nombre" etiqueta="Nombre" obligatorio error={errores.nombre}>
-            {(props) => <Entrada {...props} value={nombre} onChange={(e) => setNombre(e.target.value)} />}
+            {(props) => (
+              <Entrada {...props} value={nombre} onChange={(e) => setNombre(e.target.value)} />
+            )}
           </Campo>
           <div className="grid gap-4 sm:grid-cols-3">
             <Campo id="ins-especie" etiqueta="Especie" obligatorio>
               {(props) => (
-                <Selector {...props} value={especie} onChange={(e) => setEspecie(e.target.value as Especie)}>
+                <Selector
+                  {...props}
+                  value={especie}
+                  onChange={(e) => setEspecie(e.target.value as Especie)}
+                >
                   <option value="PERRO">Perro</option>
                   <option value="GATO">Gato</option>
                 </Selector>
@@ -96,7 +110,11 @@ export default function PaginaInscribir() {
             </Campo>
             <Campo id="ins-tamano" etiqueta="Tamaño" obligatorio>
               {(props) => (
-                <Selector {...props} value={tamano} onChange={(e) => setTamano(e.target.value as Tamano)}>
+                <Selector
+                  {...props}
+                  value={tamano}
+                  onChange={(e) => setTamano(e.target.value as Tamano)}
+                >
                   <option value="PEQUENO">Pequeño</option>
                   <option value="MEDIANO">Mediano</option>
                   <option value="GRANDE">Grande</option>
@@ -104,18 +122,39 @@ export default function PaginaInscribir() {
               )}
             </Campo>
           </div>
-          <Campo id="ins-edad" etiqueta="Edad estimada en años" ayuda="Opcional." error={errores.edad}>
-            {(props) => <Entrada {...props} inputMode="numeric" value={edad} onChange={(e) => setEdad(e.target.value)} />}
+          <Campo
+            id="ins-edad"
+            etiqueta="Edad estimada en años"
+            ayuda="Opcional."
+            error={errores.edad}
+          >
+            {(props) => (
+              <Entrada
+                {...props}
+                inputMode="numeric"
+                value={edad}
+                onChange={(e) => setEdad(e.target.value)}
+              />
+            )}
           </Campo>
           <Campo id="ins-barrio" etiqueta="Barrio" obligatorio error={errores.barrio}>
-            {(props) => <Entrada {...props} value={barrio} onChange={(e) => setBarrio(e.target.value)} />}
+            {(props) => (
+              <Entrada {...props} value={barrio} onChange={(e) => setBarrio(e.target.value)} />
+            )}
           </Campo>
-          <Campo id="ins-comunidad" etiqueta="Comunidad que lo cuida" obligatorio error={errores.comunidad}>
+          <Campo
+            id="ins-comunidad"
+            etiqueta="Comunidad que lo cuida"
+            obligatorio
+            error={errores.comunidad}
+          >
             {(props) => (
               <Selector
                 {...props}
                 value={comunidadId ?? ''}
-                onChange={(e) => setComunidadId(e.target.value === '' ? null : Number(e.target.value))}
+                onChange={(e) =>
+                  setComunidadId(e.target.value === '' ? null : Number(e.target.value))
+                }
               >
                 <option value="">Elige una comunidad</option>
                 {(comunidades.datos ?? []).map((comunidad) => (
@@ -126,19 +165,43 @@ export default function PaginaInscribir() {
               </Selector>
             )}
           </Campo>
-          <Campo id="ins-descripcion" etiqueta="Descripción" ayuda="Opcional. Rasgos, carácter, cómo lo reconocen.">
-            {(props) => <AreaTexto {...props} value={descripcion} onChange={(e) => setDescripcion(e.target.value)} />}
-          </Campo>
-          <Campo id="ins-foto" etiqueta="Foto" obligatorio error={errores.foto} ayuda="JPG, PNG o WEBP de hasta 10 MB.">
+          <Campo
+            id="ins-descripcion"
+            etiqueta="Descripción"
+            ayuda="Opcional. Rasgos, carácter, cómo lo reconocen."
+          >
             {(props) => (
-              <Entrada {...props} type="file" accept="image/*" onChange={(e) => setFoto(e.target.files?.[0] ?? null)} />
+              <AreaTexto
+                {...props}
+                value={descripcion}
+                onChange={(e) => setDescripcion(e.target.value)}
+              />
+            )}
+          </Campo>
+          <Campo
+            id="ins-foto"
+            etiqueta="Foto"
+            obligatorio
+            error={errores.foto}
+            ayuda="JPG, PNG o WEBP de hasta 10 MB."
+          >
+            {(props) => (
+              <Entrada
+                {...props}
+                type="file"
+                accept="image/*"
+                onChange={(e) => setFoto(e.target.files?.[0] ?? null)}
+              />
             )}
           </Campo>
         </div>
 
         <div className="space-y-4">
           <p className="text-pequeno font-semibold">
-            Dónde vive <span className="text-peligro" aria-hidden="true">*</span>
+            Dónde vive{' '}
+            <span className="text-peligro" aria-hidden="true">
+              *
+            </span>
           </p>
           <p className="text-minimo text-tinta-suave">Toca el mapa para marcar el punto.</p>
           <div className="overflow-hidden rounded-tarjeta border border-black/15">
@@ -150,11 +213,7 @@ export default function PaginaInscribir() {
               alSeleccionarUbicacion={setUbicacion}
             />
           </div>
-          {ubicacion && (
-            <p className="text-minimo text-tinta-suave">
-              Punto marcado: {ubicacion.lat.toFixed(5)}, {ubicacion.lng.toFixed(5)}
-            </p>
-          )}
+          <ChipLocalidad ubicacion={ubicacion} />
           {errores.ubicacion && (
             <p role="alert" className="text-minimo text-peligro">
               {errores.ubicacion}

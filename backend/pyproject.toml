@@ -21,6 +21,10 @@ dependencies = [
 ]
 
 [project.optional-dependencies]
+# Solo para regenerar el GeoJSON de localidades (scripts/kmz_a_geojson.py); el servidor no lo usa.
+geo = [
+    "shapely>=2.0",
+]
 dev = [
     "pytest>=8.3",
     "httpx>=0.27",

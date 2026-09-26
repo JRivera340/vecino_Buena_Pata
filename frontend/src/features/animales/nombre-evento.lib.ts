@@ -31,7 +31,9 @@ function detalleDe(tipo: string, detalle: Record<string, unknown>): string | nul
         return 'Aprobada.';
       }
       if (veredicto === 'CON_PENDIENTES') {
-        const pendientes = Array.isArray(detalle.pendientes) ? (detalle.pendientes as string[]) : [];
+        const pendientes = Array.isArray(detalle.pendientes)
+          ? (detalle.pendientes as string[])
+          : [];
         return pendientes.length > 0
           ? `Con pendientes: ${pendientes.map(etiquetaPendiente).join(', ')}.`
           : 'Con pendientes.';

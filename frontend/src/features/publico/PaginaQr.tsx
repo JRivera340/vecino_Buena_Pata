@@ -124,12 +124,20 @@ function FormularioReporte({ codigo, animal }: { codigo: string; animal: string 
 
 export default function PaginaQr() {
   const { codigo = '' } = useParams();
-  const { datos: animal, cargando, error } = useCarga(() => obtenerAnimalPorCodigo(codigo), [codigo]);
+  const {
+    datos: animal,
+    cargando,
+    error,
+  } = useCarga(() => obtenerAnimalPorCodigo(codigo), [codigo]);
   useTitulo(animal ? `Ficha de ${animal.nombre}` : 'Código del collar');
 
   if (cargando) {
     return (
-      <div className="contenedor max-w-[720px] space-y-4 py-10" role="status" aria-label="Cargando la ficha">
+      <div
+        className="contenedor max-w-[720px] space-y-4 py-10"
+        role="status"
+        aria-label="Cargando la ficha"
+      >
         <Esqueleto className="h-56 w-full" />
         <Esqueleto className="h-8 w-1/2" />
       </div>
@@ -140,7 +148,9 @@ export default function PaginaQr() {
     const noExiste = error instanceof ErrorApi && error.estado === 404;
     return (
       <div className="contenedor max-w-[56ch] space-y-4 py-14">
-        <h1 className="text-h1">{noExiste ? 'No encontramos este código' : 'No pudimos abrir la ficha'}</h1>
+        <h1 className="text-h1">
+          {noExiste ? 'No encontramos este código' : 'No pudimos abrir la ficha'}
+        </h1>
         <p className="text-tinta-suave">
           {noExiste
             ? 'Revisa que el código del collar esté bien leído. Si el problema sigue, avísale a quien te lo compartió.'

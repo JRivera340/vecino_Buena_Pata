@@ -18,16 +18,24 @@ describe('validarInscripcion', () => {
   });
 
   it('pide el nombre y no acepta solo espacios', () => {
-    expect(validarInscripcion(formulario({ nombre: '' })).nombre).toBe('Escribe el nombre del animal.');
-    expect(validarInscripcion(formulario({ nombre: '   ' })).nombre).toBe('Escribe el nombre del animal.');
+    expect(validarInscripcion(formulario({ nombre: '' })).nombre).toBe(
+      'Escribe el nombre del animal.',
+    );
+    expect(validarInscripcion(formulario({ nombre: '   ' })).nombre).toBe(
+      'Escribe el nombre del animal.',
+    );
   });
 
   it('pide el barrio', () => {
-    expect(validarInscripcion(formulario({ barrio: ' ' })).barrio).toBe('Escribe el barrio donde vive.');
+    expect(validarInscripcion(formulario({ barrio: ' ' })).barrio).toBe(
+      'Escribe el barrio donde vive.',
+    );
   });
 
   it('pide elegir una comunidad', () => {
-    expect(validarInscripcion(formulario({ comunidadId: null })).comunidad).toBe('Elige la comunidad que lo cuida.');
+    expect(validarInscripcion(formulario({ comunidadId: null })).comunidad).toBe(
+      'Elige la comunidad que lo cuida.',
+    );
   });
 
   it('pide marcar la ubicación en el mapa', () => {
@@ -43,13 +51,19 @@ describe('validarInscripcion', () => {
   it('rechaza un archivo que no es una imagen', () => {
     const pdf = new File(['x'], 'ficha.pdf', { type: 'application/pdf' });
 
-    expect(validarInscripcion(formulario({ foto: pdf })).foto).toBe('El archivo debe ser una imagen (JPG, PNG o WEBP).');
+    expect(validarInscripcion(formulario({ foto: pdf })).foto).toBe(
+      'El archivo debe ser una imagen (JPG, PNG o WEBP).',
+    );
   });
 
   it('rechaza una foto de más de 10 MB', () => {
-    const grande = new File([new Uint8Array(10 * 1024 * 1024 + 1)], 'grande.jpg', { type: 'image/jpeg' });
+    const grande = new File([new Uint8Array(10 * 1024 * 1024 + 1)], 'grande.jpg', {
+      type: 'image/jpeg',
+    });
 
-    expect(validarInscripcion(formulario({ foto: grande })).foto).toBe('La foto pesa más de 10 MB. Elige una más liviana.');
+    expect(validarInscripcion(formulario({ foto: grande })).foto).toBe(
+      'La foto pesa más de 10 MB. Elige una más liviana.',
+    );
   });
 
   it('acepta la edad vacía o un número entero entre 0 y 30', () => {
@@ -67,8 +81,30 @@ describe('validarInscripcion', () => {
   });
 
   it('reporta todos los errores a la vez', () => {
-    const errores = validarInscripcion(formulario({ nombre: '', barrio: '', comunidadId: null, ubicacion: null, foto: null }));
+    const errores = validarInscripcion(
+      formulario({ nombre: '', barrio: '', comunidadId: null, ubicacion: null, foto: null }),
+    );
 
-    expect(Object.keys(errores).sort()).toEqual(['barrio', 'comunidad', 'foto', 'nombre', 'ubicacion']);
+    expect(Object.keys(errores).sort()).toEqual([
+      'barrio',
+      'comunidad',
+      'foto',
+      'nombre',
+      'ubicacion',
+    ]);
+  });
+
+  it('rechaza un punto marcado fuera de Bogotá y acepta uno dentro o aún sin clasificar', () => {
+    const fuera = validarInscripcion(
+      formulario({ ubicacion: { lat: 6.2, lng: -75.5, localidad: null } }),
+    );
+    const dentro = validarInscripcion(
+      formulario({ ubicacion: { lat: 4.6, lng: -74.07, localidad: 'Santa Fe' } }),
+    );
+    const sinClasificar = validarInscripcion(formulario({ ubicacion: { lat: 4.6, lng: -74.07 } }));
+
+    expect(fuera.ubicacion).toMatch(/fuera de Bogotá/);
+    expect(dentro.ubicacion).toBeUndefined();
+    expect(sinClasificar.ubicacion).toBeUndefined();
   });
 });

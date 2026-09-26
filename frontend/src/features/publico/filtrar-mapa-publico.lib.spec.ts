@@ -25,7 +25,10 @@ describe('filtrarMapaPublico', () => {
   });
 
   it('busca por nombre sin distinguir mayusculas ni tildes', () => {
-    const animales = [crearAnimal({ id: 1, nombre: 'Lulu' }), crearAnimal({ id: 2, nombre: 'Rocky' })];
+    const animales = [
+      crearAnimal({ id: 1, nombre: 'Lulu' }),
+      crearAnimal({ id: 2, nombre: 'Rocky' }),
+    ];
     const resultado = filtrarMapaPublico(animales, { ...criteriosBase(), busqueda: 'LULÚ' });
     expect(resultado.map((a) => a.id)).toEqual([1]);
   });
@@ -37,13 +40,19 @@ describe('filtrarMapaPublico', () => {
   });
 
   it('filtra por especie', () => {
-    const animales = [crearAnimal({ id: 1, especie: 'PERRO' }), crearAnimal({ id: 2, especie: 'GATO' })];
+    const animales = [
+      crearAnimal({ id: 1, especie: 'PERRO' }),
+      crearAnimal({ id: 2, especie: 'GATO' }),
+    ];
     const resultado = filtrarMapaPublico(animales, { ...criteriosBase(), especie: 'GATO' });
     expect(resultado.map((a) => a.id)).toEqual([2]);
   });
 
   it('filtra por barrio', () => {
-    const animales = [crearAnimal({ id: 1, barrio: 'Bosa' }), crearAnimal({ id: 2, barrio: 'Usme' })];
+    const animales = [
+      crearAnimal({ id: 1, barrio: 'Bosa' }),
+      crearAnimal({ id: 2, barrio: 'Usme' }),
+    ];
     const resultado = filtrarMapaPublico(animales, { ...criteriosBase(), barrio: 'Usme' });
     expect(resultado.map((a) => a.id)).toEqual([2]);
   });
@@ -54,12 +63,19 @@ describe('filtrarMapaPublico', () => {
       crearAnimal({ id: 2, nombre: 'Lulu', especie: 'GATO', barrio: 'Bosa' }),
       crearAnimal({ id: 3, nombre: 'Lulu', especie: 'PERRO', barrio: 'Usme' }),
     ];
-    const resultado = filtrarMapaPublico(animales, { busqueda: 'lulu', especie: 'PERRO', barrio: 'Bosa' });
+    const resultado = filtrarMapaPublico(animales, {
+      busqueda: 'lulu',
+      especie: 'PERRO',
+      barrio: 'Bosa',
+    });
     expect(resultado.map((a) => a.id)).toEqual([1]);
   });
 
   it('devuelve una lista vacia si nada coincide', () => {
-    const resultado = filtrarMapaPublico([crearAnimal({})], { ...criteriosBase(), busqueda: 'zzz' });
+    const resultado = filtrarMapaPublico([crearAnimal({})], {
+      ...criteriosBase(),
+      busqueda: 'zzz',
+    });
     expect(resultado).toEqual([]);
   });
 });

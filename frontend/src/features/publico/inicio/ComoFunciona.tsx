@@ -3,7 +3,8 @@ import { Calendar, ClipboardCheck, QrCode, Stethoscope } from 'lucide-react';
 const PASOS = [
   {
     titulo: 'Inscripción',
-    texto: 'Un vecino o una organización del barrio registra al animal con su nombre, una foto y la zona donde vive.',
+    texto:
+      'Un vecino o una organización del barrio registra al animal con su nombre, una foto y la zona donde vive.',
     Icono: ClipboardCheck,
   },
   {
@@ -18,14 +19,19 @@ const PASOS = [
   },
   {
     titulo: 'Seguimiento',
-    texto: 'El equipo lo visita cada cierto tiempo y actualiza su ficha. Si algo cambia, cualquiera puede avisarlo con el QR.',
+    texto:
+      'El equipo lo visita cada cierto tiempo y actualiza su ficha. Si algo cambia, cualquiera puede avisarlo con el QR.',
     Icono: Calendar,
   },
 ];
 
 export function ComoFunciona() {
   return (
-    <section id="como-funciona" aria-labelledby="titulo-como" className="scroll-mt-20 bg-white py-14">
+    <section
+      id="como-funciona"
+      aria-labelledby="titulo-como"
+      className="scroll-mt-20 bg-white py-14"
+    >
       <div className="contenedor">
         <div className="mb-10 max-w-[62ch]">
           <h2 id="titulo-como" className="text-h2">

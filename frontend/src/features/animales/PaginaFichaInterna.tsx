@@ -1,6 +1,11 @@
 import { useParams } from 'react-router-dom';
 import { ErrorApi } from '@/core/api/cliente';
-import { obtenerAnimal, obtenerHistorial, obtenerValidaciones, obtenerVisitas } from '@/core/api/animales';
+import {
+  obtenerAnimal,
+  obtenerHistorial,
+  obtenerValidaciones,
+  obtenerVisitas,
+} from '@/core/api/animales';
 import { useCarga } from '@/core/api/useCarga';
 import {
   etiquetaEspecie,
@@ -24,7 +29,11 @@ import { Tarjeta, TarjetaCuerpo, TarjetaEncabezado } from '@/shared/ui/Tarjeta';
 import { useTitulo } from '@/shared/ui/useTitulo';
 import { describirEvento } from './nombre-evento.lib';
 
-const TONO_SALUD: Record<EstadoSalud, TonoEtiqueta> = { BUENO: 'exito', REGULAR: 'aviso', MALO: 'error' };
+const TONO_SALUD: Record<EstadoSalud, TonoEtiqueta> = {
+  BUENO: 'exito',
+  REGULAR: 'aviso',
+  MALO: 'error',
+};
 
 function Dato({ etiqueta, valor }: { etiqueta: string; valor: string }) {
   return (
@@ -40,21 +49,18 @@ export default function PaginaFichaInterna() {
   const numero = Number(id);
   const idValido = Number.isInteger(numero) && numero > 0;
 
-  const ficha = useCarga(
-    async () => {
-      if (!idValido) {
-        throw new ErrorApi(404, null);
-      }
-      const [animal, historial, visitas, validaciones] = await Promise.all([
-        obtenerAnimal(numero),
-        obtenerHistorial(numero),
-        obtenerVisitas(numero),
-        obtenerValidaciones(numero),
-      ]);
-      return { animal, historial, visitas, validaciones };
-    },
-    [numero, idValido],
-  );
+  const ficha = useCarga(async () => {
+    if (!idValido) {
+      throw new ErrorApi(404, null);
+    }
+    const [animal, historial, visitas, validaciones] = await Promise.all([
+      obtenerAnimal(numero),
+      obtenerHistorial(numero),
+      obtenerVisitas(numero),
+      obtenerValidaciones(numero),
+    ]);
+    return { animal, historial, visitas, validaciones };
+  }, [numero, idValido]);
   useTitulo(ficha.datos ? `Ficha interna de ${ficha.datos.animal.nombre}` : 'Ficha interna');
 
   if (ficha.cargando) {
@@ -70,7 +76,9 @@ export default function PaginaFichaInterna() {
     return (
       <div className="contenedor max-w-[56ch] space-y-4 py-10">
         <h1 className="text-h1">No encontramos a este animal</h1>
-        <p className="text-tinta-suave">Puede que el enlace tenga un error o que ya no esté registrado.</p>
+        <p className="text-tinta-suave">
+          Puede que el enlace tenga un error o que ya no esté registrado.
+        </p>
         <BotonEnlace to="/mapa">Volver al mapa</BotonEnlace>
       </div>
     );
@@ -174,8 +182,12 @@ export default function PaginaFichaInterna() {
                   <TarjetaCuerpo className="space-y-2 text-pequeno">
                     <div className="flex flex-wrap items-center gap-3">
                       <span className="font-semibold">{formatearFecha(visita.fecha)}</span>
-                      <Etiqueta tono={TONO_SALUD[visita.estado_salud]}>{etiquetaSalud(visita.estado_salud)}</Etiqueta>
-                      {peso(visita.peso_kg) && <span className="text-tinta-suave">Pesó {peso(visita.peso_kg)}</span>}
+                      <Etiqueta tono={TONO_SALUD[visita.estado_salud]}>
+                        {etiquetaSalud(visita.estado_salud)}
+                      </Etiqueta>
+                      {peso(visita.peso_kg) && (
+                        <span className="text-tinta-suave">Pesó {peso(visita.peso_kg)}</span>
+                      )}
                     </div>
                     <p>Comportamiento: {visita.estado_comportamiento}</p>
                     {visita.observaciones && <p>{visita.observaciones}</p>}

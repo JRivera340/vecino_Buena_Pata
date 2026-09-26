@@ -4,6 +4,7 @@ from app.models.animal import Animal
 from app.models.enums import EspecieEnum
 from app.services.duplicados import buscar_posible_duplicado
 from app.services.historial import registrar_evento
+from app.services.localidades import localidad_de_punto
 
 
 def radicado_de(animal: Animal) -> str:
@@ -17,6 +18,9 @@ def inscribir_animal(db: Session, datos: dict, inscrito_por: str) -> Animal:
             db, datos.get("especie", EspecieEnum.PERRO), datos["nombre"], datos["latitud"], datos["longitud"]
         )
         datos["posible_duplicado_de_id"] = duplicado.id if duplicado else None
+
+    if "localidad" not in datos:
+        datos["localidad"] = localidad_de_punto(datos["latitud"], datos["longitud"])
 
     animal = Animal(**datos, inscrito_por=inscrito_por)
     db.add(animal)

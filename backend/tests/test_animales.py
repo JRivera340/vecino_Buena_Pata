@@ -166,3 +166,16 @@ def test_listar_y_obtener_animal(db_session):
     respuesta_detalle = client.get(f"/api/v1/animales/{creado['id']}", headers=encabezados)
     assert respuesta_detalle.status_code == 200
     assert respuesta_detalle.json()["nombre"] == "Tribilin"
+
+
+def test_inscripcion_interna_rechaza_un_punto_fuera_de_bogota(db_session):
+    token = _token_para(db_session, "vera", RolUsuarioEnum.VETERINARIO)
+    comunidad_id = _crear_comunidad(db_session)
+
+    respuesta = client.post(
+        "/api/v1/animales",
+        json={"nombre": "Lejos", "sexo": "MACHO", "tamano": "GRANDE", "barrio": "Laureles", "latitud": 6.2442, "longitud": -75.5812, "comunidad_id": comunidad_id},
+        headers={"Authorization": f"Bearer {token}"},
+    )
+
+    assert respuesta.status_code == 422

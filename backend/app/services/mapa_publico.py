@@ -32,6 +32,7 @@ def listar_mapa_publico(db: Session) -> list[dict]:
             "especie": animal.especie,
             "foto_principal": animal.foto_principal,
             "barrio": animal.barrio,
+            "localidad": animal.localidad,
             "latitud": aproximar_coordenada(animal.latitud),
             "longitud": aproximar_coordenada(animal.longitud),
         }
@@ -68,6 +69,7 @@ def obtener_hoja_vida_publica(db: Session, animal_id: int) -> dict | None:
         "descripcion": animal.descripcion,
         "foto_principal": animal.foto_principal,
         "barrio": animal.barrio,
+        "localidad": animal.localidad,
         "fecha_inscripcion": animal.fecha_inscripcion,
         "esterilizado": animal.esterilizado,
         "tiene_microchip": bool(animal.numero_microchip),

@@ -12,25 +12,36 @@ describe('describirEvento', () => {
   });
 
   it('muestra el veredicto y los pendientes de una validación', () => {
-    const evento = describirEvento('VALIDACION', { veredicto: 'CON_PENDIENTES', pendientes: ['SIN_CHIP', 'SALUD'] });
+    const evento = describirEvento('VALIDACION', {
+      veredicto: 'CON_PENDIENTES',
+      pendientes: ['SIN_CHIP', 'SALUD'],
+    });
 
     expect(evento.detalle).toBe('Con pendientes: sin microchip, salud.');
   });
 
   it('muestra que una validación fue aprobada', () => {
-    expect(describirEvento('VALIDACION', { veredicto: 'APROBADO', pendientes: [] }).detalle).toBe('Aprobada.');
+    expect(describirEvento('VALIDACION', { veredicto: 'APROBADO', pendientes: [] }).detalle).toBe(
+      'Aprobada.',
+    );
   });
 
   it('muestra el barrio de una inscripción', () => {
-    expect(describirEvento('INSCRIPCION', { barrio: 'Bosa', comunidad_id: 3 }).detalle).toBe('Barrio Bosa.');
+    expect(describirEvento('INSCRIPCION', { barrio: 'Bosa', comunidad_id: 3 }).detalle).toBe(
+      'Barrio Bosa.',
+    );
   });
 
   it('muestra el código del collar sin cambiarlo', () => {
-    expect(describirEvento('FORMALIZACION', { codigo_collar: 'vbp-abc123' }).detalle).toBe('Collar vbp-abc123.');
+    expect(describirEvento('FORMALIZACION', { codigo_collar: 'vbp-abc123' }).detalle).toBe(
+      'Collar vbp-abc123.',
+    );
   });
 
   it('muestra el estado de salud de una visita', () => {
-    expect(describirEvento('VISITA_SEGUIMIENTO', { estado_salud: 'REGULAR' }).detalle).toBe('Salud regular.');
+    expect(describirEvento('VISITA_SEGUIMIENTO', { estado_salud: 'REGULAR' }).detalle).toBe(
+      'Salud regular.',
+    );
   });
 
   it('muestra la causal de una salida', () => {

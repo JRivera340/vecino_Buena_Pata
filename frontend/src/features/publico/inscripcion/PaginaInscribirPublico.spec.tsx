@@ -76,7 +76,10 @@ describe('PaginaInscribirPublico', () => {
     await escribirDocumento('1.234.567');
 
     expect(await screen.findByLabelText(/nombre del animal/i)).toBeInTheDocument();
-    expect(verificarInscriptor).toHaveBeenCalledWith({ tipo_documento: 'CC', numero_documento: '1.234.567' });
+    expect(verificarInscriptor).toHaveBeenCalledWith({
+      tipo_documento: 'CC',
+      numero_documento: '1.234.567',
+    });
   });
 
   it('avisa cuántos animales ya registró y deja continuar', async () => {

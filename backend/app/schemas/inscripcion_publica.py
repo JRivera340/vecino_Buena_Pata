@@ -28,6 +28,7 @@ class AnimalDeInscriptorSchema(BaseModel):
     esterilizado: bool
     tiene_microchip: bool
     barrio: str
+    localidad: str | None = None
     fecha_inscripcion: datetime
 
 

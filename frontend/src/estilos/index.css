@@ -44,3 +44,44 @@
     clip: rect(0, 0, 0, 0);
   }
 }
+
+/* Mapa: los mosaicos se atenúan para que las localidades y las huellitas sean lo que destaque. */
+.leaflet-tile-pane {
+  filter: saturate(0.55) brightness(1.04) contrast(0.96);
+}
+
+.leaflet-touch .leaflet-bar a {
+  width: 44px;
+  height: 44px;
+  line-height: 44px;
+}
+
+.cartel-localidad {
+  border: 1px solid rgba(0, 0, 0, 0.15);
+  border-radius: 4px;
+  background: #ffffff;
+  color: #252525;
+  font-size: 0.8125rem;
+  font-weight: 600;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.18);
+}
+
+.cartel-localidad::before {
+  display: none;
+}
+
+.etiqueta-localidad {
+  pointer-events: none;
+  text-align: center;
+}
+
+.etiqueta-localidad span {
+  color: #45591a;
+  font-size: 0.8125rem;
+  font-weight: 700;
+  text-shadow:
+    0 0 3px #ffffff,
+    0 0 3px #ffffff,
+    0 0 6px #ffffff;
+  white-space: nowrap;
+}

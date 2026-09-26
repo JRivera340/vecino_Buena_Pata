@@ -35,7 +35,9 @@ vi.mock('@/shared/mapa/MapaTerritorio', () => ({
 
 const mapaMock = vi.mocked(listarMapa);
 
-function animal(datos: Partial<AnimalMapaPublico> & { id: number; nombre: string }): AnimalMapaPublico {
+function animal(
+  datos: Partial<AnimalMapaPublico> & { id: number; nombre: string },
+): AnimalMapaPublico {
   return {
     especie: 'PERRO',
     foto_principal: null,
@@ -48,7 +50,14 @@ function animal(datos: Partial<AnimalMapaPublico> & { id: number; nombre: string
 
 const ANIMALES = [
   animal({ id: 1, nombre: 'Lulú', barrio: 'Teusaquillo', foto_principal: 'lulu.jpg' }),
-  animal({ id: 2, nombre: 'Monacho', especie: 'GATO', barrio: 'Chapinero', latitud: 4.65, longitud: -74.06 }),
+  animal({
+    id: 2,
+    nombre: 'Monacho',
+    especie: 'GATO',
+    barrio: 'Chapinero',
+    latitud: 4.65,
+    longitud: -74.06,
+  }),
   animal({ id: 3, nombre: 'Pirata', barrio: 'Bosa', latitud: 4.57, longitud: -74.11 }),
 ];
 
@@ -63,7 +72,9 @@ describe('PaginaInicio', () => {
     mapaMock.mockResolvedValue(ANIMALES);
     renderizarConRutas(<PaginaInicio />);
 
-    expect(await screen.findByText('Hoy hay 3 Vecinos Buena Pata activos en 3 barrios.')).toBeInTheDocument();
+    expect(
+      await screen.findByText('Hoy hay 3 Vecinos Buena Pata activos en 3 barrios.'),
+    ).toBeInTheDocument();
     expect(within(lista()).getAllByRole('listitem')).toHaveLength(3);
     expect(screen.getByRole('button', { name: 'Marcador de Lulú' })).toBeInTheDocument();
     expect(screen.getByText('3 animales en la lista')).toBeInTheDocument();
@@ -127,7 +138,10 @@ describe('PaginaInicio', () => {
 
     const tarjeta = within(lista()).getByRole('button', { name: /Monacho/ });
     expect(tarjeta).toHaveAttribute('aria-pressed', 'true');
-    expect(screen.getByRole('button', { name: 'Marcador de Monacho' })).toHaveAttribute('data-seleccionado', 'true');
+    expect(screen.getByRole('button', { name: 'Marcador de Monacho' })).toHaveAttribute(
+      'data-seleccionado',
+      'true',
+    );
   });
 
   it('separa en el mapa a los animales que comparten el mismo punto', async () => {
@@ -147,7 +161,9 @@ describe('PaginaInicio', () => {
     mapaMock.mockResolvedValue([]);
     renderizarConRutas(<PaginaInicio />);
 
-    expect(await screen.findByText('Todavía no hay animales activos en el mapa.')).toBeInTheDocument();
+    expect(
+      await screen.findByText('Todavía no hay animales activos en el mapa.'),
+    ).toBeInTheDocument();
     expect(screen.getByText(/Aún no hay animales activos en el mapa/)).toBeInTheDocument();
   });
 

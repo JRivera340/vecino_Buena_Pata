@@ -125,9 +125,9 @@ def cargar_demo(db: Session, almacenamiento, rehacer: bool = False) -> bool:
         tamano=TamanoEnum.PEQUENO,
         edad_estimada=4,
         descripcion="Terrier blanco de pelo largo, juguetón y muy sociable. Acompaña a los vecinos en el parque.",
-        barrio="Las Cruces",
-        latitud=4.5931,
-        longitud=-74.0906,
+        barrio="La Macarena",
+        latitud=4.6125,
+        longitud=-74.0655,
         foto="perro-westie.jpg",
     )
     registrar_validacion(
@@ -166,7 +166,7 @@ def cargar_demo(db: Session, almacenamiento, rehacer: bool = False) -> bool:
         tamano=TamanoEnum.PEQUENO,
         edad_estimada=0,
         descripcion="Cachorro de bulldog de pelaje claro. Lo encontraron los vecinos de la calle sexta.",
-        barrio="Santa Fe",
+        barrio="Las Nieves",
         latitud=4.6045,
         longitud=-74.0780,
         foto="perro-bulldog.jpg",
@@ -180,9 +180,9 @@ def cargar_demo(db: Session, almacenamiento, rehacer: bool = False) -> bool:
         tamano=TamanoEnum.MEDIANO,
         edad_estimada=5,
         descripcion="Gato naranja de andar tranquilo. Dormía cerca de la plaza del barrio.",
-        barrio="Las Cruces",
-        latitud=4.5952,
-        longitud=-74.0887,
+        barrio="Bosque Izquierdo",
+        latitud=4.6085,
+        longitud=-74.0625,
         foto="gato-naranja.jpg",
     )
     registrar_validacion(

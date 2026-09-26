@@ -60,7 +60,7 @@ def test_el_mapa_solo_incluye_los_campos_publicos(db_session):
 
     (item,) = listar_mapa_publico(db_session)
 
-    assert set(item.keys()) == {"id", "nombre", "especie", "foto_principal", "barrio", "latitud", "longitud"}
+    assert set(item.keys()) == {"id", "nombre", "especie", "foto_principal", "barrio", "localidad", "latitud", "longitud"}
 
 
 def test_el_mapa_ordena_por_id_ascendente(db_session):
@@ -113,7 +113,7 @@ def test_hoja_de_vida_no_expone_el_numero_de_microchip_ni_datos_internos(db_sess
 
     assert set(hoja.keys()) == {
         "id", "nombre", "especie", "sexo", "tamano", "edad_estimada", "descripcion",
-        "foto_principal", "barrio", "fecha_inscripcion", "esterilizado", "tiene_microchip",
+        "foto_principal", "barrio", "localidad", "fecha_inscripcion", "esterilizado", "tiene_microchip",
         "ultima_visita",
     }
     assert "985112345678901" not in str(hoja)

@@ -6,7 +6,9 @@ describe('resumirMapa', () => {
   });
 
   it('usa el singular con un solo animal', () => {
-    expect(resumirMapa([{ barrio: 'Bosa' }])).toBe('Hoy hay 1 Vecino Buena Pata activo en 1 barrio.');
+    expect(resumirMapa([{ barrio: 'Bosa' }])).toBe(
+      'Hoy hay 1 Vecino Buena Pata activo en 1 barrio.',
+    );
   });
 
   it('cuenta animales y barrios distintos en plural', () => {

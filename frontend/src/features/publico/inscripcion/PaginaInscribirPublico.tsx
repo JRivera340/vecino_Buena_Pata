@@ -11,6 +11,7 @@ import { mensajeError } from '@/core/api/mensaje-error';
 import { useCarga } from '@/core/api/useCarga';
 import type { Especie, Sexo, Tamano, TipoDocumento } from '@/core/modelos/enums';
 import type { AnimalDeInscriptor, InscripcionPublicaRespuesta } from '@/core/modelos/inscripcion';
+import { ChipLocalidad } from '@/shared/mapa/ChipLocalidad';
 import { MapaTerritorio, type UbicacionSeleccionada } from '@/shared/mapa/MapaTerritorio';
 import { Alerta } from '@/shared/ui/Alerta';
 import { Boton, BotonEnlace } from '@/shared/ui/Boton';
@@ -410,11 +411,7 @@ export default function PaginaInscribirPublico() {
                 alSeleccionarUbicacion={setUbicacion}
               />
             </div>
-            {ubicacion && (
-              <p className="text-minimo text-tinta-suave">
-                Punto marcado: {ubicacion.lat.toFixed(5)}, {ubicacion.lng.toFixed(5)}
-              </p>
-            )}
+            <ChipLocalidad ubicacion={ubicacion} />
             {errores.ubicacion && (
               <p role="alert" className="text-minimo text-peligro">
                 {errores.ubicacion}

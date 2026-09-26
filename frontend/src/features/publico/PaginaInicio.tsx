@@ -16,7 +16,12 @@ export default function PaginaInicio() {
   return (
     <>
       <Hero animales={datos} cargando={cargando} />
-      <MapaVecinos animales={datos} cargando={cargando} hayError={error !== null} alReintentar={recargar} />
+      <MapaVecinos
+        animales={datos}
+        cargando={cargando}
+        hayError={error !== null}
+        alReintentar={recargar}
+      />
       <ComoFunciona />
       <LlamadoQr />
     </>

@@ -68,8 +68,7 @@ export function Hero({ animales, cargando }: HeroProps) {
       aria-labelledby="titulo-hero"
       className="relative overflow-hidden text-white"
       style={{
-        background:
-          'linear-gradient(235deg, #719d15 0%, #5f8910 25%, #55711f 55%, #45591a 100%)',
+        background: 'linear-gradient(235deg, #719d15 0%, #5f8910 25%, #55711f 55%, #45591a 100%)',
       }}
     >
       <CurvasDeNivel />
@@ -79,19 +78,26 @@ export function Hero({ animales, cargando }: HeroProps) {
             Conoce a los animales que cuidamos en Santa Fe
           </h1>
           <p className="mt-4 text-h5 font-normal text-white">
-            Cada Vecino Buena Pata tiene su ficha con foto, datos de salud y la zona aproximada donde
-            vive. Explora el mapa o escanea el código QR de su collar.
+            Cada Vecino Buena Pata tiene su ficha con foto, datos de salud y la zona aproximada
+            donde vive. Explora el mapa o escanea el código QR de su collar.
           </p>
           <p className="mt-3 text-pequeno text-white" aria-live="polite">
             {cargando ? 'Cargando el mapa…' : resumirMapa(animales ?? [])}
           </p>
           <div className="mt-8 flex flex-wrap gap-3">
-            <a href="#mapa" className={estilosBoton({ variante: 'claro', tamano: 'grande', movilCompleto: true })}>
+            <a
+              href="#mapa"
+              className={estilosBoton({ variante: 'claro', tamano: 'grande', movilCompleto: true })}
+            >
               Explorar el mapa
             </a>
             <Link
               to="/inscribir"
-              className={estilosBoton({ variante: 'contornoClaro', tamano: 'grande', movilCompleto: true })}
+              className={estilosBoton({
+                variante: 'contornoClaro',
+                tamano: 'grande',
+                movilCompleto: true,
+              })}
             >
               Inscribir un animal
             </Link>

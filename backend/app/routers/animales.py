@@ -14,6 +14,7 @@ from app.schemas.historial import EventoHistorialSchema
 from app.schemas.validacion import ValidacionSchema
 from app.schemas.visita import VisitaSchema
 from app.services.inscripcion import inscribir_animal as inscribir_animal_servicio
+from app.services.localidades import localidad_de_punto
 from app.services.notificaciones import procesar_notificaciones, registrar_notificaciones
 
 router = APIRouter(prefix="/animales", tags=["animales"])
@@ -46,6 +47,11 @@ def inscribir_animal(
     db: Session = Depends(get_db),
     usuario: Usuario = Depends(requiere_rol(*_ROLES_INSCRIBEN)),
 ) -> Animal:
+    if localidad_de_punto(datos.latitud, datos.longitud) is None:
+        raise HTTPException(
+            status_code=422,
+            detail="El punto marcado esta fuera de Bogota. Marca un lugar dentro de la ciudad.",
+        )
     animal = inscribir_animal_servicio(db, datos=datos.model_dump(), inscrito_por=usuario.username)
     try:
         ids = registrar_notificaciones(db, animal, None)

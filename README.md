@@ -57,6 +57,22 @@ Cada inscripción genera dos correos: uno a la persona que inscribió (con el ra
 
 Railway bloquea el SMTP saliente en los planes Trial, Free y Hobby, por eso se usa un proveedor por API HTTPS. Si faltan las variables, la notificación queda como fallida con el motivo; una vez configuradas, `python -m app.services.reintentar_notificaciones` reenvía las pendientes.
 
+## Localidades de Bogotá
+
+Todos los mapas dibujan las 20 localidades y cada animal guarda la suya (`animal.localidad`), calculada con sus coordenadas al inscribirlo. Los datos salen del archivo `Localidades Bogota.kmz`, que se convierte en dos GeoJSON:
+
+- `backend/app/data/localidades.geojson`: precisión completa, para calcular la localidad de cada animal.
+- `frontend/src/geo/localidades.geojson`: simplificado (unos 100 KB), para dibujar.
+
+Para regenerarlos, con el KMZ en la raíz del repositorio:
+
+```bash
+pip install -e "backend[geo]"
+python scripts/kmz_a_geojson.py "Localidades Bogota.kmz"
+```
+
+En lo público solo se muestra el nombre de la localidad, nunca el punto exacto.
+
 ## Pruebas
 
 Frontend:

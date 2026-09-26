@@ -34,6 +34,7 @@ class AnimalSchema(BaseModel):
     esterilizado: bool
     numero_microchip: str | None
     barrio: str
+    localidad: str | None = None
     latitud: float
     longitud: float
     comunidad_id: int

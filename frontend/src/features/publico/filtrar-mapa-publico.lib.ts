@@ -8,11 +8,7 @@ export interface CriteriosFiltroMapaPublico {
 }
 
 function normalizar(texto: string): string {
-  return texto
-    .normalize('NFD')
-    .replace(/[̀-ͯ]/g, '')
-    .toLowerCase()
-    .trim();
+  return texto.normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase().trim();
 }
 
 export function filtrarMapaPublico(

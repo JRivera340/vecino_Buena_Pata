@@ -47,7 +47,9 @@ describe('PaginaFicha', () => {
     montar('/vbp/2');
 
     expect(await screen.findByRole('heading', { level: 1, name: 'Lulú' })).toBeInTheDocument();
-    expect(screen.getByText('Perro hembra de tamaño pequeño, del barrio Teusaquillo.')).toBeInTheDocument();
+    expect(
+      screen.getByText('Perro hembra de tamaño pequeño, del barrio Teusaquillo.'),
+    ).toBeInTheDocument();
     expect(screen.getByText('Sociable y tranquila.')).toBeInTheDocument();
     expect(screen.getByText('4 años')).toBeInTheDocument();
     expect(screen.getByText('25 de septiembre de 2026')).toBeInTheDocument();
@@ -60,9 +62,9 @@ describe('PaginaFicha', () => {
     hojaMock.mockResolvedValue(HOJA);
     montar('/vbp/2');
 
-    const seccion = (await screen.findByRole('heading', { name: 'Última visita de seguimiento' })).closest(
-      'section',
-    ) as HTMLElement;
+    const seccion = (
+      await screen.findByRole('heading', { name: 'Última visita de seguimiento' })
+    ).closest('section') as HTMLElement;
 
     expect(within(seccion).getByText('20 de septiembre de 2026')).toBeInTheDocument();
     expect(within(seccion).getByText('Buena')).toBeInTheDocument();
@@ -87,7 +89,9 @@ describe('PaginaFicha', () => {
     expect(screen.getByText('Sin dato')).toBeInTheDocument();
     expect(screen.getByText('Sin esterilizar')).toBeInTheDocument();
     expect(screen.getByText('Sin microchip')).toBeInTheDocument();
-    expect(screen.getByText('Todavía no tiene visitas de seguimiento registradas.')).toBeInTheDocument();
+    expect(
+      screen.getByText('Todavía no tiene visitas de seguimiento registradas.'),
+    ).toBeInTheDocument();
     expect(document.body).not.toHaveTextContent('null');
     expect(document.body).not.toHaveTextContent('undefined');
   });
@@ -116,14 +120,18 @@ describe('PaginaFicha', () => {
     hojaMock.mockRejectedValue(new ErrorApi(404, 'Animal no disponible.'));
     montar('/vbp/9999');
 
-    expect(await screen.findByRole('heading', { name: 'Este animal no está disponible' })).toBeInTheDocument();
+    expect(
+      await screen.findByRole('heading', { name: 'Este animal no está disponible' }),
+    ).toBeInTheDocument();
     expect(screen.getByRole('link', { name: 'Volver al mapa' })).toHaveAttribute('href', '/');
   });
 
   it('no consulta el servidor si el identificador no es un número válido', async () => {
     montar('/vbp/abc');
 
-    expect(await screen.findByRole('heading', { name: 'Este animal no está disponible' })).toBeInTheDocument();
+    expect(
+      await screen.findByRole('heading', { name: 'Este animal no está disponible' }),
+    ).toBeInTheDocument();
     expect(hojaMock).not.toHaveBeenCalled();
   });
 
