@@ -65,7 +65,7 @@ export default function PaginaIngreso() {
         <div className="hidden flex-col justify-end gap-3 bg-verde-profundo p-10 text-white lg:flex">
           <h2 className="text-h2 text-white">Ingreso del personal</h2>
           <p className="max-w-[34ch] text-white">
-            Aquí trabajan las comunidades, los veterinarios, los líderes y la unidad especial del
+            Aquí trabajan las comunidades, los veterinarios, los líderes y los administradores del
             programa. Si buscas a un animal, el mapa público está abierto para todos.
           </p>
         </div>

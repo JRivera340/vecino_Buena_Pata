@@ -45,7 +45,7 @@ def test_crear_reporte_y_atencion(db_session):
 
     atencion = AtencionEspecial(
         reporte_id=reporte.id,
-        responsable="unidad.especial",
+        responsable="dr.rojas",
         acciones_realizadas="Se llevo alimento y se reviso al animal",
         resultado="El animal volvio a comer con normalidad",
     )
@@ -53,4 +53,4 @@ def test_crear_reporte_y_atencion(db_session):
     db_session.commit()
 
     guardada = db_session.query(AtencionEspecial).filter_by(reporte_id=reporte.id).one()
-    assert guardada.responsable == "unidad.especial"
+    assert guardada.responsable == "dr.rojas"

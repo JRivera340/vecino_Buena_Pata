@@ -29,10 +29,6 @@ describe('enlacesGestion', () => {
     expect(rutas('COMUNIDAD')).toEqual(['/mapa', '/animales/inscribir', '/reportes', '/indicadores']);
   });
 
-  it('no deja inscribir a UNIDAD_ESPECIAL', () => {
-    expect(rutas('UNIDAD_ESPECIAL')).toEqual(['/mapa', '/reportes', '/indicadores']);
-  });
-
   it('nombra cada enlace en español claro', () => {
     const textos = enlacesGestion('ADMIN').map((enlace) => enlace.texto);
     expect(textos).toEqual(['Mapa', 'Inscribir', 'Validar', 'Formalizar', 'Reportes', 'Indicadores', 'Usuarios']);

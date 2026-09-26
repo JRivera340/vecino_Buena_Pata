@@ -121,10 +121,8 @@ def test_inscribir_con_una_especie_desconocida_devuelve_422(db_session):
     assert respuesta.status_code == 422
 
 
-def test_unidad_especial_no_puede_inscribir_animal(db_session):
-    token = _token_para(db_session, "unidad.especial", RolUsuarioEnum.UNIDAD_ESPECIAL)
+def test_sin_sesion_no_se_puede_inscribir_por_el_endpoint_interno(db_session):
     comunidad_id = _crear_comunidad(db_session)
-    encabezados = {"Authorization": f"Bearer {token}"}
 
     respuesta = client.post(
         "/api/v1/animales",
@@ -137,9 +135,9 @@ def test_unidad_especial_no_puede_inscribir_animal(db_session):
             "longitud": -74.1,
             "comunidad_id": comunidad_id,
         },
-        headers=encabezados,
     )
-    assert respuesta.status_code == 403
+
+    assert respuesta.status_code == 401
 
 
 def test_listar_y_obtener_animal(db_session):

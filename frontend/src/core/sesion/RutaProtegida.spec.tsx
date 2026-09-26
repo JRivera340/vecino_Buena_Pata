@@ -51,7 +51,7 @@ describe('RutaProtegida', () => {
   });
 
   it('deja pasar a cualquier sesión cuando no se piden roles', () => {
-    useSesion.getState().iniciar({ token: 't', rol: 'UNIDAD_ESPECIAL', nombre: 'Unidad' });
+    useSesion.getState().iniciar({ token: 't', rol: 'LIDER', nombre: 'Lider' });
 
     montar('/validacion');
 

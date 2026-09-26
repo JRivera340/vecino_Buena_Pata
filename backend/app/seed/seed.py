@@ -62,7 +62,6 @@ _USUARIOS = [
     dict(nombre="Maria Comunidad", rol=RolUsuarioEnum.COMUNIDAD, username="maria.comunidad"),
     dict(nombre="Dr. Rojas", rol=RolUsuarioEnum.VETERINARIO, username="dr.rojas"),
     dict(nombre="Lider de Campo", rol=RolUsuarioEnum.LIDER, username="lider.campo"),
-    dict(nombre="Unidad Especial", rol=RolUsuarioEnum.UNIDAD_ESPECIAL, username="unidad.especial"),
     dict(nombre="Administrador", rol=RolUsuarioEnum.ADMIN, username="admin"),
 ]
 
@@ -359,7 +358,7 @@ def ejecutar_seed() -> None:
             AtencionEspecial(
                 reporte_id=reporte_cerrado.id,
                 fecha=_ahora_menos(8),
-                responsable="unidad.especial",
+                responsable="dr.rojas",
                 acciones_realizadas="Se llevo alimento reforzado y se reviso su estado general.",
                 resultado="El animal recupero el apetito y su comportamiento normal.",
             )

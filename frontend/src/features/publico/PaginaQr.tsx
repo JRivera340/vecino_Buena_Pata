@@ -66,7 +66,7 @@ function FormularioReporte({ codigo, animal }: { codigo: string; animal: string 
   if (enviado) {
     return (
       <Alerta tipo="exito" titulo="Gracias, recibimos tu reporte">
-        La unidad especial lo va a revisar y se pondrá en contacto con quien cuida a {animal}.
+        El equipo del programa lo va a revisar y se pondrá en contacto con quien cuida a {animal}.
       </Alerta>
     );
   }

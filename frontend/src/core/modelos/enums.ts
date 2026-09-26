@@ -3,7 +3,7 @@ export type Especie = 'PERRO' | 'GATO';
 export type TipoComunidad = 'ACCION_COMUNAL' | 'PROTECCION_ANIMAL' | 'EDUCATIVA' | 'UNIVERSIDAD';
 export type Sexo = 'MACHO' | 'HEMBRA';
 export type Tamano = 'PEQUENO' | 'MEDIANO' | 'GRANDE';
-export type RolUsuario = 'COMUNIDAD' | 'VETERINARIO' | 'LIDER' | 'UNIDAD_ESPECIAL' | 'ADMIN';
+export type RolUsuario = 'COMUNIDAD' | 'VETERINARIO' | 'LIDER' | 'ADMIN';
 export type CausalSalida = 'ADOPCION' | 'PERDIDA' | 'FALLECIMIENTO';
 
 export type VeredictoValidacion = 'APROBADO' | 'CON_PENDIENTES';

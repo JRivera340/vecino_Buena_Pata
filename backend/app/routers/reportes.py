@@ -23,7 +23,7 @@ def crear_atencion(
     reporte_id: int,
     datos: AtencionCrear,
     db: Session = Depends(get_db),
-    usuario: Usuario = Depends(requiere_rol(RolUsuarioEnum.UNIDAD_ESPECIAL, RolUsuarioEnum.ADMIN)),
+    usuario: Usuario = Depends(requiere_rol(RolUsuarioEnum.VETERINARIO, RolUsuarioEnum.ADMIN)),
 ) -> AtencionEspecial:
     try:
         return registrar_atencion(

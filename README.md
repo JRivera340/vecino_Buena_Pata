@@ -23,7 +23,7 @@ docker compose exec backend python -m app.seed.cargar_demo
 - Aplicación: `http://localhost:4200`
 - API: `http://localhost:8000` (documentación en `/docs`)
 
-Usuarios de prueba, todos con la contraseña `vbp2026`: `maria.comunidad`, `dr.rojas`, `lider.campo`, `unidad.especial` y `admin`.
+Usuarios de prueba, todos con la contraseña `vbp2026`: `maria.comunidad`, `dr.rojas`, `lider.campo` y `admin`.
 
 Sin Docker, el frontend se levanta con `cd frontend && npm install && npm run dev` y apunta por defecto a la API en `http://localhost:8000`.
 

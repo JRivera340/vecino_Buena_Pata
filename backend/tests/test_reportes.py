@@ -60,8 +60,8 @@ def test_listar_reportes(db_session):
     assert respuesta.json()[0]["estado"] == "NUEVO"
 
 
-def test_unidad_especial_registra_atencion_y_cierra_reporte(db_session):
-    token = _token(db_session, "unidad.especial", RolUsuarioEnum.UNIDAD_ESPECIAL)
+def test_veterinario_registra_atencion_y_cierra_reporte(db_session):
+    token = _token(db_session, "dr.rojas", RolUsuarioEnum.VETERINARIO)
     reporte_id = _crear_reporte(db_session)
 
     respuesta = client.post(
@@ -76,7 +76,7 @@ def test_unidad_especial_registra_atencion_y_cierra_reporte(db_session):
 
 
 def test_atender_reporte_ya_cerrado_devuelve_409(db_session):
-    token = _token(db_session, "unidad.especial", RolUsuarioEnum.UNIDAD_ESPECIAL)
+    token = _token(db_session, "dr.rojas", RolUsuarioEnum.VETERINARIO)
     reporte_id = _crear_reporte(db_session)
     client.post(
         f"/api/v1/reportes/{reporte_id}/atencion",
@@ -94,7 +94,6 @@ def test_atender_reporte_ya_cerrado_devuelve_409(db_session):
 
 def test_atencion_queda_registrada_en_historial_del_animal(db_session):
     token_vet = _token(db_session, "dr.rojas", RolUsuarioEnum.VETERINARIO)
-    token_unidad = _token(db_session, "unidad.especial", RolUsuarioEnum.UNIDAD_ESPECIAL)
 
     comunidad = Comunidad(
         nombre="Patitas del Sur",
@@ -128,7 +127,7 @@ def test_atencion_queda_registrada_en_historial_del_animal(db_session):
     respuesta = client.post(
         f"/api/v1/reportes/{reporte.id}/atencion",
         json={"acciones_realizadas": "Visita de verificacion.", "resultado": "Todo en orden."},
-        headers={"Authorization": f"Bearer {token_unidad}"},
+        headers={"Authorization": f"Bearer {token_vet}"},
     )
     assert respuesta.status_code == 201
 
@@ -150,3 +149,23 @@ def test_comunidad_no_puede_registrar_atencion(db_session):
         headers={"Authorization": f"Bearer {token}"},
     )
     assert respuesta.status_code == 403
+
+
+def test_solo_veterinario_y_admin_atienden_reportes(db_session):
+    reporte_id = _crear_reporte(db_session)
+    for rol in (RolUsuarioEnum.COMUNIDAD, RolUsuarioEnum.LIDER):
+        token = _token(db_session, f"usuario.{rol.value.lower()}", rol)
+        respuesta = client.post(
+            f"/api/v1/reportes/{reporte_id}/atencion",
+            json={"acciones_realizadas": "Intento.", "resultado": "N/A"},
+            headers={"Authorization": f"Bearer {token}"},
+        )
+        assert respuesta.status_code == 403
+
+    token_admin = _token(db_session, "admin", RolUsuarioEnum.ADMIN)
+    respuesta = client.post(
+        f"/api/v1/reportes/{reporte_id}/atencion",
+        json={"acciones_realizadas": "Visita.", "resultado": "Resuelto."},
+        headers={"Authorization": f"Bearer {token_admin}"},
+    )
+    assert respuesta.status_code == 201

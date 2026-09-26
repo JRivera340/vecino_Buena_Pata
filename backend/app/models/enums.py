@@ -43,7 +43,6 @@ class RolUsuarioEnum(str, enum.Enum):
     COMUNIDAD = "COMUNIDAD"
     VETERINARIO = "VETERINARIO"
     LIDER = "LIDER"
-    UNIDAD_ESPECIAL = "UNIDAD_ESPECIAL"
     ADMIN = "ADMIN"
 
 
