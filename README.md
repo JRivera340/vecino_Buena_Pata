@@ -64,11 +64,11 @@ Todos los mapas dibujan las 20 localidades y cada animal guarda la suya (`animal
 - `backend/app/data/localidades.geojson`: precisión completa, para calcular la localidad de cada animal.
 - `frontend/src/geo/localidades.geojson`: simplificado (unos 100 KB), para dibujar.
 
-Para regenerarlos, con el KMZ en la raíz del repositorio:
+Para regenerarlos, con el KMZ ya versionado en `scripts/datos/`:
 
 ```bash
 pip install -e "backend[geo]"
-python scripts/kmz_a_geojson.py "Localidades Bogota.kmz"
+python scripts/kmz_a_geojson.py scripts/datos/localidades-bogota.kmz
 ```
 
 En lo público solo se muestra el nombre de la localidad, nunca el punto exacto.

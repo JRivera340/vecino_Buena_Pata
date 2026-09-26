@@ -2,7 +2,7 @@
 
 Uso (desde la raiz del repositorio, con shapely instalado: pip install -e "backend[geo]"):
 
-    python scripts/kmz_a_geojson.py "Localidades Bogota.kmz"
+    python scripts/kmz_a_geojson.py scripts/datos/localidades-bogota.kmz
 
 Genera:
   - backend/app/data/localidades.geojson   precision completa, para calcular la localidad de cada animal.
