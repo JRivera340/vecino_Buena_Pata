@@ -13,6 +13,7 @@ export interface Animal {
   esterilizado: boolean;
   numero_microchip: string | null;
   barrio: string;
+  localidad?: string | null;
   latitud: number;
   longitud: number;
   comunidad_id: number;

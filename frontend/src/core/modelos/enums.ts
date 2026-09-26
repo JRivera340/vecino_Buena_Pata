@@ -1,4 +1,5 @@
-export type EstadoAnimal = 'CANDIDATO' | 'EN_PROCESO' | 'VBP_ACTIVO' | 'ADOPTADO' | 'PERDIDO' | 'FALLECIDO';
+export type EstadoAnimal =
+  'CANDIDATO' | 'EN_PROCESO' | 'VBP_ACTIVO' | 'ADOPTADO' | 'PERDIDO' | 'FALLECIDO';
 export type Especie = 'PERRO' | 'GATO';
 export type TipoComunidad = 'ACCION_COMUNAL' | 'PROTECCION_ANIMAL' | 'EDUCATIVA' | 'UNIVERSIDAD';
 export type Sexo = 'MACHO' | 'HEMBRA';

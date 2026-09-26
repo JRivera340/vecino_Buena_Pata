@@ -1,13 +1,13 @@
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 import { Maximize2 } from 'lucide-react';
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
 import type { EstadoVisualResultado } from '@/shared/estado-visual/estado-visual.lib';
 import { cx } from '@/shared/ui/clases';
 import { crearCapaLocalidades, type CapaLocalidades } from './capa-localidades';
 import { cargarLocalidades } from './cargar-localidades';
 import { ControlLocalidades } from './ControlLocalidades';
-import { crearIconoMarcador } from './icono-marcador';
+import { crearIconoMarcador, crearIconoUbicacion } from './icono-marcador';
 import {
   buscarLocalidad,
   cajaDe,
@@ -25,6 +25,8 @@ export interface MarcadorMapa {
   lng: number;
   visual: EstadoVisualResultado;
   etiqueta: string;
+  // Localidad del animal: al elegirlo, el mapa la resalta.
+  localidad?: string | null;
 }
 
 export interface UbicacionSeleccionada {
@@ -50,20 +52,21 @@ interface MapaTerritorioProps {
   textoCartelLocalidad?: (nombre: string) => string;
   colorLocalidad?: (nombre: string) => string | null;
   alHacerClicEnMarcador?: (id: number) => void;
+  // Escape o un clic en un espacio vacío: quien usa el mapa suelta el animal elegido.
+  alDeseleccionarMarcador?: () => void;
   alSeleccionarUbicacion?: (ubicacion: UbicacionSeleccionada) => void;
+  // Panel con el detalle de lo elegido: lateral en escritorio y hoja inferior en móvil.
+  panel?: ReactNode;
 }
 
 const CENTRO_POR_DEFECTO: [number, number] = [4.6097, -74.0817];
 const ZOOM_AL_MARCAR = 16;
+const ZOOM_AL_ELEGIR_ANIMAL = 15;
+const ANCHO_PANEL_ESCRITORIO = 340;
 
-const ICONO_SELECCION = L.divIcon({
-  html:
-    '<svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 28 28">' +
-    '<circle cx="14" cy="14" r="10" fill="#55711f" stroke="#ffffff" stroke-width="2.5"/></svg>',
-  className: 'marcador-vbp',
-  iconSize: [28, 28],
-  iconAnchor: [14, 14],
-});
+function hayPanelLateral(): boolean {
+  return window.matchMedia?.('(min-width: 1024px)').matches === true;
+}
 
 export function MapaTerritorio({
   marcadores = [],
@@ -80,7 +83,9 @@ export function MapaTerritorio({
   textoCartelLocalidad,
   colorLocalidad,
   alHacerClicEnMarcador,
+  alDeseleccionarMarcador,
   alSeleccionarUbicacion,
+  panel,
 }: MapaTerritorioProps) {
   const envoltura = useRef<HTMLDivElement>(null);
   const contenedor = useRef<HTMLDivElement>(null);
@@ -91,41 +96,76 @@ export function MapaTerritorio({
   const ultimaClave = useRef('');
   const pila = useRef(new PilaDeVistas());
   const alClic = useRef(alHacerClicEnMarcador);
+  const alSoltarMarcador = useRef(alDeseleccionarMarcador);
   const alUbicar = useRef(alSeleccionarUbicacion);
   const alElegirLocalidad = useRef(alSeleccionarLocalidad);
   const textoCartel = useRef(textoCartelLocalidad);
   const colorPorLocalidad = useRef(colorLocalidad);
+  const conPanel = useRef(Boolean(panel));
 
   const [coleccion, setColeccion] = useState<ColeccionLocalidades | null>(null);
   const [verLocalidades, setVerLocalidades] = useState(mostrarLocalidades);
   const [interna, setInterna] = useState<string | null>(null);
   const elegida = localidadSeleccionada !== undefined ? localidadSeleccionada : interna;
   const elegidaRef = useRef<string | null>(elegida);
+  const seleccionadoRef = useRef<number | null>(seleccionadoId);
   const coleccionRef = useRef<ColeccionLocalidades | null>(null);
-  // Cuando la elección viene de marcar un punto, el mapa ya vuela al punto y no debe volar a la localidad.
+  // Cuando la elección viene de marcar un punto o de elegir un animal, el mapa ya vuela hacia allá
+  // y no debe volar además a los límites de la localidad.
   const omitirVuelo = useRef(false);
   const elegidaVolada = useRef<string | null>(null);
+  const localidadPorAnimal = useRef(false);
+  const animalVolado = useRef<number | null>(null);
 
   useEffect(() => {
     alClic.current = alHacerClicEnMarcador;
+    alSoltarMarcador.current = alDeseleccionarMarcador;
     alUbicar.current = alSeleccionarUbicacion;
     alElegirLocalidad.current = alSeleccionarLocalidad;
     textoCartel.current = textoCartelLocalidad;
     colorPorLocalidad.current = colorLocalidad;
     elegidaRef.current = elegida;
+    seleccionadoRef.current = seleccionadoId;
+    conPanel.current = Boolean(panel);
   }, [
     alHacerClicEnMarcador,
+    alDeseleccionarMarcador,
     alSeleccionarUbicacion,
     alSeleccionarLocalidad,
     textoCartelLocalidad,
     colorLocalidad,
     elegida,
+    seleccionadoId,
+    panel,
   ]);
 
   const elegirLocalidad = useCallback((nombre: string | null) => {
     setInterna(nombre);
     alElegirLocalidad.current?.(nombre);
   }, []);
+
+  const guardarOrigen = useCallback((instancia: L.Map) => {
+    if (pila.current.tamano === 0) {
+      pila.current.empujar(vistaActual(instancia));
+    }
+  }, []);
+
+  const restaurarOrigen = useCallback((instancia: L.Map) => {
+    const previa = pila.current.sacar();
+    pila.current.limpiar();
+    if (previa) {
+      volarAVista(instancia, previa);
+    }
+  }, []);
+
+  // Suelta lo que haya elegido: primero el animal (que arrastra su localidad) y si no, la localidad.
+  const soltarTodo = useCallback(() => {
+    if (seleccionadoRef.current !== null) {
+      alSoltarMarcador.current?.();
+    } else if (elegidaRef.current !== null) {
+      elegirLocalidad(null);
+    }
+  }, [elegirLocalidad]);
 
   useEffect(() => {
     if (!contenedor.current) {
@@ -144,17 +184,15 @@ export function MapaTerritorio({
 
     instancia.on('click', (evento: L.LeafletMouseEvent) => {
       if (!seleccionable) {
-        // Un clic en un espacio vacío suelta la localidad elegida.
-        if (elegidaRef.current !== null) {
-          elegirLocalidad(null);
-        }
+        // Un clic en un espacio vacío suelta lo que se haya elegido.
+        soltarTodo();
         return;
       }
       const localidad = coleccionRef.current
         ? localidadDePunto(evento.latlng.lat, evento.latlng.lng, coleccionRef.current)
         : undefined;
       temporal.current?.remove();
-      temporal.current = L.marker(evento.latlng, { icon: ICONO_SELECCION }).addTo(instancia);
+      temporal.current = L.marker(evento.latlng, { icon: crearIconoUbicacion() }).addTo(instancia);
       const nueva = localidad ?? null;
       if (nueva !== elegidaRef.current) {
         omitirVuelo.current = true;
@@ -214,7 +252,10 @@ export function MapaTerritorio({
     }
     const capa = crearCapaLocalidades(instancia, coleccion, {
       interactiva: !seleccionable,
-      alHacerClic: (nombre) => elegirLocalidad(nombre === elegidaRef.current ? null : nombre),
+      alHacerClic: (nombre) => {
+        localidadPorAnimal.current = false;
+        elegirLocalidad(nombre === elegidaRef.current ? null : nombre);
+      },
       textoCartel: (nombre) => textoCartel.current?.(nombre) ?? nombre,
       colorRelleno: (nombre) => colorPorLocalidad.current?.(nombre) ?? null,
     });
@@ -247,21 +288,58 @@ export function MapaTerritorio({
       if (!coleccion) {
         return; // Espera a que carguen las localidades para saber adónde volar.
       }
-      if (elegidaVolada.current === null) {
-        pila.current.empujar(vistaActual(instancia));
-      }
+      guardarOrigen(instancia);
       const feature = buscarLocalidad(coleccion, elegida);
       if (feature) {
         volarALimites(instancia, cajaDe(feature));
       }
-    } else {
-      const previa = pila.current.sacar();
-      if (previa) {
-        volarAVista(instancia, previa);
-      }
+    } else if (seleccionadoRef.current === null) {
+      restaurarOrigen(instancia);
     }
     elegidaVolada.current = elegida;
-  }, [elegida, coleccion, verLocalidades]);
+  }, [elegida, coleccion, verLocalidades, guardarOrigen, restaurarOrigen]);
+
+  // Al elegir un animal: la huellita salta, el mapa vuela hasta él y se resalta su localidad.
+  useEffect(() => {
+    const instancia = mapa.current;
+    if (!instancia || animalVolado.current === seleccionadoId) {
+      return;
+    }
+    if (seleccionadoId !== null) {
+      const animal = marcadores.find((marcador) => marcador.id === seleccionadoId);
+      if (!animal) {
+        return;
+      }
+      animalVolado.current = seleccionadoId;
+      guardarOrigen(instancia);
+      const tamano = instancia.getSize();
+      const desplazamiento: [number, number] = !conPanel.current
+        ? [0, 0]
+        : hayPanelLateral()
+          ? [ANCHO_PANEL_ESCRITORIO / 2, 0]
+          : [0, -tamano.y * 0.225];
+      volarAPunto(instancia, [animal.lat, animal.lng], ZOOM_AL_ELEGIR_ANIMAL, desplazamiento);
+      if (animal.localidad) {
+        if (animal.localidad !== elegidaRef.current) {
+          omitirVuelo.current = true;
+        }
+        localidadPorAnimal.current = true;
+        elegirLocalidad(animal.localidad);
+      }
+      return;
+    }
+    animalVolado.current = null;
+    if (localidadPorAnimal.current) {
+      localidadPorAnimal.current = false;
+      if (elegidaRef.current !== null) {
+        omitirVuelo.current = true;
+        elegirLocalidad(null);
+      }
+      restaurarOrigen(instancia);
+    } else if (elegidaRef.current === null) {
+      restaurarOrigen(instancia);
+    }
+  }, [seleccionadoId, marcadores, elegirLocalidad, guardarOrigen, restaurarOrigen]);
 
   useEffect(() => {
     const grupo = capaMarcadores.current;
@@ -281,7 +359,11 @@ export function MapaTerritorio({
         alt: marcador.etiqueta,
         keyboard: true,
         zIndexOffset: elegido ? 1000 : 0,
-      }).bindPopup(contenido);
+      });
+      if (!panel) {
+        punto.bindPopup(contenido);
+      }
+      punto.on('add', () => punto.getElement()?.setAttribute('aria-label', marcador.etiqueta));
       punto.on('click', () => alClic.current?.(marcador.id));
       grupo.addLayer(punto);
     }
@@ -296,11 +378,11 @@ export function MapaTerritorio({
       );
     }
     ultimaClave.current = clave;
-  }, [marcadores, seleccionadoId, ajustarAMarcadores]);
+  }, [marcadores, seleccionadoId, ajustarAMarcadores, panel]);
 
   const nombres = useMemo(() => (coleccion ? nombresOrdenados(coleccion) : []), [coleccion]);
 
-  // Escape suelta la localidad elegida. Se escucha en el contenedor y no con un atributo de React para
+  // Escape suelta lo elegido. Se escucha en el contenedor y no con un atributo de React para
   // no volver "interactivo" a un elemento que solo agrupa el mapa.
   useEffect(() => {
     const elemento = envoltura.current;
@@ -308,13 +390,13 @@ export function MapaTerritorio({
       return undefined;
     }
     const alTeclear = (evento: globalThis.KeyboardEvent) => {
-      if (evento.key === 'Escape' && elegidaRef.current !== null) {
-        elegirLocalidad(null);
+      if (evento.key === 'Escape') {
+        soltarTodo();
       }
     };
     elemento.addEventListener('keydown', alTeclear);
     return () => elemento.removeEventListener('keydown', alTeclear);
-  }, [elegirLocalidad]);
+  }, [soltarTodo]);
 
   const verTodaBogota = () => {
     if (mapa.current && coleccion) {
@@ -339,7 +421,10 @@ export function MapaTerritorio({
               <ControlLocalidades
                 nombres={nombres}
                 seleccionada={elegida}
-                alElegir={elegirLocalidad}
+                alElegir={(nombre) => {
+                  localidadPorAnimal.current = false;
+                  elegirLocalidad(nombre);
+                }}
               />
             )}
             <button
@@ -372,6 +457,11 @@ export function MapaTerritorio({
               </button>
             )}
           </div>
+        </div>
+      )}
+      {panel && (
+        <div className="absolute inset-x-0 bottom-0 z-[550] max-h-[45%] overflow-y-auto rounded-t-seccion bg-white shadow-fuerte lg:inset-x-auto lg:bottom-3 lg:left-3 lg:top-[104px] lg:max-h-none lg:w-[340px] lg:rounded-tarjeta">
+          {panel}
         </div>
       )}
     </div>

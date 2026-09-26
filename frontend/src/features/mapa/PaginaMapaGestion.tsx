@@ -8,6 +8,7 @@ import type { Animal } from '@/core/modelos/animal';
 import type { EstadoAnimal } from '@/core/modelos/enums';
 import { estadoVisual } from '@/shared/estado-visual/estado-visual.lib';
 import { MapaTerritorio, type MarcadorMapa } from '@/shared/mapa/MapaTerritorio';
+import { PanelAnimalMapa } from '@/shared/mapa/PanelAnimalMapa';
 import { Campo, Entrada, Opcion, Selector } from '@/shared/ui/Campo';
 import { EncabezadoPagina } from '@/shared/ui/EncabezadoPagina';
 import { ErrorCarga } from '@/shared/ui/ErrorCarga';
@@ -18,7 +19,14 @@ import { Tarjeta } from '@/shared/ui/Tarjeta';
 import { useTitulo } from '@/shared/ui/useTitulo';
 import { filtrarAnimales } from './filtrar-animales.lib';
 
-const ESTADOS: EstadoAnimal[] = ['CANDIDATO', 'EN_PROCESO', 'VBP_ACTIVO', 'ADOPTADO', 'PERDIDO', 'FALLECIDO'];
+const ESTADOS: EstadoAnimal[] = [
+  'CANDIDATO',
+  'EN_PROCESO',
+  'VBP_ACTIVO',
+  'ADOPTADO',
+  'PERDIDO',
+  'FALLECIDO',
+];
 
 export default function PaginaMapaGestion() {
   useTitulo('Mapa de gestión');
@@ -29,6 +37,7 @@ export default function PaginaMapaGestion() {
   const [barrio, setBarrio] = useState('TODOS');
   const [comunidadId, setComunidadId] = useState<number | 'TODOS'>('TODOS');
   const [mostrarSalidos, setMostrarSalidos] = useState(false);
+  const [seleccionadoId, setSeleccionadoId] = useState<number | null>(null);
 
   const lista: Animal[] = useMemo(() => animales.datos ?? [], [animales.datos]);
   const barrios = useMemo(() => [...new Set(lista.map((animal) => animal.barrio))].sort(), [lista]);
@@ -44,9 +53,11 @@ export default function PaginaMapaGestion() {
         lng: animal.longitud,
         visual: estadoVisual(animal.estado),
         etiqueta: `${animal.nombre} - ${estadoVisual(animal.estado).etiqueta}`,
+        localidad: animal.localidad ?? null,
       })),
     [visibles],
   );
+  const elegido = visibles.find((animal) => animal.id === seleccionadoId) ?? null;
 
   return (
     <div className="contenedor py-10">
@@ -62,12 +73,21 @@ export default function PaginaMapaGestion() {
           <aside className="space-y-4" aria-label="Filtros">
             <Campo id="filtro-busqueda" etiqueta="Buscar por nombre">
               {(props) => (
-                <Entrada {...props} type="search" value={busqueda} onChange={(e) => setBusqueda(e.target.value)} />
+                <Entrada
+                  {...props}
+                  type="search"
+                  value={busqueda}
+                  onChange={(e) => setBusqueda(e.target.value)}
+                />
               )}
             </Campo>
             <Campo id="filtro-estado" etiqueta="Estado">
               {(props) => (
-                <Selector {...props} value={estado} onChange={(e) => setEstado(e.target.value as EstadoAnimal | 'TODOS')}>
+                <Selector
+                  {...props}
+                  value={estado}
+                  onChange={(e) => setEstado(e.target.value as EstadoAnimal | 'TODOS')}
+                >
                   <option value="TODOS">Todos</option>
                   {ESTADOS.map((valor) => (
                     <option key={valor} value={valor}>
@@ -94,7 +114,9 @@ export default function PaginaMapaGestion() {
                 <Selector
                   {...props}
                   value={comunidadId}
-                  onChange={(e) => setComunidadId(e.target.value === 'TODOS' ? 'TODOS' : Number(e.target.value))}
+                  onChange={(e) =>
+                    setComunidadId(e.target.value === 'TODOS' ? 'TODOS' : Number(e.target.value))
+                  }
                 >
                   <option value="TODOS">Todas</option>
                   {(comunidades.datos ?? []).map((comunidad) => (
@@ -115,21 +137,41 @@ export default function PaginaMapaGestion() {
           </aside>
 
           <div className="space-y-6">
-            <div className="h-[420px] overflow-hidden rounded-tarjeta border border-black/15 shadow-sutil">
+            <div className="h-[520px] overflow-hidden rounded-tarjeta border border-black/15 shadow-sutil">
               {animales.cargando ? (
                 <Esqueleto className="h-full w-full" />
               ) : (
                 <MapaTerritorio
                   marcadores={marcadores}
                   ajustarAMarcadores
+                  seleccionadoId={seleccionadoId}
+                  alHacerClicEnMarcador={setSeleccionadoId}
+                  alDeseleccionarMarcador={() => setSeleccionadoId(null)}
                   descripcion="Mapa con los animales inscritos"
-                  altura="420px"
+                  altura="520px"
+                  panel={
+                    elegido && (
+                      <PanelAnimalMapa
+                        nombre={elegido.nombre}
+                        especie={elegido.especie}
+                        foto={elegido.foto_principal}
+                        estado={elegido.estado}
+                        localidad={elegido.localidad}
+                        barrio={elegido.barrio}
+                        fechaInscripcion={elegido.fecha_inscripcion}
+                        hrefFicha={`/animales/${elegido.id}`}
+                        alVolver={() => setSeleccionadoId(null)}
+                      />
+                    )
+                  }
                 />
               )}
             </div>
 
             <p className="text-pequeno text-tinta-suave" aria-live="polite">
-              {animales.cargando ? 'Cargando animales...' : `${visibles.length} de ${lista.length} animales`}
+              {animales.cargando
+                ? 'Cargando animales...'
+                : `${visibles.length} de ${lista.length} animales`}
             </p>
 
             {!animales.cargando && visibles.length === 0 ? (
@@ -149,7 +191,9 @@ export default function PaginaMapaGestion() {
                           className="h-20 w-20 shrink-0 rounded"
                         />
                         <div className="min-w-0 space-y-1">
-                          <p className="truncate text-h6 font-semibold text-tinta">{animal.nombre}</p>
+                          <p className="truncate text-h6 font-semibold text-tinta">
+                            {animal.nombre}
+                          </p>
                           <p className="text-minimo text-tinta-suave">
                             {etiquetaEspecie(animal.especie)} en {animal.barrio}
                           </p>

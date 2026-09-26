@@ -6,6 +6,7 @@ export interface AnimalMapaPublico {
   especie: Especie;
   foto_principal: string | null;
   barrio: string;
+  localidad?: string | null;
   latitud: number;
   longitud: number;
 }

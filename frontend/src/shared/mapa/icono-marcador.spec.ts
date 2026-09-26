@@ -2,12 +2,23 @@ import { estadoVisual } from '@/shared/estado-visual/estado-visual.lib';
 import { crearIconoMarcador, htmlMarcador } from './icono-marcador';
 
 describe('htmlMarcador', () => {
-  it('pinta el círculo con el color del estado', () => {
+  it('dibuja una huellita: una almohadilla y cuatro deditos', () => {
+    const html = htmlMarcador(estadoVisual('VBP_ACTIVO'));
+
+    expect(html.match(/<ellipse/g)).toHaveLength(4);
+    expect(html.match(/<path d="M22 22\.5/g)).toHaveLength(1);
+  });
+
+  it('pinta la huellita con el color del estado', () => {
     expect(htmlMarcador(estadoVisual('VBP_ACTIVO'))).toContain('fill="#719d15"');
     expect(htmlMarcador(estadoVisual('PERDIDO'))).toContain('fill="#b02a37"');
   });
 
-  it('incluye el glifo propio de cada estado', () => {
+  it('lleva un borde blanco para separarse del mapa', () => {
+    expect(htmlMarcador(estadoVisual('VBP_ACTIVO'))).toContain('stroke="#ffffff"');
+  });
+
+  it('incluye el glifo propio de cada estado en el distintivo', () => {
     const activo = htmlMarcador(estadoVisual('VBP_ACTIVO'));
     const fallecido = htmlMarcador(estadoVisual('FALLECIDO'));
     expect(activo).not.toEqual(fallecido);
@@ -19,24 +30,23 @@ describe('htmlMarcador', () => {
     expect(htmlMarcador(estadoVisual('VBP_ACTIVO', true))).toContain('stroke="#b02a37"');
   });
 
-  it('agranda el marcador seleccionado y le pone un halo', () => {
+  it('marca la huellita elegida con un halo y un aro que solo animan al aparecer', () => {
     const normal = htmlMarcador(estadoVisual('VBP_ACTIVO'));
-    const elegido = htmlMarcador(estadoVisual('VBP_ACTIVO'), true);
-    expect(normal).toContain('width="36"');
-    expect(elegido).toContain('width="46"');
-    expect(elegido).toContain('stroke-dasharray');
+    const elegida = htmlMarcador(estadoVisual('VBP_ACTIVO'), true);
+
+    expect(normal).not.toContain('huella-elegida');
+    expect(elegida).toContain('huella-elegida');
+    expect(elegida).toContain('huella-aro');
+    expect(elegida).toContain('stroke-dasharray');
   });
 });
 
 describe('crearIconoMarcador', () => {
-  it('centra el ancla del icono', () => {
+  it('usa el área táctil mínima de 44 px y centra el ancla', () => {
     const icono = crearIconoMarcador(estadoVisual('VBP_ACTIVO'));
-    expect(icono.options.iconAnchor).toEqual([18, 18]);
-    expect(icono.options.className).toBe('marcador-vbp');
-  });
 
-  it('usa un ancla mayor para el marcador seleccionado', () => {
-    const icono = crearIconoMarcador(estadoVisual('VBP_ACTIVO'), true);
-    expect(icono.options.iconAnchor).toEqual([23, 23]);
+    expect(icono.options.iconSize).toEqual([44, 44]);
+    expect(icono.options.iconAnchor).toEqual([22, 22]);
+    expect(icono.options.className).toBe('marcador-vbp');
   });
 });

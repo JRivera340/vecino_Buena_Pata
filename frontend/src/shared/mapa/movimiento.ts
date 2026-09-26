@@ -19,7 +19,30 @@ export function volarALimites(mapa: L.Map, caja: CajaGeografica, margen = 24): v
   }
 }
 
-export function volarAPunto(mapa: L.Map, centro: [number, number], zoom: number): void {
+// `desplazamiento` corre el punto respecto al centro del mapa, en píxeles: sirve para que el animal
+// elegido quede a la vista y no debajo del panel de detalle. Con [170, 0] el punto queda 170 px a la
+// derecha del centro; con [0, -100], 100 px por encima.
+export function centroDesplazado(
+  mapa: L.Map,
+  punto: [number, number],
+  zoom: number,
+  desplazamiento: [number, number] = [0, 0],
+): [number, number] {
+  if (desplazamiento[0] === 0 && desplazamiento[1] === 0) {
+    return punto;
+  }
+  const enPixeles = mapa.project(L.latLng(punto), zoom).subtract(L.point(desplazamiento));
+  const centro = mapa.unproject(enPixeles, zoom);
+  return [centro.lat, centro.lng];
+}
+
+export function volarAPunto(
+  mapa: L.Map,
+  punto: [number, number],
+  zoom: number,
+  desplazamiento: [number, number] = [0, 0],
+): void {
+  const centro = centroDesplazado(mapa, punto, zoom, desplazamiento);
   if (prefiereMenosMovimiento()) {
     mapa.setView(centro, zoom, { animate: false });
   } else {

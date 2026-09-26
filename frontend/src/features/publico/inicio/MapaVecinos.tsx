@@ -4,6 +4,7 @@ import type { Especie } from '@/core/modelos/enums';
 import type { AnimalMapaPublico } from '@/core/modelos/publico';
 import { estadoVisual } from '@/shared/estado-visual/estado-visual.lib';
 import { MapaTerritorio, type MarcadorMapa } from '@/shared/mapa/MapaTerritorio';
+import { PanelAnimalMapa } from '@/shared/mapa/PanelAnimalMapa';
 import { Alerta } from '@/shared/ui/Alerta';
 import { Boton } from '@/shared/ui/Boton';
 import { Campo, Entrada, Selector } from '@/shared/ui/Campo';
@@ -47,10 +48,12 @@ export function MapaVecinos({ animales, cargando, hayError, alReintentar }: Prop
         lng: animal.longitud,
         etiqueta: animal.nombre,
         visual,
+        localidad: animal.localidad ?? null,
       })),
     );
   }, [filtrados]);
 
+  const elegido = filtrados.find((animal) => animal.id === seleccionadoId) ?? null;
   const hayFiltros = busqueda.trim() !== '' || especie !== 'TODAS' || barrio !== 'TODOS';
 
   function limpiarFiltros() {
@@ -196,6 +199,21 @@ export function MapaVecinos({ animales, cargando, hayError, alReintentar }: Prop
               altura="min(72vh, 640px)"
               descripcion="Mapa con la ubicación aproximada de los Vecinos Buena Pata activos"
               alHacerClicEnMarcador={setSeleccionadoId}
+              alDeseleccionarMarcador={() => setSeleccionadoId(null)}
+              panel={
+                elegido && (
+                  <PanelAnimalMapa
+                    nombre={elegido.nombre}
+                    especie={elegido.especie}
+                    foto={elegido.foto_principal}
+                    estado="VBP_ACTIVO"
+                    localidad={elegido.localidad}
+                    barrio={elegido.barrio}
+                    hrefFicha={`/vbp/${elegido.id}`}
+                    alVolver={() => setSeleccionadoId(null)}
+                  />
+                )
+              }
             />
           </div>
           <p className="mt-3 max-w-[70ch] text-pequeno text-tinta-suave">
