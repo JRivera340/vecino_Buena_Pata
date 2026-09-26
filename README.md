@@ -44,6 +44,19 @@ Para guardar las fotos en un bucket de R2, el backend necesita estas variables:
 
 El bucket debe tener acceso público (dominio propio o `r2.dev`), y esa URL es la que va en el argumento `MEDIA_BASE_URL` al construir el frontend.
 
+## Correos de confirmación
+
+Cada inscripción genera dos correos: uno a la persona que inscribió (con el radicado) y otro al equipo de IDPYBA con el enlace a la ficha interna. Se envían en segundo plano y cada intento queda en la tabla `notificacion`, así que un fallo del proveedor nunca tumba la inscripción. Un animal inscrito por el personal solo genera el aviso a IDPYBA.
+
+| Variable | Qué es |
+|---|---|
+| `MAIL_PROVIDER` | `resend` (por defecto) |
+| `MAIL_API_KEY` | Clave de API del proveedor |
+| `MAIL_FROM` | Remitente verificado, por ejemplo `Vecino Buena Pata <no-responder@midominio.com>` |
+| `NOTIFY_IDPYBA_EMAIL` | Correo que recibe el aviso de cada animal nuevo |
+
+Railway bloquea el SMTP saliente en los planes Trial, Free y Hobby, por eso se usa un proveedor por API HTTPS. Si faltan las variables, la notificación queda como fallida con el motivo; una vez configuradas, `python -m app.services.reintentar_notificaciones` reenvía las pendientes.
+
 ## Pruebas
 
 Frontend:

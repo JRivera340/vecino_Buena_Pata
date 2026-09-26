@@ -4,6 +4,7 @@ from app.models.collar_qr import CollarQr
 from app.models.comunidad import Comunidad
 from app.models.evento_historial import EventoHistorial
 from app.models.limite_peticion import LimitePeticion
+from app.models.notificacion import Notificacion
 from app.models.persona import Persona
 from app.models.reporte_novedad import ReporteNovedad
 from app.models.usuario import Usuario
@@ -17,6 +18,7 @@ __all__ = [
     "Comunidad",
     "EventoHistorial",
     "LimitePeticion",
+    "Notificacion",
     "Persona",
     "ReporteNovedad",
     "Usuario",

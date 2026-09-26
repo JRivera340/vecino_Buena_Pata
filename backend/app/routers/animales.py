@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi import APIRouter, BackgroundTasks, Depends, HTTPException, status
 from sqlalchemy.orm import Session
 
 from app.core.db import get_db
@@ -14,6 +14,7 @@ from app.schemas.historial import EventoHistorialSchema
 from app.schemas.validacion import ValidacionSchema
 from app.schemas.visita import VisitaSchema
 from app.services.inscripcion import inscribir_animal as inscribir_animal_servicio
+from app.services.notificaciones import procesar_notificaciones, registrar_notificaciones
 
 router = APIRouter(prefix="/animales", tags=["animales"])
 
@@ -41,10 +42,19 @@ def obtener_animal(animal_id: int, db: Session = Depends(get_db), _=Depends(get_
 @router.post("", response_model=AnimalSchema, status_code=201)
 def inscribir_animal(
     datos: AnimalCrear,
+    tareas: BackgroundTasks,
     db: Session = Depends(get_db),
     usuario: Usuario = Depends(requiere_rol(*_ROLES_INSCRIBEN)),
 ) -> Animal:
-    return inscribir_animal_servicio(db, datos=datos.model_dump(), inscrito_por=usuario.username)
+    animal = inscribir_animal_servicio(db, datos=datos.model_dump(), inscrito_por=usuario.username)
+    try:
+        ids = registrar_notificaciones(db, animal, None)
+    except Exception:  # noqa: BLE001 - anotar el correo no debe tumbar la inscripcion
+        db.rollback()
+        ids = []
+    if ids:
+        tareas.add_task(procesar_notificaciones, ids)
+    return animal
 
 
 @router.get("/{animal_id}/historial", response_model=list[EventoHistorialSchema])

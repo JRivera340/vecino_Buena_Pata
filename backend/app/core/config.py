@@ -17,6 +17,10 @@ class Settings(BaseSettings):
     cors_origins: list[str] | None = None
     limite_verificar_por_minuto: int = 10
     limite_inscripciones_por_hora: int = 5
+    mail_provider: str = "resend"
+    mail_api_key: str | None = None
+    mail_from: str | None = None
+    notify_idpyba_email: str | None = None
     r2_endpoint_url: str | None = None
     r2_bucket: str | None = None
     r2_access_key_id: str | None = None
