@@ -10,3 +10,4 @@ export type VeredictoValidacion = 'APROBADO' | 'CON_PENDIENTES';
 export type EstadoSalud = 'BUENO' | 'REGULAR' | 'MALO';
 
 export type EstadoReporte = 'NUEVO' | 'EN_ATENCION' | 'ATENDIDO' | 'CERRADO';
+export type TipoDocumento = 'CC' | 'CE' | 'NIT' | 'OTRO';

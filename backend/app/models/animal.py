@@ -36,3 +36,5 @@ class Animal(Base):
 
     fecha_inscripcion: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
     inscrito_por: Mapped[str] = mapped_column(String(120))
+    persona_id: Mapped[int | None] = mapped_column(ForeignKey("persona.id"), nullable=True)
+    posible_duplicado_de_id: Mapped[int | None] = mapped_column(ForeignKey("animal.id"), nullable=True)

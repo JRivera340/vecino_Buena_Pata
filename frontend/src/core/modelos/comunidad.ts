@@ -9,4 +9,5 @@ export interface Comunidad {
   email_contacto: string;
   activa: boolean;
   fecha_registro: string;
+  lider_id?: number | null;
 }

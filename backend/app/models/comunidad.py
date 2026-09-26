@@ -1,6 +1,6 @@
 from datetime import datetime
 
-from sqlalchemy import Boolean, DateTime, String, func
+from sqlalchemy import Boolean, DateTime, ForeignKey, String, func
 from sqlalchemy.orm import Mapped, mapped_column
 
 from app.core.db import Base
@@ -18,3 +18,4 @@ class Comunidad(Base):
     email_contacto: Mapped[str] = mapped_column(String(160))
     activa: Mapped[bool] = mapped_column(Boolean, default=True)
     fecha_registro: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
+    lider_id: Mapped[int | None] = mapped_column(ForeignKey("usuario.id"), nullable=True)

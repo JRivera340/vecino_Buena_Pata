@@ -8,6 +8,7 @@ export interface EnlaceNavegacion {
 export const ENLACES_PUBLICOS: EnlaceNavegacion[] = [
   { a: '/', texto: 'Inicio' },
   { a: '/#como-funciona', texto: 'Cómo funciona' },
+  { a: '/inscribir', texto: 'Inscribir un animal' },
 ];
 
 export function enlacesGestion(rol: RolUsuario): EnlaceNavegacion[] {
@@ -23,6 +24,9 @@ export function enlacesGestion(rol: RolUsuario): EnlaceNavegacion[] {
     enlaces.push({ a: '/formalizacion', texto: 'Formalizar' });
   }
   enlaces.push({ a: '/reportes', texto: 'Reportes' }, { a: '/indicadores', texto: 'Indicadores' });
+  if (rol === 'ADMIN') {
+    enlaces.push({ a: '/usuarios', texto: 'Usuarios' });
+  }
 
   return enlaces;
 }

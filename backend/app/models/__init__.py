@@ -3,6 +3,8 @@ from app.models.atencion_especial import AtencionEspecial
 from app.models.collar_qr import CollarQr
 from app.models.comunidad import Comunidad
 from app.models.evento_historial import EventoHistorial
+from app.models.limite_peticion import LimitePeticion
+from app.models.persona import Persona
 from app.models.reporte_novedad import ReporteNovedad
 from app.models.usuario import Usuario
 from app.models.validacion import Validacion
@@ -14,6 +16,8 @@ __all__ = [
     "CollarQr",
     "Comunidad",
     "EventoHistorial",
+    "LimitePeticion",
+    "Persona",
     "ReporteNovedad",
     "Usuario",
     "Validacion",

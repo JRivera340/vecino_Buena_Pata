@@ -16,7 +16,14 @@ const PaginaValidacion = lazy(() => import('@/features/validacion/PaginaValidaci
 const PaginaFormalizacion = lazy(() => import('@/features/formalizacion/PaginaFormalizacion'));
 const PaginaReportes = lazy(() => import('@/features/reportes/PaginaReportes'));
 const PaginaIndicadores = lazy(() => import('@/features/indicadores/PaginaIndicadores'));
-const PaginaEstilos = import.meta.env.DEV ? lazy(() => import('@/features/estilos/PaginaEstilos')) : null;
+const PaginaInscribirPublico = lazy(
+  () => import('@/features/publico/inscripcion/PaginaInscribirPublico'),
+);
+const PaginaPoliticaDatos = lazy(() => import('@/features/publico/PaginaPoliticaDatos'));
+const PaginaUsuarios = lazy(() => import('@/features/usuarios/PaginaUsuarios'));
+const PaginaEstilos = import.meta.env.DEV
+  ? lazy(() => import('@/features/estilos/PaginaEstilos'))
+  : null;
 
 export default function App() {
   return (
@@ -28,22 +35,29 @@ export default function App() {
             <Route path="/vbp/:id" element={<PaginaFicha />} />
             <Route path="/v/:codigo" element={<PaginaQr />} />
             <Route path="/ingreso" element={<PaginaIngreso />} />
+            <Route path="/inscribir" element={<PaginaInscribirPublico />} />
+            <Route path="/politica-de-datos" element={<PaginaPoliticaDatos />} />
             <Route element={<RutaProtegida />}>
               <Route path="/mapa" element={<PaginaMapaGestion />} />
               <Route path="/animales/:id" element={<PaginaFichaInterna />} />
               <Route path="/reportes" element={<PaginaReportes />} />
               <Route path="/indicadores" element={<PaginaIndicadores />} />
             </Route>
-            <Route element={<RutaProtegida roles={['COMUNIDAD', 'VETERINARIO', 'LIDER', 'ADMIN']} />}>
+            <Route
+              element={<RutaProtegida roles={['COMUNIDAD', 'VETERINARIO', 'LIDER', 'ADMIN']} />}
+            >
               <Route path="/animales/inscribir" element={<PaginaInscribir />} />
             </Route>
             <Route element={<RutaProtegida roles={['VETERINARIO', 'ADMIN']} />}>
               <Route path="/validacion" element={<PaginaValidacion />} />
             </Route>
+            <Route element={<RutaProtegida roles={['ADMIN']} />}>
+              <Route path="/usuarios" element={<PaginaUsuarios />} />
+            </Route>
             <Route element={<RutaProtegida roles={['LIDER', 'ADMIN']} />}>
               <Route path="/formalizacion" element={<PaginaFormalizacion />} />
             </Route>
-            {PaginaEstilos &&<Route path="/estilos" element={<PaginaEstilos />} />}
+            {PaginaEstilos && <Route path="/estilos" element={<PaginaEstilos />} />}
             <Route path="*" element={<PaginaNoEncontrada />} />
           </Route>
         </Routes>

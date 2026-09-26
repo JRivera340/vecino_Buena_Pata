@@ -11,6 +11,7 @@ describe('enlacesGestion', () => {
       '/formalizacion',
       '/reportes',
       '/indicadores',
+      '/usuarios',
     ]);
   });
 
@@ -34,6 +35,6 @@ describe('enlacesGestion', () => {
 
   it('nombra cada enlace en español claro', () => {
     const textos = enlacesGestion('ADMIN').map((enlace) => enlace.texto);
-    expect(textos).toEqual(['Mapa', 'Inscribir', 'Validar', 'Formalizar', 'Reportes', 'Indicadores']);
+    expect(textos).toEqual(['Mapa', 'Inscribir', 'Validar', 'Formalizar', 'Reportes', 'Indicadores', 'Usuarios']);
   });
 });

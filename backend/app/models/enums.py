@@ -70,3 +70,10 @@ class EstadoReporteEnum(str, enum.Enum):
     EN_ATENCION = "EN_ATENCION"
     ATENDIDO = "ATENDIDO"
     CERRADO = "CERRADO"
+
+
+class TipoDocumentoEnum(str, enum.Enum):
+    CC = "CC"
+    CE = "CE"
+    NIT = "NIT"
+    OTRO = "OTRO"

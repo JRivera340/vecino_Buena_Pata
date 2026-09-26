@@ -89,12 +89,12 @@ export function Hero({ animales, cargando }: HeroProps) {
             <a href="#mapa" className={estilosBoton({ variante: 'claro', tamano: 'grande', movilCompleto: true })}>
               Explorar el mapa
             </a>
-            <a
-              href="#como-funciona"
+            <Link
+              to="/inscribir"
               className={estilosBoton({ variante: 'contornoClaro', tamano: 'grande', movilCompleto: true })}
             >
-              Cómo funciona
-            </a>
+              Inscribir un animal
+            </Link>
           </div>
         </div>
         {destacado && !cargando && <FichaDestacada animal={destacado} />}

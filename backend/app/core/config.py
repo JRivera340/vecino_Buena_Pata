@@ -15,6 +15,8 @@ class Settings(BaseSettings):
     jwt_expire_minutes: int = 480
     frontend_base_url: str = "http://localhost:4200"
     cors_origins: list[str] | None = None
+    limite_verificar_por_minuto: int = 10
+    limite_inscripciones_por_hora: int = 5
     r2_endpoint_url: str | None = None
     r2_bucket: str | None = None
     r2_access_key_id: str | None = None
