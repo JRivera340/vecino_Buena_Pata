@@ -48,6 +48,8 @@ interface MapaTerritorioProps {
   mostrarLocalidades?: boolean;
   // Si se pasa, la localidad elegida la controla quien usa el mapa; si no, el mapa la recuerda solo.
   localidadSeleccionada?: string | null;
+  // Para el modo en que el mapa recuerda solo la elección: con qué localidad arranca.
+  localidadInicial?: string | null;
   alSeleccionarLocalidad?: (nombre: string | null) => void;
   textoCartelLocalidad?: (nombre: string) => string;
   colorLocalidad?: (nombre: string) => string | null;
@@ -79,6 +81,7 @@ export function MapaTerritorio({
   descripcion = 'Mapa de animales del territorio',
   mostrarLocalidades = true,
   localidadSeleccionada,
+  localidadInicial = null,
   alSeleccionarLocalidad,
   textoCartelLocalidad,
   colorLocalidad,
@@ -105,7 +108,7 @@ export function MapaTerritorio({
 
   const [coleccion, setColeccion] = useState<ColeccionLocalidades | null>(null);
   const [verLocalidades, setVerLocalidades] = useState(mostrarLocalidades);
-  const [interna, setInterna] = useState<string | null>(null);
+  const [interna, setInterna] = useState<string | null>(localidadInicial);
   const elegida = localidadSeleccionada !== undefined ? localidadSeleccionada : interna;
   const elegidaRef = useRef<string | null>(elegida);
   const seleccionadoRef = useRef<number | null>(seleccionadoId);
@@ -460,7 +463,7 @@ export function MapaTerritorio({
         </div>
       )}
       {panel && (
-        <div className="absolute inset-x-0 bottom-0 z-[550] max-h-[45%] overflow-y-auto rounded-t-seccion bg-white shadow-fuerte lg:inset-x-auto lg:bottom-3 lg:left-3 lg:top-[104px] lg:max-h-none lg:w-[340px] lg:rounded-tarjeta">
+        <div className="absolute inset-x-2 bottom-6 z-[550] max-h-[45%] overflow-y-auto rounded-tarjeta bg-white shadow-fuerte lg:inset-x-auto lg:bottom-auto lg:left-3 lg:top-[104px] lg:max-h-[calc(100%-116px)] lg:w-[340px] lg:rounded-tarjeta">
           {panel}
         </div>
       )}

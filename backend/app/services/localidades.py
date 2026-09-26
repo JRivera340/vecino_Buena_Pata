@@ -93,3 +93,8 @@ def localidad_de_punto(latitud: float, longitud: float, localidades: list[Locali
         if any(_dentro_del_poligono(longitud, latitud, poligono) for poligono in localidad.poligonos):
             return localidad.nombre
     return None
+
+
+def listar_localidades() -> list[tuple[str, str]]:
+    """(codigo, nombre) de las 20 localidades, en orden de codigo."""
+    return sorted((localidad.codigo, localidad.nombre) for localidad in _localidades())

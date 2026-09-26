@@ -7,7 +7,11 @@ interface EstadoCarga<T> {
 }
 
 export function useCarga<T>(cargar: () => Promise<T>, dependencias: unknown[] = []) {
-  const [estado, setEstado] = useState<EstadoCarga<T>>({ datos: null, cargando: true, error: null });
+  const [estado, setEstado] = useState<EstadoCarga<T>>({
+    datos: null,
+    cargando: true,
+    error: null,
+  });
   const [version, setVersion] = useState(0);
 
   useEffect(() => {

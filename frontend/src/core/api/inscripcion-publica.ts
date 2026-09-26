@@ -6,7 +6,8 @@ import type {
 } from '@/core/modelos/inscripcion';
 import { solicitar } from './cliente';
 
-export const listarComunidadesPublicas = () => solicitar<ComunidadPublica[]>('/publico/comunidades');
+export const listarComunidadesPublicas = () =>
+  solicitar<ComunidadPublica[]>('/publico/comunidades');
 
 export const verificarInscriptor = (datos: DocumentoConsulta) =>
   solicitar<VerificarInscriptorRespuesta>('/publico/inscriptores/verificar', {
@@ -15,4 +16,7 @@ export const verificarInscriptor = (datos: DocumentoConsulta) =>
   });
 
 export const inscribirComoPublico = (formulario: FormData) =>
-  solicitar<InscripcionPublicaRespuesta>('/publico/inscripciones', { metodo: 'POST', cuerpo: formulario });
+  solicitar<InscripcionPublicaRespuesta>('/publico/inscripciones', {
+    metodo: 'POST',
+    cuerpo: formulario,
+  });

@@ -39,7 +39,10 @@ describe('PanelAnimalMapa', () => {
   it('lleva a la hoja de vida indicada', () => {
     abrir({ hrefFicha: '/vbp/11' });
 
-    expect(screen.getByRole('link', { name: 'Ver hoja de vida' })).toHaveAttribute('href', '/vbp/11');
+    expect(screen.getByRole('link', { name: 'Ver hoja de vida' })).toHaveAttribute(
+      'href',
+      '/vbp/11',
+    );
   });
 
   it('omite la localidad y la fecha cuando no se conocen', () => {

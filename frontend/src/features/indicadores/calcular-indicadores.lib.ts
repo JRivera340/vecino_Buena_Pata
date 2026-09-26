@@ -14,7 +14,14 @@ export interface Indicadores {
   conteoPorEstado: ConteoEstado[];
 }
 
-const ORDEN_ESTADOS: EstadoAnimal[] = ['CANDIDATO', 'EN_PROCESO', 'VBP_ACTIVO', 'ADOPTADO', 'PERDIDO', 'FALLECIDO'];
+const ORDEN_ESTADOS: EstadoAnimal[] = [
+  'CANDIDATO',
+  'EN_PROCESO',
+  'VBP_ACTIVO',
+  'ADOPTADO',
+  'PERDIDO',
+  'FALLECIDO',
+];
 
 export function calcularIndicadores(animales: Animal[], reportes: Reporte[]): Indicadores {
   const conteoPorEstado: ConteoEstado[] = ORDEN_ESTADOS.map((estado) => ({

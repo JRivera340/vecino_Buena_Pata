@@ -4,7 +4,12 @@ import { crearAnimal, listarAnimales } from './animales';
 import { iniciarSesion } from './autenticacion';
 import { descargarQr, formalizarAnimal } from './formalizacion';
 import { subirArchivo } from './medios';
-import { crearReportePublico, listarMapa, obtenerAnimalPorCodigo, obtenerHojaVida } from './publico';
+import {
+  crearReportePublico,
+  listarMapa,
+  obtenerAnimalPorCodigo,
+  obtenerHojaVida,
+} from './publico';
 import { listarReportes, registrarAtencion } from './reportes';
 import { crearVisita, reactivarAnimal, registrarSalida } from './seguimiento';
 import { crearValidacion } from './validaciones';
@@ -40,7 +45,12 @@ describe('servicios de la API', () => {
 
   it('iniciarSesion envía el formulario a /auth/login y guarda la sesión', async () => {
     fetchFalso.mockResolvedValue(
-      respuesta({ access_token: 'tk', token_type: 'bearer', rol: 'VETERINARIO', nombre: 'Dr. Rojas' }),
+      respuesta({
+        access_token: 'tk',
+        token_type: 'bearer',
+        rol: 'VETERINARIO',
+        nombre: 'Dr. Rojas',
+      }),
     );
 
     await iniciarSesion('dr.rojas', 'clave');
@@ -75,7 +85,10 @@ describe('servicios de la API', () => {
 
   it('formaliza con POST y descarga el QR como imagen', async () => {
     await formalizarAnimal(4);
-    expect(ultimaLlamada()).toMatchObject({ url: `${BASE}/animales/4/formalizacion`, metodo: 'POST' });
+    expect(ultimaLlamada()).toMatchObject({
+      url: `${BASE}/animales/4/formalizacion`,
+      metodo: 'POST',
+    });
 
     fetchFalso.mockResolvedValue(new Response('png', { status: 200 }));
     await descargarQr(4);
@@ -156,6 +169,9 @@ describe('servicios de la API', () => {
       esterilizado: true,
       numero_microchip: null,
     });
-    expect(ultimaLlamada()).toMatchObject({ url: `${BASE}/animales/2/validaciones`, metodo: 'POST' });
+    expect(ultimaLlamada()).toMatchObject({
+      url: `${BASE}/animales/2/validaciones`,
+      metodo: 'POST',
+    });
   });
 });

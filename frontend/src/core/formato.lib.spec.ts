@@ -1,4 +1,11 @@
-import { etiquetaEspecie, etiquetaSexo, etiquetaTamano, formatearEdad, formatearFecha, formatearPeso } from './formato.lib';
+import {
+  etiquetaEspecie,
+  etiquetaSexo,
+  etiquetaTamano,
+  formatearEdad,
+  formatearFecha,
+  formatearPeso,
+} from './formato.lib';
 
 describe('formatearFecha', () => {
   it('escribe la fecha completa en español de Colombia', () => {

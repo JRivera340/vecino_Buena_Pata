@@ -28,13 +28,21 @@ export function formatearEdad(anos: number | null): string {
 
 const ESPECIES: Record<string, string> = { PERRO: 'Perro', GATO: 'Gato' };
 const SEXOS: Record<string, string> = { MACHO: 'Macho', HEMBRA: 'Hembra' };
-const TAMANOS: Record<string, string> = { PEQUENO: 'Pequeño', MEDIANO: 'Mediano', GRANDE: 'Grande' };
+const TAMANOS: Record<string, string> = {
+  PEQUENO: 'Pequeño',
+  MEDIANO: 'Mediano',
+  GRANDE: 'Grande',
+};
 
 export const etiquetaEspecie = (valor: string): string => ESPECIES[valor] ?? valor;
 export const etiquetaSexo = (valor: string): string => SEXOS[valor] ?? valor;
 export const etiquetaTamano = (valor: string): string => TAMANOS[valor] ?? valor;
 
-const CAUSALES: Record<string, string> = { ADOPCION: 'adopción', PERDIDA: 'pérdida', FALLECIMIENTO: 'fallecimiento' };
+const CAUSALES: Record<string, string> = {
+  ADOPCION: 'adopción',
+  PERDIDA: 'pérdida',
+  FALLECIMIENTO: 'fallecimiento',
+};
 const PENDIENTES: Record<string, string> = {
   SIN_CHIP: 'sin microchip',
   SIN_ESTERILIZAR: 'sin esterilizar',

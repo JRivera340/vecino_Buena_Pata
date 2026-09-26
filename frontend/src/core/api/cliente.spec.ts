@@ -148,9 +148,13 @@ describe('solicitar', () => {
   });
 
   it('no toca la sesión cuando un 401 llega sin token (login fallido)', async () => {
-    fetchFalso.mockResolvedValue(respuestaJson({ detail: 'Usuario o contrasena incorrectos' }, 401));
+    fetchFalso.mockResolvedValue(
+      respuestaJson({ detail: 'Usuario o contrasena incorrectos' }, 401),
+    );
 
-    const error = await capturar(solicitar('/auth/login', { metodo: 'POST', cuerpo: new URLSearchParams() }));
+    const error = await capturar(
+      solicitar('/auth/login', { metodo: 'POST', cuerpo: new URLSearchParams() }),
+    );
 
     expect(error.estado).toBe(401);
     expect(useAviso.getState().mensaje).toBeNull();
