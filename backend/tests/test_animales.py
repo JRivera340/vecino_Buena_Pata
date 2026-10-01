@@ -2,15 +2,22 @@ from fastapi.testclient import TestClient
 
 from app.core.security import create_access_token, hash_password
 from app.main import app
+from app.models.animal import Animal
 from app.models.comunidad import Comunidad
-from app.models.enums import RolUsuarioEnum, TipoComunidadEnum
+from app.models.enums import RolUsuarioEnum, SexoEnum, TamanoEnum, TipoComunidadEnum
 from app.models.usuario import Usuario
 
 client = TestClient(app)
 
 
-def _token_para(db_session, username: str, rol: RolUsuarioEnum) -> str:
-    usuario = Usuario(nombre=username, rol=rol, username=username, password_hash=hash_password("vbp2026"))
+def _token_para(db_session, username: str, rol: RolUsuarioEnum, comunidad_id: int | None = None) -> str:
+    usuario = Usuario(
+        nombre=username,
+        rol=rol,
+        username=username,
+        password_hash=hash_password("vbp2026"),
+        comunidad_id=comunidad_id,
+    )
     db_session.add(usuario)
     db_session.commit()
     return create_access_token(subject=username, rol=rol.value)
@@ -223,3 +230,48 @@ def test_inscribir_exige_cedula_de_quien_diligencia(db_session):
     )
     assert respuesta_ok.status_code == 201
     assert respuesta_ok.json()["persona_id"] is not None
+
+
+def test_mis_perritos_filtra_por_comunidad_del_usuario(db_session):
+    comunidad_1 = _crear_comunidad(db_session)
+    comunidad_2 = Comunidad(
+        nombre="Huellitas del Norte",
+        tipo=TipoComunidadEnum.PROTECCION_ANIMAL,
+        barrio="La Candelaria",
+        telefono_contacto="3001112233",
+        email_contacto="contacto@huellitasdelnorte.org",
+    )
+    db_session.add(comunidad_2)
+    db_session.commit()
+
+    animal_1 = Animal(
+        nombre="Firulais",
+        sexo=SexoEnum.MACHO,
+        tamano=TamanoEnum.MEDIANO,
+        barrio="El Poblado",
+        latitud=4.65,
+        longitud=-74.1,
+        comunidad_id=comunidad_1,
+        inscrito_por="maria.comunidad",
+    )
+    animal_2 = Animal(
+        nombre="Luna",
+        sexo=SexoEnum.HEMBRA,
+        tamano=TamanoEnum.PEQUENO,
+        barrio="La Candelaria",
+        latitud=4.6,
+        longitud=-74.08,
+        comunidad_id=comunidad_2.id,
+        inscrito_por="otra.comunidad",
+    )
+    db_session.add_all([animal_1, animal_2])
+    db_session.commit()
+
+    token = _token_para(db_session, "maria.comunidad", RolUsuarioEnum.COMUNIDAD, comunidad_id=comunidad_1)
+
+    respuesta = client.get("/api/v1/animales/mis-perritos", headers={"Authorization": f"Bearer {token}"})
+
+    assert respuesta.status_code == 200
+    datos = respuesta.json()
+    assert len(datos) == 1
+    assert all(a["comunidad_id"] == comunidad_1 for a in datos)

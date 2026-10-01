@@ -12,6 +12,7 @@ const PaginaNoEncontrada = lazy(() => import('@/features/publico/PaginaNoEncontr
 const PaginaMapaGestion = lazy(() => import('@/features/mapa/PaginaMapaGestion'));
 const PaginaFichaInterna = lazy(() => import('@/features/animales/PaginaFichaInterna'));
 const PaginaInscribir = lazy(() => import('@/features/animales/PaginaInscribir'));
+const PaginaMisPerritos = lazy(() => import('@/features/animales/PaginaMisPerritos'));
 const PaginaValidacion = lazy(() => import('@/features/validacion/PaginaValidacion'));
 const PaginaFormalizacion = lazy(() => import('@/features/formalizacion/PaginaFormalizacion'));
 const PaginaReportes = lazy(() => import('@/features/reportes/PaginaReportes'));
@@ -46,6 +47,9 @@ export default function App() {
               element={<RutaProtegida roles={['COMUNIDAD', 'VETERINARIO', 'LIDER', 'ADMIN']} />}
             >
               <Route path="/animales/inscribir" element={<PaginaInscribir />} />
+            </Route>
+            <Route element={<RutaProtegida roles={['COMUNIDAD', 'LIDER']} />}>
+              <Route path="/mis-perritos" element={<PaginaMisPerritos />} />
             </Route>
             <Route element={<RutaProtegida roles={['VETERINARIO', 'ADMIN']} />}>
               <Route path="/validacion" element={<PaginaValidacion />} />

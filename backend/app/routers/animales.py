@@ -96,6 +96,21 @@ def listar_seguimiento(
     return resultado
 
 
+@router.get("/mis-perritos", response_model=list[AnimalSchema])
+def mis_perritos(
+    db: Session = Depends(get_db),
+    usuario: Usuario = Depends(requiere_rol(RolUsuarioEnum.COMUNIDAD, RolUsuarioEnum.LIDER, RolUsuarioEnum.ADMIN)),
+) -> list[Animal]:
+    if usuario.comunidad_id is None:
+        return []
+    return (
+        db.query(Animal)
+        .filter_by(comunidad_id=usuario.comunidad_id)
+        .order_by(Animal.fecha_inscripcion.desc())
+        .all()
+    )
+
+
 @router.get("/{animal_id}", response_model=AnimalSchema)
 def obtener_animal(animal_id: int, db: Session = Depends(get_db), _=Depends(get_current_user)) -> Animal:
     animal = db.get(Animal, animal_id)

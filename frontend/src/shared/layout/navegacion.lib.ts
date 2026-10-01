@@ -14,6 +14,9 @@ export function enlacesGestion(rol: RolUsuario): EnlaceNavegacion[] {
   const enlaces: EnlaceNavegacion[] = [{ a: '/mapa', texto: 'Mapa' }];
 
   enlaces.push({ a: '/animales/inscribir', texto: 'Inscribir' });
+  if (rol === 'COMUNIDAD' || rol === 'LIDER') {
+    enlaces.push({ a: '/mis-perritos', texto: 'Mis perritos' });
+  }
   if (rol === 'VETERINARIO' || rol === 'ADMIN') {
     enlaces.push({ a: '/validacion', texto: 'Validar' });
   }

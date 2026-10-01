@@ -6,6 +6,8 @@ import { solicitar } from './cliente';
 
 export const listarAnimales = () => solicitar<Animal[]>('/animales');
 
+export const listarMisPerritos = () => solicitar<Animal[]>('/animales/mis-perritos');
+
 export const obtenerAnimal = (id: number) => solicitar<Animal>(`/animales/${id}`);
 
 export const crearAnimal = (datos: AnimalCrear) =>

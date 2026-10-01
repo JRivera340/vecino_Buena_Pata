@@ -27,14 +27,21 @@ describe('enlacesGestion', () => {
     expect(rutas('LIDER')).not.toContain('/validacion');
   });
 
-  it('da a COMUNIDAD solo mapa, inscripción, reportes, indicadores y notificaciones', () => {
+  it('da a COMUNIDAD mapa, inscripción, mis perritos, reportes, indicadores y notificaciones', () => {
     expect(rutas('COMUNIDAD')).toEqual([
       '/mapa',
       '/animales/inscribir',
+      '/mis-perritos',
       '/reportes',
       '/indicadores',
       '/notificaciones',
     ]);
+  });
+
+  it('da a COMUNIDAD y a LIDER el enlace a mis perritos, pero no a VETERINARIO', () => {
+    expect(rutas('COMUNIDAD')).toContain('/mis-perritos');
+    expect(rutas('LIDER')).toContain('/mis-perritos');
+    expect(rutas('VETERINARIO')).not.toContain('/mis-perritos');
   });
 
   it('nombra cada enlace en español claro', () => {
