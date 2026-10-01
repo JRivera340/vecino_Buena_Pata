@@ -2,7 +2,7 @@ from datetime import datetime
 
 from pydantic import BaseModel, ConfigDict
 
-from app.models.enums import CausalSalidaEnum, EspecieEnum, EstadoAnimalEnum, SexoEnum, TamanoEnum
+from app.models.enums import CausalSalidaEnum, EspecieEnum, EstadoAnimalEnum, SexoEnum, TamanoEnum, TipoDocumentoEnum
 
 
 class AnimalCrear(BaseModel):
@@ -17,6 +17,9 @@ class AnimalCrear(BaseModel):
     latitud: float
     longitud: float
     comunidad_id: int
+    tipo_documento: TipoDocumentoEnum
+    numero_documento: str
+    observacion_comportamiento: str | None = None
 
 
 class AnimalSchema(BaseModel):
@@ -38,6 +41,8 @@ class AnimalSchema(BaseModel):
     latitud: float
     longitud: float
     comunidad_id: int
+    persona_id: int | None
+    observacion_comportamiento: str | None
     causal_salida: CausalSalidaEnum | None
     fecha_salida: datetime | None
     notas_salida: str | None

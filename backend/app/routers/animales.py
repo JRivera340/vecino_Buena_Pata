@@ -13,7 +13,9 @@ from app.schemas.animal import AnimalCrear, AnimalSchema
 from app.schemas.historial import EventoHistorialSchema
 from app.schemas.validacion import ValidacionSchema
 from app.schemas.visita import VisitaSchema
+from app.services.documentos import normalizar_numero_documento
 from app.services.inscripcion import inscribir_animal as inscribir_animal_servicio
+from app.services.inscriptores import obtener_o_crear_persona
 from app.services.localidades import localidad_de_punto
 from app.services.notificaciones import procesar_notificaciones, registrar_notificaciones
 
@@ -52,7 +54,19 @@ def inscribir_animal(
             status_code=422,
             detail="El punto marcado esta fuera de Bogota. Marca un lugar dentro de la ciudad.",
         )
-    animal = inscribir_animal_servicio(db, datos=datos.model_dump(), inscrito_por=usuario.username)
+    try:
+        normalizar_numero_documento(datos.numero_documento)
+    except ValueError as error:
+        raise HTTPException(status_code=422, detail=str(error)) from error
+    persona = obtener_o_crear_persona(
+        db, datos.tipo_documento, datos.numero_documento,
+        nombre=usuario.nombre, telefono="", correo="", barrio=datos.barrio,
+    )
+    animal = inscribir_animal_servicio(
+        db,
+        datos={**datos.model_dump(exclude={"tipo_documento", "numero_documento"}), "persona_id": persona.id},
+        inscrito_por=usuario.username,
+    )
     try:
         ids = registrar_notificaciones(db, animal, None)
     except Exception:  # noqa: BLE001 - anotar el correo no debe tumbar la inscripcion

@@ -18,6 +18,7 @@ class Animal(Base):
     tamano: Mapped[TamanoEnum] = mapped_column()
     descripcion: Mapped[str | None] = mapped_column(String(1000), nullable=True)
     foto_principal: Mapped[str | None] = mapped_column(String(255), nullable=True)
+    observacion_comportamiento: Mapped[str | None] = mapped_column(String(1000), nullable=True)
 
     estado: Mapped[EstadoAnimalEnum] = mapped_column(default=EstadoAnimalEnum.CANDIDATO)
 

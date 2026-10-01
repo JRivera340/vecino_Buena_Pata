@@ -44,6 +44,8 @@ def test_inscribir_animal_queda_como_candidato(db_session):
             "latitud": 4.65,
             "longitud": -74.1,
             "comunidad_id": comunidad_id,
+            "tipo_documento": "CC",
+            "numero_documento": "1.020.304.050",
         },
         headers=encabezados,
     )
@@ -68,6 +70,8 @@ def test_inscribir_animal_sin_especie_asume_perro(db_session):
             "latitud": 4.65,
             "longitud": -74.1,
             "comunidad_id": comunidad_id,
+            "tipo_documento": "CC",
+            "numero_documento": "1.020.304.050",
         },
         headers={"Authorization": f"Bearer {token}"},
     )
@@ -91,6 +95,8 @@ def test_inscribir_gato_guarda_la_especie(db_session):
             "latitud": 4.65,
             "longitud": -74.1,
             "comunidad_id": comunidad_id,
+            "tipo_documento": "CC",
+            "numero_documento": "1.020.304.050",
         },
         headers={"Authorization": f"Bearer {token}"},
     )
@@ -155,6 +161,8 @@ def test_listar_y_obtener_animal(db_session):
             "latitud": 4.65,
             "longitud": -74.1,
             "comunidad_id": comunidad_id,
+            "tipo_documento": "CC",
+            "numero_documento": "1.020.304.050",
         },
         headers=encabezados,
     ).json()
@@ -179,3 +187,39 @@ def test_inscripcion_interna_rechaza_un_punto_fuera_de_bogota(db_session):
     )
 
     assert respuesta.status_code == 422
+
+
+def test_inscribir_exige_cedula_de_quien_diligencia(db_session):
+    token = _token_para(db_session, "maria.comunidad", RolUsuarioEnum.COMUNIDAD)
+    comunidad = Comunidad(
+        nombre="Patitas del Sur", tipo=TipoComunidadEnum.PROTECCION_ANIMAL,
+        barrio="El Poblado", telefono_contacto="3000000000", email_contacto="c@c.org",
+    )
+    db_session.add(comunidad)
+    db_session.commit()
+
+    respuesta = client.post(
+        "/api/v1/animales",
+        json={
+            "nombre": "Toby", "sexo": "MACHO", "tamano": "MEDIANO",
+            "barrio": "El Poblado", "latitud": 4.65, "longitud": -74.1,
+            "comunidad_id": comunidad.id,
+            "observacion_comportamiento": "Se deja acariciar sin problema.",
+        },
+        headers={"Authorization": f"Bearer {token}"},
+    )
+    assert respuesta.status_code == 422
+
+    respuesta_ok = client.post(
+        "/api/v1/animales",
+        json={
+            "nombre": "Toby", "sexo": "MACHO", "tamano": "MEDIANO",
+            "barrio": "El Poblado", "latitud": 4.65, "longitud": -74.1,
+            "comunidad_id": comunidad.id,
+            "tipo_documento": "CC", "numero_documento": "1.020.304.050",
+            "observacion_comportamiento": "Se deja acariciar sin problema.",
+        },
+        headers={"Authorization": f"Bearer {token}"},
+    )
+    assert respuesta_ok.status_code == 201
+    assert respuesta_ok.json()["persona_id"] is not None
