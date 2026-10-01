@@ -48,3 +48,5 @@ class AnimalSchema(BaseModel):
     notas_salida: str | None
     fecha_inscripcion: datetime
     inscrito_por: str
+    visita_en_camino_por: str | None = None
+    visita_en_camino_desde: datetime | None = None

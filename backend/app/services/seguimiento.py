@@ -1,3 +1,5 @@
+from datetime import datetime, timezone
+
 from sqlalchemy.orm import Session
 
 from app.models.animal import Animal
@@ -43,4 +45,36 @@ def registrar_visita(
         detalle={"estado_salud": estado_salud.value},
     )
 
+    animal.visita_en_camino_por = None
+    animal.visita_en_camino_desde = None
+    db.commit()
+
     return visita
+
+
+def marcar_en_camino(db: Session, animal_id: int, responsable: str) -> Animal:
+    animal = db.get(Animal, animal_id)
+    if animal is None:
+        raise ValueError("Animal no encontrado.")
+    if animal.estado != EstadoAnimalEnum.VBP_ACTIVO:
+        raise ValueError(f"No se puede marcar en camino un animal en estado {animal.estado.value}.")
+    if animal.visita_en_camino_por is not None and animal.visita_en_camino_por != responsable:
+        raise ValueError(f"{animal.visita_en_camino_por} ya va en camino a visitarlo.")
+    animal.visita_en_camino_por = responsable
+    animal.visita_en_camino_desde = datetime.now(timezone.utc)
+    db.commit()
+    db.refresh(animal)
+    return animal
+
+
+def cancelar_en_camino(db: Session, animal_id: int, responsable: str) -> Animal:
+    animal = db.get(Animal, animal_id)
+    if animal is None:
+        raise ValueError("Animal no encontrado.")
+    if animal.visita_en_camino_por != responsable:
+        raise ValueError("No marcaste tu ir en camino a este animal.")
+    animal.visita_en_camino_por = None
+    animal.visita_en_camino_desde = None
+    db.commit()
+    db.refresh(animal)
+    return animal

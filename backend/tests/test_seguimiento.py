@@ -78,3 +78,40 @@ def test_no_se_puede_registrar_visita_a_un_fallecido(db_session):
             estado_salud=EstadoSaludEnum.BUENO,
             estado_comportamiento="Tranquilo",
         )
+
+
+def test_marcar_en_camino_y_que_se_limpie_al_visitar(db_session):
+    from app.models.animal import Animal
+    from app.models.comunidad import Comunidad
+    from app.models.enums import EstadoAnimalEnum, SexoEnum, TamanoEnum, TipoComunidadEnum
+
+    comunidad = Comunidad(
+        nombre="Patitas", tipo=TipoComunidadEnum.PROTECCION_ANIMAL,
+        barrio="X", telefono_contacto="300", email_contacto="c@c.org",
+    )
+    db_session.add(comunidad)
+    db_session.commit()
+    animal = Animal(
+        nombre="Rocky", sexo=SexoEnum.MACHO, tamano=TamanoEnum.MEDIANO,
+        barrio="X", latitud=4.6, longitud=-74.1, comunidad_id=comunidad.id,
+        estado=EstadoAnimalEnum.VBP_ACTIVO, inscrito_por="maria.comunidad",
+    )
+    db_session.add(animal)
+    db_session.commit()
+
+    from app.services.seguimiento import cancelar_en_camino, marcar_en_camino, registrar_visita
+
+    marcar_en_camino(db_session, animal_id=animal.id, responsable="unidad.especial")
+    db_session.refresh(animal)
+    assert animal.visita_en_camino_por == "unidad.especial"
+
+    with pytest.raises(ValueError):
+        marcar_en_camino(db_session, animal_id=animal.id, responsable="otra.persona")
+
+    from app.models.enums import EstadoSaludEnum
+    registrar_visita(
+        db_session, animal_id=animal.id, responsable="unidad.especial",
+        estado_salud=EstadoSaludEnum.BUENO, estado_comportamiento="Tranquilo",
+    )
+    db_session.refresh(animal)
+    assert animal.visita_en_camino_por is None

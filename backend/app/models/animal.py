@@ -40,3 +40,6 @@ class Animal(Base):
     localidad: Mapped[str | None] = mapped_column(String(60), nullable=True)
     persona_id: Mapped[int | None] = mapped_column(ForeignKey("persona.id"), nullable=True)
     posible_duplicado_de_id: Mapped[int | None] = mapped_column(ForeignKey("animal.id"), nullable=True)
+
+    visita_en_camino_por: Mapped[str | None] = mapped_column(String(120), nullable=True)
+    visita_en_camino_desde: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
