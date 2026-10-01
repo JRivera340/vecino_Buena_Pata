@@ -17,7 +17,7 @@ def crear_visita(
     animal_id: int,
     datos: VisitaCrear,
     db: Session = Depends(get_db),
-    usuario: Usuario = Depends(requiere_rol(RolUsuarioEnum.VETERINARIO, RolUsuarioEnum.ADMIN)),
+    usuario: Usuario = Depends(requiere_rol(RolUsuarioEnum.UNIDAD_ESPECIAL, RolUsuarioEnum.ADMIN)),
 ) -> VisitaSeguimiento:
     try:
         return registrar_visita(

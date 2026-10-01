@@ -10,13 +10,16 @@ from app.models.usuario import Usuario
 client = TestClient(app)
 
 
-def _token_veterinario(db_session) -> str:
+def _token_unidad_especial(db_session) -> str:
     usuario = Usuario(
-        nombre="Dr. Rojas", rol=RolUsuarioEnum.VETERINARIO, username="dr.rojas", password_hash=hash_password("vbp2026")
+        nombre="Unidad Especial",
+        rol=RolUsuarioEnum.UNIDAD_ESPECIAL,
+        username="unidad.especial",
+        password_hash=hash_password("vbp2026"),
     )
     db_session.add(usuario)
     db_session.commit()
-    return create_access_token(subject="dr.rojas", rol=RolUsuarioEnum.VETERINARIO.value)
+    return create_access_token(subject="unidad.especial", rol=RolUsuarioEnum.UNIDAD_ESPECIAL.value)
 
 
 def _crear_animal(db_session, estado=EstadoAnimalEnum.VBP_ACTIVO) -> int:
@@ -45,8 +48,8 @@ def _crear_animal(db_session, estado=EstadoAnimalEnum.VBP_ACTIVO) -> int:
     return animal.id
 
 
-def test_veterinario_registra_visita(db_session):
-    token = _token_veterinario(db_session)
+def test_unidad_especial_registra_visita(db_session):
+    token = _token_unidad_especial(db_session)
     animal_id = _crear_animal(db_session)
 
     respuesta = client.post(
@@ -59,7 +62,7 @@ def test_veterinario_registra_visita(db_session):
 
 
 def test_visita_a_candidato_devuelve_409(db_session):
-    token = _token_veterinario(db_session)
+    token = _token_unidad_especial(db_session)
     animal_id = _crear_animal(db_session, estado=EstadoAnimalEnum.CANDIDATO)
 
     respuesta = client.post(
@@ -85,3 +88,36 @@ def test_comunidad_no_puede_registrar_visita(db_session):
         headers={"Authorization": f"Bearer {token}"},
     )
     assert respuesta.status_code == 403
+
+
+def test_solo_unidad_especial_y_admin_registran_visita(db_session):
+    animal_id = _crear_animal(db_session)
+    for rol in (RolUsuarioEnum.COMUNIDAD, RolUsuarioEnum.LIDER, RolUsuarioEnum.VETERINARIO):
+        usuario = Usuario(
+            nombre=f"Usuario {rol.value}",
+            rol=rol,
+            username=f"usuario.{rol.value.lower()}",
+            password_hash=hash_password("vbp2026"),
+        )
+        db_session.add(usuario)
+        db_session.commit()
+        token = create_access_token(subject=f"usuario.{rol.value.lower()}", rol=rol.value)
+        respuesta = client.post(
+            f"/api/v1/animales/{animal_id}/visitas",
+            json={"estado_salud": "BUENO", "estado_comportamiento": "Tranquilo"},
+            headers={"Authorization": f"Bearer {token}"},
+        )
+        assert respuesta.status_code == 403
+
+    usuario_admin = Usuario(
+        nombre="Administrador", rol=RolUsuarioEnum.ADMIN, username="admin", password_hash=hash_password("vbp2026")
+    )
+    db_session.add(usuario_admin)
+    db_session.commit()
+    token_admin = create_access_token(subject="admin", rol=RolUsuarioEnum.ADMIN.value)
+    respuesta = client.post(
+        f"/api/v1/animales/{animal_id}/visitas",
+        json={"estado_salud": "BUENO", "estado_comportamiento": "Tranquilo"},
+        headers={"Authorization": f"Bearer {token_admin}"},
+    )
+    assert respuesta.status_code == 201
