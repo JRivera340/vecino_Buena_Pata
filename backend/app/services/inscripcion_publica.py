@@ -2,14 +2,6 @@ from app.models.animal import Animal
 from app.schemas.inscripcion_publica import AnimalDeInscriptorSchema
 
 
-class InscripcionInvalida(ValueError):
-    """La solicitud no cumple una regla de negocio. El mensaje se muestra a la persona."""
-
-    def __init__(self, mensaje: str, estado: int = 422):
-        super().__init__(mensaje)
-        self.estado = estado
-
-
 def a_animal_de_inscriptor(animal: Animal) -> AnimalDeInscriptorSchema:
     return AnimalDeInscriptorSchema(
         id=animal.id,
