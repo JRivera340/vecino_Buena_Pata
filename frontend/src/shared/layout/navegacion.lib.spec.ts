@@ -33,4 +33,11 @@ describe('enlacesGestion', () => {
     const textos = enlacesGestion('ADMIN').map((enlace) => enlace.texto);
     expect(textos).toEqual(['Mapa', 'Inscribir', 'Validar', 'Formalizar', 'Reportes', 'Indicadores', 'Usuarios']);
   });
+
+  it('da a UNIDAD_ESPECIAL reportes pero no validación ni formalización', () => {
+    const rutas_especial = rutas('UNIDAD_ESPECIAL');
+    expect(rutas_especial).toContain('/reportes');
+    expect(rutas_especial).not.toContain('/validacion');
+    expect(rutas_especial).not.toContain('/formalizacion');
+  });
 });
