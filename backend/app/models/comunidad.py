@@ -18,6 +18,4 @@ class Comunidad(Base):
     email_contacto: Mapped[str] = mapped_column(String(160))
     activa: Mapped[bool] = mapped_column(Boolean, default=True)
     fecha_registro: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
-    lider_id: Mapped[int | None] = mapped_column(
-        ForeignKey("usuario.id", name="fk_comunidad_lider_id", use_alter=True), nullable=True
-    )
+    lider_id: Mapped[int | None] = mapped_column(ForeignKey("usuario.id"), nullable=True)
