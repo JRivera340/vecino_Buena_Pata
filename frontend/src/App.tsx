@@ -18,6 +18,7 @@ const PaginaReportes = lazy(() => import('@/features/reportes/PaginaReportes'));
 const PaginaIndicadores = lazy(() => import('@/features/indicadores/PaginaIndicadores'));
 const PaginaPoliticaDatos = lazy(() => import('@/features/publico/PaginaPoliticaDatos'));
 const PaginaUsuarios = lazy(() => import('@/features/usuarios/PaginaUsuarios'));
+const PaginaPanelSeguimiento = lazy(() => import('@/features/seguimiento/PaginaPanelSeguimiento'));
 const PaginaEstilos = import.meta.env.DEV
   ? lazy(() => import('@/features/estilos/PaginaEstilos'))
   : null;
@@ -52,6 +53,9 @@ export default function App() {
             </Route>
             <Route element={<RutaProtegida roles={['LIDER', 'ADMIN']} />}>
               <Route path="/formalizacion" element={<PaginaFormalizacion />} />
+            </Route>
+            <Route element={<RutaProtegida roles={['UNIDAD_ESPECIAL', 'ADMIN']} />}>
+              <Route path="/seguimiento/panel" element={<PaginaPanelSeguimiento />} />
             </Route>
             {PaginaEstilos && <Route path="/estilos" element={<PaginaEstilos />} />}
             <Route path="*" element={<PaginaNoEncontrada />} />

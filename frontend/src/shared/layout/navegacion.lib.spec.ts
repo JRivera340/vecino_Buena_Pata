@@ -11,6 +11,7 @@ describe('enlacesGestion', () => {
       '/formalizacion',
       '/reportes',
       '/indicadores',
+      '/seguimiento/panel',
       '/usuarios',
     ]);
   });
@@ -31,13 +32,28 @@ describe('enlacesGestion', () => {
 
   it('nombra cada enlace en español claro', () => {
     const textos = enlacesGestion('ADMIN').map((enlace) => enlace.texto);
-    expect(textos).toEqual(['Mapa', 'Inscribir', 'Validar', 'Formalizar', 'Reportes', 'Indicadores', 'Usuarios']);
+    expect(textos).toEqual([
+      'Mapa',
+      'Inscribir',
+      'Validar',
+      'Formalizar',
+      'Reportes',
+      'Indicadores',
+      'Seguimiento',
+      'Usuarios',
+    ]);
   });
 
-  it('da a UNIDAD_ESPECIAL reportes pero no validación ni formalización', () => {
+  it('da a UNIDAD_ESPECIAL reportes y el panel de seguimiento, pero no validación ni formalización', () => {
     const rutas_especial = rutas('UNIDAD_ESPECIAL');
     expect(rutas_especial).toContain('/reportes');
+    expect(rutas_especial).toContain('/seguimiento/panel');
     expect(rutas_especial).not.toContain('/validacion');
     expect(rutas_especial).not.toContain('/formalizacion');
+  });
+
+  it('no da a COMUNIDAD ni a LIDER el panel de seguimiento', () => {
+    expect(rutas('COMUNIDAD')).not.toContain('/seguimiento/panel');
+    expect(rutas('LIDER')).not.toContain('/seguimiento/panel');
   });
 });

@@ -21,6 +21,9 @@ export function enlacesGestion(rol: RolUsuario): EnlaceNavegacion[] {
     enlaces.push({ a: '/formalizacion', texto: 'Formalizar' });
   }
   enlaces.push({ a: '/reportes', texto: 'Reportes' }, { a: '/indicadores', texto: 'Indicadores' });
+  if (rol === 'UNIDAD_ESPECIAL' || rol === 'ADMIN') {
+    enlaces.push({ a: '/seguimiento/panel', texto: 'Seguimiento' });
+  }
   if (rol === 'ADMIN') {
     enlaces.push({ a: '/usuarios', texto: 'Usuarios' });
   }
