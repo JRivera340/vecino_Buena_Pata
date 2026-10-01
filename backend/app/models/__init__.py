@@ -5,6 +5,7 @@ from app.models.comunidad import Comunidad
 from app.models.evento_historial import EventoHistorial
 from app.models.limite_peticion import LimitePeticion
 from app.models.notificacion import Notificacion
+from app.models.notificacion_interna import NotificacionInterna
 from app.models.persona import Persona
 from app.models.reporte_novedad import ReporteNovedad
 from app.models.usuario import Usuario
@@ -19,6 +20,7 @@ __all__ = [
     "EventoHistorial",
     "LimitePeticion",
     "Notificacion",
+    "NotificacionInterna",
     "Persona",
     "ReporteNovedad",
     "Usuario",
