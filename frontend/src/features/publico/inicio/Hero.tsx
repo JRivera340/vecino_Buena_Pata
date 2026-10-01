@@ -91,16 +91,6 @@ export function Hero({ animales, cargando }: HeroProps) {
             >
               Explorar el mapa
             </a>
-            <Link
-              to="/inscribir"
-              className={estilosBoton({
-                variante: 'contornoClaro',
-                tamano: 'grande',
-                movilCompleto: true,
-              })}
-            >
-              Inscribir un animal
-            </Link>
           </div>
         </div>
         {destacado && !cargando && <FichaDestacada animal={destacado} />}

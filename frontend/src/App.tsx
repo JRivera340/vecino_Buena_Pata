@@ -16,9 +16,6 @@ const PaginaValidacion = lazy(() => import('@/features/validacion/PaginaValidaci
 const PaginaFormalizacion = lazy(() => import('@/features/formalizacion/PaginaFormalizacion'));
 const PaginaReportes = lazy(() => import('@/features/reportes/PaginaReportes'));
 const PaginaIndicadores = lazy(() => import('@/features/indicadores/PaginaIndicadores'));
-const PaginaInscribirPublico = lazy(
-  () => import('@/features/publico/inscripcion/PaginaInscribirPublico'),
-);
 const PaginaPoliticaDatos = lazy(() => import('@/features/publico/PaginaPoliticaDatos'));
 const PaginaUsuarios = lazy(() => import('@/features/usuarios/PaginaUsuarios'));
 const PaginaEstilos = import.meta.env.DEV
@@ -35,7 +32,6 @@ export default function App() {
             <Route path="/vbp/:id" element={<PaginaFicha />} />
             <Route path="/v/:codigo" element={<PaginaQr />} />
             <Route path="/ingreso" element={<PaginaIngreso />} />
-            <Route path="/inscribir" element={<PaginaInscribirPublico />} />
             <Route path="/politica-de-datos" element={<PaginaPoliticaDatos />} />
             <Route element={<RutaProtegida />}>
               <Route path="/mapa" element={<PaginaMapaGestion />} />

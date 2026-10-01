@@ -44,10 +44,3 @@ class ComunidadPublicaSchema(BaseModel):
     nombre: str
     tipo: TipoComunidadEnum
     barrio: str
-
-
-class InscripcionPublicaRespuesta(BaseModel):
-    animal_id: int
-    radicado: str
-    nombre: str
-    estado: EstadoAnimalEnum

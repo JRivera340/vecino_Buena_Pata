@@ -28,13 +28,6 @@ export interface ComunidadPublica {
   barrio: string;
 }
 
-export interface InscripcionPublicaRespuesta {
-  animal_id: number;
-  radicado: string;
-  nombre: string;
-  estado: EstadoAnimal;
-}
-
 export interface DocumentoConsulta {
   tipo_documento: TipoDocumento;
   numero_documento: string;

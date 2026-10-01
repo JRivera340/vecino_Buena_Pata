@@ -1,24 +1,23 @@
-import io
-
 import httpx
 import pytest
 from fastapi.testclient import TestClient
-from PIL import Image
 
 from app.core.config import get_settings
 from app.core.security import create_access_token, hash_password
 from app.main import app
 from app.models.animal import Animal
-from app.models.enums import RolUsuarioEnum
+from app.models.enums import RolUsuarioEnum, TipoDocumentoEnum
 from app.models.evento_historial import EventoHistorial
 from app.models.notificacion import Notificacion
 from app.models.usuario import Usuario
 from app.services import notificaciones
 from app.services.inscripcion import inscribir_animal, radicado_de
+from app.services.inscriptores import obtener_o_crear_persona
 from app.services.notificaciones import (
     ErrorEnvio,
     ProveedorResend,
     enviar_notificacion,
+    procesar_notificaciones,
     registrar_notificaciones,
     reintentar_pendientes,
 )
@@ -54,38 +53,25 @@ def _animal(db, **cambios):
     return inscribir_animal(db, datos_animal(comunidad.id, **cambios), "demo")
 
 
-def _formulario(comunidad_id):
-    salida = io.BytesIO()
-    Image.new("RGB", (8, 8), "white").save(salida, format="JPEG")
-    return (
-        {
-            "tipo_documento": "CC",
-            "numero_documento": "1234567",
-            "nombre_persona": "Ana Perez",
-            "telefono": "3001234567",
-            "correo": "ana@example.org",
-            "acepta_datos": "true",
-            "nombre": "Copito",
-            "sexo": "MACHO",
-            "tamano": "PEQUENO",
-            "barrio": "Las Cruces",
-            "latitud": "4.6",
-            "longitud": "-74.08",
-            "comunidad_id": str(comunidad_id),
-        },
-        [("foto", ("foto.jpg", salida.getvalue(), "image/jpeg"))],
+def _inscripcion_con_persona(db, **cambios):
+    """Un animal inscrito con una persona de contacto asociada, como lo haria un lider al
+    registrar a alguien de su comunidad. Util para probar la confirmacion por correo."""
+    comunidad = crear_comunidad(db)
+    persona = obtener_o_crear_persona(
+        db, TipoDocumentoEnum.CC, "1234567", "Ana Perez", "3001234567", "ana@example.org", "Las Cruces"
     )
+    animal = inscribir_animal(db, datos_animal(comunidad.id, persona_id=persona.id, **cambios), "publico")
+    return animal, persona
 
 
-def test_una_inscripcion_publica_envia_dos_correos_y_los_deja_registrados(db_session, monkeypatch):
+def test_una_inscripcion_con_persona_envia_dos_correos_y_los_deja_registrados(db_session, monkeypatch):
     proveedor = ProveedorFalso()
     monkeypatch.setattr(notificaciones, "obtener_proveedor", lambda settings=None: proveedor)
-    comunidad = crear_comunidad(db_session)
-    datos, archivos = _formulario(comunidad.id)
+    animal, persona = _inscripcion_con_persona(db_session)
 
-    respuesta = client.post("/api/v1/publico/inscripciones", data=datos, files=archivos)
+    ids = registrar_notificaciones(db_session, animal, persona)
+    procesar_notificaciones(ids)
 
-    assert respuesta.status_code == 201
     assert sorted(destino for destino, _ in proveedor.enviados) == ["ana@example.org", "idpyba@example.org"]
     registradas = db_session.query(Notificacion).all()
     assert {n.estado for n in registradas} == {"enviado"}
@@ -94,15 +80,14 @@ def test_una_inscripcion_publica_envia_dos_correos_y_los_deja_registrados(db_ses
     assert len(eventos) == 2 and "ana@example.org" not in str([e.detalle for e in eventos])
 
 
-def test_la_inscripcion_responde_201_aunque_el_proveedor_falle(db_session, monkeypatch):
+def test_el_animal_queda_registrado_aunque_el_proveedor_de_correo_falle(db_session, monkeypatch):
     proveedor = ProveedorFalso(fallos_antes_de_enviar=99)
     monkeypatch.setattr(notificaciones, "obtener_proveedor", lambda settings=None: proveedor)
-    comunidad = crear_comunidad(db_session)
-    datos, archivos = _formulario(comunidad.id)
+    animal, persona = _inscripcion_con_persona(db_session)
 
-    respuesta = client.post("/api/v1/publico/inscripciones", data=datos, files=archivos)
+    ids = registrar_notificaciones(db_session, animal, persona)
+    procesar_notificaciones(ids)
 
-    assert respuesta.status_code == 201
     assert db_session.query(Animal).count() == 1
     registradas = db_session.query(Notificacion).all()
     assert {n.estado for n in registradas} == {"fallido"}
@@ -111,12 +96,11 @@ def test_la_inscripcion_responde_201_aunque_el_proveedor_falle(db_session, monke
 
 def test_sin_proveedor_configurado_queda_fallida_con_el_motivo(db_session, monkeypatch):
     monkeypatch.setattr(notificaciones, "obtener_proveedor", lambda settings=None: None)
-    comunidad = crear_comunidad(db_session)
-    datos, archivos = _formulario(comunidad.id)
+    animal, persona = _inscripcion_con_persona(db_session)
 
-    respuesta = client.post("/api/v1/publico/inscripciones", data=datos, files=archivos)
+    ids = registrar_notificaciones(db_session, animal, persona)
+    procesar_notificaciones(ids)
 
-    assert respuesta.status_code == 201
     assert all("no esta configurado" in n.ultimo_error for n in db_session.query(Notificacion).all())
 
 

@@ -1,4 +1,4 @@
-from fastapi import APIRouter, BackgroundTasks, Depends, File, Form, HTTPException, Response, UploadFile, status
+from fastapi import APIRouter, Depends, HTTPException, Response, status
 from sqlalchemy.orm import Session
 
 from app.core.config import get_settings
@@ -7,12 +7,9 @@ from app.core.limite import limitar
 from app.models.animal import Animal
 from app.models.collar_qr import CollarQr
 from app.models.comunidad import Comunidad
-from app.models.persona import Persona
-from app.models.enums import EspecieEnum, EstadoAnimalEnum, SexoEnum, TamanoEnum, TipoDocumentoEnum
 from app.models.reporte_novedad import ReporteNovedad
 from app.schemas.inscripcion_publica import (
     ComunidadPublicaSchema,
-    InscripcionPublicaRespuesta,
     VerificarInscriptorRespuesta,
     VerificarInscriptorSolicitud,
 )
@@ -23,11 +20,9 @@ from app.schemas.publico import (
     ReporteNovedadCrear,
     ReporteNovedadRespuesta,
 )
-from app.services.inscripcion import radicado_de
-from app.services.inscripcion_publica import InscripcionInvalida, a_animal_de_inscriptor, inscribir_desde_publico
+from app.services.inscripcion_publica import a_animal_de_inscriptor
 from app.services.inscriptores import animales_de_persona
 from app.services.documentos import normalizar_numero_documento
-from app.services.notificaciones import procesar_notificaciones, registrar_notificaciones
 from app.services.mapa_publico import listar_mapa_publico, obtener_hoja_vida_publica
 
 router = APIRouter(prefix="/publico", tags=["publico"])
@@ -98,79 +93,3 @@ def verificar_inscriptor(datos: VerificarInscriptorSolicitud, db: Session = Depe
         raise HTTPException(status_code=status.HTTP_422_UNPROCESSABLE_ENTITY, detail=str(error)) from error
     animales = animales_de_persona(db, datos.tipo_documento, datos.numero_documento)
     return {"total": len(animales), "animales": [a_animal_de_inscriptor(animal) for animal in animales]}
-
-
-@router.post(
-    "/inscripciones",
-    response_model=InscripcionPublicaRespuesta,
-    status_code=201,
-    dependencies=[Depends(limitar("inscripcion", lambda: get_settings().limite_inscripciones_por_hora, 3600))],
-)
-def inscribir_desde_el_publico(
-    tareas: BackgroundTasks,
-    tipo_documento: TipoDocumentoEnum = Form(...),
-    numero_documento: str = Form(...),
-    nombre_persona: str = Form(..., max_length=160),
-    telefono: str = Form(..., max_length=30),
-    correo: str = Form(..., max_length=160),
-    acepta_datos: bool = Form(...),
-    nombre: str = Form(..., max_length=120),
-    especie: EspecieEnum = Form(EspecieEnum.PERRO),
-    sexo: SexoEnum = Form(...),
-    tamano: TamanoEnum = Form(...),
-    edad_estimada: int | None = Form(None, ge=0, le=30),
-    descripcion: str | None = Form(None, max_length=1000),
-    barrio: str = Form(..., max_length=120),
-    latitud: float = Form(..., ge=-90, le=90),
-    longitud: float = Form(..., ge=-180, le=180),
-    comunidad_id: int = Form(...),
-    foto: UploadFile = File(...),
-    sitio_web: str = Form(""),
-    db: Session = Depends(get_db),
-) -> InscripcionPublicaRespuesta:
-    if sitio_web.strip():
-        # Campo trampa que una persona no ve: si viene lleno es un bot. Se responde como si
-        # hubiera funcionado, sin guardar nada.
-        return InscripcionPublicaRespuesta(
-            animal_id=0, radicado="VBP-0000-000000", nombre=nombre, estado=EstadoAnimalEnum.CANDIDATO
-        )
-    try:
-        animal = inscribir_desde_publico(
-            db,
-            get_settings(),
-            tipo_documento=tipo_documento,
-            numero_documento=numero_documento,
-            nombre_persona=nombre_persona,
-            telefono=telefono,
-            correo=correo,
-            acepta_datos=acepta_datos,
-            nombre=nombre,
-            especie=especie,
-            sexo=sexo,
-            tamano=tamano,
-            edad_estimada=edad_estimada,
-            descripcion=descripcion,
-            barrio=barrio,
-            latitud=latitud,
-            longitud=longitud,
-            comunidad_id=comunidad_id,
-            foto=foto,
-        )
-    except InscripcionInvalida as error:
-        raise HTTPException(status_code=error.estado, detail=str(error)) from error
-    _programar_correos(db, tareas, animal)
-    return InscripcionPublicaRespuesta(
-        animal_id=animal.id, radicado=radicado_de(animal), nombre=animal.nombre, estado=animal.estado
-    )
-
-
-def _programar_correos(db: Session, tareas: BackgroundTasks, animal) -> None:
-    """Los correos van en segundo plano: si fallan, la inscripcion ya quedo guardada."""
-    try:
-        persona = db.get(Persona, animal.persona_id) if animal.persona_id else None
-        ids = registrar_notificaciones(db, animal, persona)
-    except Exception:  # noqa: BLE001 - no anotar un correo no debe tumbar la inscripcion
-        db.rollback()
-        return
-    if ids:
-        tareas.add_task(procesar_notificaciones, ids)

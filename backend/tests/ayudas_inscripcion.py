@@ -1,5 +1,8 @@
 from app.models.comunidad import Comunidad
-from app.models.enums import EspecieEnum, SexoEnum, TamanoEnum, TipoComunidadEnum
+from app.models.enums import EspecieEnum, SexoEnum, TamanoEnum, TipoComunidadEnum, TipoDocumentoEnum
+from app.models.animal import Animal
+from app.services.inscripcion import inscribir_animal
+from app.services.inscriptores import obtener_o_crear_persona
 
 
 def crear_comunidad(db, nombre="Vecinos de Santa Fe") -> Comunidad:
@@ -30,3 +33,13 @@ def datos_animal(comunidad_id: int = 1, **cambios) -> dict:
     )
     datos.update(cambios)
     return datos
+
+
+def inscribir_animal_de_prueba(db, comunidad_id: int, **cambios) -> Animal:
+    """Crea una persona (si hace falta) y un animal inscrito por ella, sin pasar por HTTP.
+    Util para preparar datos de pruebas que verifican la consulta por documento."""
+    persona = obtener_o_crear_persona(
+        db, TipoDocumentoEnum.CC, "1234567", "Ana Perez", "3001234567", "ana@example.org", "Las Cruces"
+    )
+    datos = datos_animal(comunidad_id, persona_id=persona.id, **cambios)
+    return inscribir_animal(db, datos, inscrito_por="publico")
