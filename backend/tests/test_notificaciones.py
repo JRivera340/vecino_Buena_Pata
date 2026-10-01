@@ -148,7 +148,7 @@ def test_la_inscripcion_interna_solo_avisa_a_idpyba(db_session, monkeypatch):
 
     respuesta = client.post(
         "/api/v1/animales",
-        json={"nombre": "Rocky", "sexo": "MACHO", "tamano": "MEDIANO", "barrio": "Bosa", "latitud": 4.6, "longitud": -74.1, "comunidad_id": comunidad.id},
+        json={"nombre": "Rocky", "sexo": "MACHO", "tamano": "MEDIANO", "barrio": "Bosa", "latitud": 4.6, "longitud": -74.1, "comunidad_id": comunidad.id, "tipo_documento": "CC", "numero_documento": "1.020.304.050"},
         headers={"Authorization": f"Bearer {token}"},
     )
 
