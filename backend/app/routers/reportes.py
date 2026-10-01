@@ -1,21 +1,40 @@
+from datetime import datetime
+
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
 
 from app.core.db import get_db
 from app.core.deps import get_current_user, requiere_rol
 from app.models.atencion_especial import AtencionEspecial
-from app.models.enums import RolUsuarioEnum
+from app.models.enums import EstadoReporteEnum, RolUsuarioEnum
 from app.models.reporte_novedad import ReporteNovedad
 from app.models.usuario import Usuario
-from app.schemas.reporte import AtencionCrear, AtencionSchema, ReporteSchema
+from app.schemas.reporte import AtencionCrear, AtencionSchema, ReportesPaginaSchema
 from app.services.atencion import registrar_atencion
 
 router = APIRouter(prefix="/reportes", tags=["reportes"])
 
 
-@router.get("", response_model=list[ReporteSchema])
-def listar_reportes(db: Session = Depends(get_db), _=Depends(get_current_user)) -> list[ReporteNovedad]:
-    return db.query(ReporteNovedad).order_by(ReporteNovedad.fecha.desc()).all()
+@router.get("", response_model=ReportesPaginaSchema)
+def listar_reportes(
+    limit: int = 20,
+    offset: int = 0,
+    desde: datetime | None = None,
+    hasta: datetime | None = None,
+    estado: EstadoReporteEnum | None = None,
+    db: Session = Depends(get_db),
+    _=Depends(get_current_user),
+) -> dict:
+    consulta = db.query(ReporteNovedad)
+    if desde is not None:
+        consulta = consulta.filter(ReporteNovedad.fecha >= desde)
+    if hasta is not None:
+        consulta = consulta.filter(ReporteNovedad.fecha <= hasta)
+    if estado is not None:
+        consulta = consulta.filter(ReporteNovedad.estado == estado)
+    total = consulta.count()
+    items = consulta.order_by(ReporteNovedad.fecha.desc()).offset(offset).limit(limit).all()
+    return {"total": total, "items": items}
 
 
 @router.post("/{reporte_id}/atencion", response_model=AtencionSchema, status_code=201)

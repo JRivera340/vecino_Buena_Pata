@@ -34,3 +34,8 @@ class AtencionSchema(BaseModel):
     responsable: str
     acciones_realizadas: str
     resultado: str
+
+
+class ReportesPaginaSchema(BaseModel):
+    total: int
+    items: list[ReporteSchema]

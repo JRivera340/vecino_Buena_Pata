@@ -24,8 +24,11 @@ function Cifra({ valor, texto }: { valor: number; texto: string }) {
 export default function PaginaIndicadores() {
   useTitulo('Indicadores');
   const datos = useCarga(async () => {
-    const [animales, reportes] = await Promise.all([listarAnimales(), listarReportes()]);
-    return { animales, resumen: calcularIndicadores(animales, reportes) };
+    const [animales, reportes] = await Promise.all([
+      listarAnimales(),
+      listarReportes({ limit: 10000, offset: 0 }),
+    ]);
+    return { animales, resumen: calcularIndicadores(animales, reportes.items) };
   }, []);
 
   return (

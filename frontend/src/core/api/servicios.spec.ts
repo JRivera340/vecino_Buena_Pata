@@ -140,8 +140,8 @@ describe('servicios de la API', () => {
   });
 
   it('lista reportes y registra una atención', async () => {
-    await listarReportes();
-    expect(ultimaLlamada().url).toBe(`${BASE}/reportes`);
+    await listarReportes({ limit: 20, offset: 0 });
+    expect(ultimaLlamada().url).toBe(`${BASE}/reportes?limit=20&offset=0`);
 
     await registrarAtencion(3, { acciones_realizadas: 'Visita', resultado: 'Resuelto' });
     expect(ultimaLlamada()).toMatchObject({ url: `${BASE}/reportes/3/atencion`, metodo: 'POST' });

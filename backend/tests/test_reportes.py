@@ -101,8 +101,23 @@ def test_listar_reportes(db_session):
 
     respuesta = client.get("/api/v1/reportes", headers={"Authorization": f"Bearer {token}"})
     assert respuesta.status_code == 200
-    assert len(respuesta.json()) == 1
-    assert respuesta.json()[0]["estado"] == "NUEVO"
+    assert len(respuesta.json()["items"]) == 1
+    assert respuesta.json()["items"][0]["estado"] == "NUEVO"
+
+
+def test_reportes_pagina_y_filtra_por_fecha(db_session):
+    token = _token(db_session, "maria.comunidad", RolUsuarioEnum.COMUNIDAD)
+    for _ in range(3):
+        _crear_reporte(db_session)
+
+    respuesta = client.get("/api/v1/reportes?limit=2&offset=0", headers={"Authorization": f"Bearer {token}"})
+    cuerpo = respuesta.json()
+    assert cuerpo["total"] == 3
+    assert len(cuerpo["items"]) == 2
+
+    respuesta_vacia = client.get("/api/v1/reportes?limit=2&offset=99", headers={"Authorization": f"Bearer {token}"})
+    assert respuesta_vacia.json()["items"] == []
+    assert respuesta_vacia.json()["total"] == 3
 
 
 def test_unidad_especial_registra_atencion_y_cierra_reporte(db_session):
@@ -117,7 +132,7 @@ def test_unidad_especial_registra_atencion_y_cierra_reporte(db_session):
     assert respuesta.status_code == 201
 
     respuesta_lista = client.get("/api/v1/reportes", headers={"Authorization": f"Bearer {token}"})
-    assert respuesta_lista.json()[0]["estado"] == "CERRADO"
+    assert respuesta_lista.json()["items"][0]["estado"] == "CERRADO"
 
 
 def test_atender_reporte_ya_cerrado_devuelve_409(db_session):

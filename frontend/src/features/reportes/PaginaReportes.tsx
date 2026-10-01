@@ -9,14 +9,17 @@ import type { Reporte } from '@/core/modelos/reporte';
 import { useSesion } from '@/core/sesion/sesion.store';
 import { Alerta } from '@/shared/ui/Alerta';
 import { Boton } from '@/shared/ui/Boton';
-import { AreaTexto, Campo } from '@/shared/ui/Campo';
+import { AreaTexto, Campo, Entrada, Selector } from '@/shared/ui/Campo';
 import { EncabezadoPagina } from '@/shared/ui/EncabezadoPagina';
 import { ErrorCarga } from '@/shared/ui/ErrorCarga';
 import { Etiqueta, type TonoEtiqueta } from '@/shared/ui/Etiqueta';
 import { Modal } from '@/shared/ui/Modal';
+import { Paginacion } from '@/shared/ui/Paginacion';
 import { Tabla, type Columna } from '@/shared/ui/Tabla';
 import { useTitulo } from '@/shared/ui/useTitulo';
 import { puedeAtenderReportes } from './permisos-reportes.lib';
+
+const TAMANO_PAGINA = 20;
 
 const ESTADOS: Record<EstadoReporte, { texto: string; tono: TonoEtiqueta }> = {
   NUEVO: { texto: 'Nuevo', tono: 'info' },
@@ -77,10 +80,19 @@ function FormularioAtencion({ reporte, alTerminar }: { reporte: Reporte; alTermi
 export default function PaginaReportes() {
   useTitulo('Reportes');
   const rol = useSesion((estado) => estado.sesion?.rol);
-  const reportes = useCarga(listarReportes, []);
+  const [pagina, setPagina] = useState(1);
+  const [desde, setDesde] = useState('');
+  const [hasta, setHasta] = useState('');
+  const [estado, setEstado] = useState('');
+  const reportes = useCarga(
+    () => listarReportes({ limit: TAMANO_PAGINA, offset: (pagina - 1) * TAMANO_PAGINA, desde, hasta, estado }),
+    [pagina, desde, hasta, estado],
+  );
   const [atendiendo, setAtendiendo] = useState<Reporte | null>(null);
   const [aviso, setAviso] = useState<string | null>(null);
   const puedeAtender = puedeAtenderReportes(rol);
+  const total = reportes.datos?.total ?? 0;
+  const totalPaginas = Math.ceil(total / TAMANO_PAGINA);
 
   const columnas: Columna<Reporte>[] = [
     { clave: 'fecha', titulo: 'Fecha', celda: (r) => formatearFecha(r.fecha) },
@@ -125,17 +137,67 @@ export default function PaginaReportes() {
           {aviso}
         </Alerta>
       )}
+      <div className="mb-6 grid gap-4 sm:grid-cols-3">
+        <Campo id="rep-desde" etiqueta="Desde">
+          {(props) => (
+            <Entrada
+              {...props}
+              type="date"
+              value={desde}
+              onChange={(e) => {
+                setDesde(e.target.value);
+                setPagina(1);
+              }}
+            />
+          )}
+        </Campo>
+        <Campo id="rep-hasta" etiqueta="Hasta">
+          {(props) => (
+            <Entrada
+              {...props}
+              type="date"
+              value={hasta}
+              onChange={(e) => {
+                setHasta(e.target.value);
+                setPagina(1);
+              }}
+            />
+          )}
+        </Campo>
+        <Campo id="rep-estado" etiqueta="Estado">
+          {(props) => (
+            <Selector
+              {...props}
+              value={estado}
+              onChange={(e) => {
+                setEstado(e.target.value);
+                setPagina(1);
+              }}
+            >
+              <option value="">Todos</option>
+              {(Object.keys(ESTADOS) as EstadoReporte[]).map((clave) => (
+                <option key={clave} value={clave}>
+                  {ESTADOS[clave].texto}
+                </option>
+              ))}
+            </Selector>
+          )}
+        </Campo>
+      </div>
       {reportes.error ? (
         <ErrorCarga titulo="No pudimos cargar los reportes" alReintentar={reportes.recargar} />
       ) : (
-        <Tabla
-          columnas={columnas}
-          filas={reportes.datos ?? []}
-          claveFila={(r) => r.id}
-          descripcion="Reportes de novedades"
-          cargando={reportes.cargando}
-          vacio={<p className="text-tinta-suave">Todavía no hay reportes.</p>}
-        />
+        <>
+          <Tabla
+            columnas={columnas}
+            filas={reportes.datos?.items ?? []}
+            claveFila={(r) => r.id}
+            descripcion="Reportes de novedades"
+            cargando={reportes.cargando}
+            vacio={<p className="text-tinta-suave">Todavía no hay reportes.</p>}
+          />
+          <Paginacion pagina={pagina} totalPaginas={totalPaginas} alCambiar={setPagina} />
+        </>
       )}
 
       <Modal abierto={atendiendo !== null} titulo="Atender reporte" alCerrar={() => setAtendiendo(null)}>
