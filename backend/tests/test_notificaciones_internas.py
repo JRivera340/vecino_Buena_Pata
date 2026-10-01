@@ -56,3 +56,22 @@ def test_listar_y_marcar_leida(db_session):
 
     respuesta_2 = client.get("/api/v1/notificaciones", headers={"Authorization": f"Bearer {token}"})
     assert respuesta_2.json()[0]["leida_en"] is not None
+
+
+def test_marcar_leida_de_otro_usuario_devuelve_403(db_session):
+    lider = Usuario(nombre="Luis", rol=RolUsuarioEnum.LIDER, username="luis.lider2", password_hash=hash_password("x"))
+    otro = Usuario(
+        nombre="Marta", rol=RolUsuarioEnum.VETERINARIO, username="marta.veterinaria", password_hash=hash_password("x")
+    )
+    db_session.add_all([lider, otro])
+    db_session.commit()
+    animal_id = _crear_animal(db_session)
+    notificacion = NotificacionInterna(animal_id=animal_id, origen_tipo="REPORTE", origen_id=1, usuario_id=lider.id)
+    db_session.add(notificacion)
+    db_session.commit()
+
+    token_otro = create_access_token(subject="marta.veterinaria", rol="VETERINARIO")
+    marcar = client.post(
+        f"/api/v1/notificaciones/{notificacion.id}/leer", headers={"Authorization": f"Bearer {token_otro}"}
+    )
+    assert marcar.status_code == 403
