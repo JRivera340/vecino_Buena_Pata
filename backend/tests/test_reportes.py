@@ -120,6 +120,18 @@ def test_reportes_pagina_y_filtra_por_fecha(db_session):
     assert respuesta_vacia.json()["total"] == 3
 
 
+def test_filtro_hasta_incluye_reportes_del_mismo_dia(db_session):
+    from datetime import date
+
+    token = _token(db_session, "maria.comunidad", RolUsuarioEnum.COMUNIDAD)
+    _crear_reporte(db_session)
+
+    hoy = date.today().isoformat()
+    respuesta = client.get(f"/api/v1/reportes?hasta={hoy}", headers={"Authorization": f"Bearer {token}"})
+    assert respuesta.status_code == 200
+    assert respuesta.json()["total"] == 1
+
+
 def test_unidad_especial_registra_atencion_y_cierra_reporte(db_session):
     token = _token(db_session, "unidad.especial", RolUsuarioEnum.UNIDAD_ESPECIAL)
     reporte_id = _crear_reporte(db_session)

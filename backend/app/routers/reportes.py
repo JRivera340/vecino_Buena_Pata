@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import datetime, timedelta
 
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
@@ -29,7 +29,7 @@ def listar_reportes(
     if desde is not None:
         consulta = consulta.filter(ReporteNovedad.fecha >= desde)
     if hasta is not None:
-        consulta = consulta.filter(ReporteNovedad.fecha <= hasta)
+        consulta = consulta.filter(ReporteNovedad.fecha < hasta + timedelta(days=1))
     if estado is not None:
         consulta = consulta.filter(ReporteNovedad.estado == estado)
     total = consulta.count()
