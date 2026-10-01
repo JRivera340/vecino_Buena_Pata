@@ -73,6 +73,10 @@ def crear_reporte_publico(
     db.add(reporte)
     db.commit()
     db.refresh(reporte)
+
+    from app.services.notificaciones_internas import crear_notificaciones
+    crear_notificaciones(db, animal=animal, origen_tipo="REPORTE", origen_id=reporte.id)
+
     return reporte
 
 

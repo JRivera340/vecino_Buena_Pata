@@ -3,8 +3,10 @@ from fastapi.testclient import TestClient
 from app.core.security import create_access_token, hash_password
 from app.main import app
 from app.models.animal import Animal
+from app.models.collar_qr import CollarQr
 from app.models.comunidad import Comunidad
 from app.models.enums import RolUsuarioEnum, SexoEnum, TamanoEnum, TipoComunidadEnum
+from app.models.notificacion_interna import NotificacionInterna
 from app.models.reporte_novedad import ReporteNovedad
 from app.models.usuario import Usuario
 
@@ -48,6 +50,49 @@ def _crear_reporte(db_session) -> int:
     db_session.add(reporte)
     db_session.commit()
     return reporte.id
+
+
+def _crear_animal_con_collar(db_session) -> tuple[int, str]:
+    comunidad = Comunidad(
+        nombre="Patitas del Sur",
+        tipo=TipoComunidadEnum.PROTECCION_ANIMAL,
+        barrio="El Poblado",
+        telefono_contacto="3009876543",
+        email_contacto="contacto@patitasdelsur.org",
+    )
+    db_session.add(comunidad)
+    db_session.commit()
+    animal = Animal(
+        nombre="Rocky",
+        sexo=SexoEnum.MACHO,
+        tamano=TamanoEnum.MEDIANO,
+        barrio="El Poblado",
+        latitud=4.65,
+        longitud=-74.1,
+        comunidad_id=comunidad.id,
+        inscrito_por="maria.comunidad",
+    )
+    db_session.add(animal)
+    db_session.commit()
+    db_session.add(CollarQr(animal_id=animal.id, codigo="vbp-abc123"))
+    db_session.commit()
+    return animal.id, "vbp-abc123"
+
+
+def test_crear_reporte_publico_genera_notificaciones(db_session):
+    _token(db_session, "maria.comunidad", RolUsuarioEnum.COMUNIDAD)
+    animal_id, codigo = _crear_animal_con_collar(db_session)
+
+    respuesta = client.post(
+        f"/api/v1/publico/animales/{codigo}/reportes",
+        json={"reportante_nombre": "Vecino", "descripcion": "Esta herido.", "foto": None, "latitud": None, "longitud": None},
+    )
+    assert respuesta.status_code == 201
+
+    notificaciones = (
+        db_session.query(NotificacionInterna).filter_by(animal_id=animal_id, origen_tipo="REPORTE").all()
+    )
+    assert len(notificaciones) > 0
 
 
 def test_listar_reportes(db_session):

@@ -49,6 +49,10 @@ def registrar_visita(
     animal.visita_en_camino_desde = None
     db.commit()
 
+    if estado_salud != EstadoSaludEnum.BUENO:
+        from app.services.notificaciones_internas import crear_notificaciones
+        crear_notificaciones(db, animal=animal, origen_tipo="VISITA_PREOCUPANTE", origen_id=visita.id)
+
     return visita
 
 

@@ -8,6 +8,7 @@ from app.core.deps import get_current_user, requiere_rol
 from app.models.animal import Animal
 from app.models.enums import EstadoAnimalEnum, RolUsuarioEnum
 from app.models.evento_historial import EventoHistorial
+from app.models.notificacion_interna import NotificacionInterna
 from app.models.usuario import Usuario
 from app.models.validacion import Validacion
 from app.models.visita_seguimiento import VisitaSeguimiento
@@ -21,6 +22,7 @@ from app.services.inscripcion import inscribir_animal as inscribir_animal_servic
 from app.services.inscriptores import obtener_o_crear_persona
 from app.services.localidades import localidad_de_punto
 from app.services.notificaciones import procesar_notificaciones, registrar_notificaciones
+from app.services.notificaciones_internas import crear_notificaciones
 from app.services.seguimiento_estado import DIAS_CADENCIA, calcular_estado_seguimiento
 
 router = APIRouter(prefix="/animales", tags=["animales"])
@@ -69,6 +71,15 @@ def listar_seguimiento(
             en_camino_por=animal.visita_en_camino_por,
             ahora=ahora,
         )
+        if estado == "VENCIDO":
+            ya_notificado = (
+                db.query(NotificacionInterna)
+                .filter_by(animal_id=animal.id, origen_tipo="VISITA_VENCIDA")
+                .filter(NotificacionInterna.creada_en >= ahora - timedelta(days=DIAS_CADENCIA))
+                .first()
+            )
+            if ya_notificado is None:
+                crear_notificaciones(db, animal=animal, origen_tipo="VISITA_VENCIDA", origen_id=None)
         resultado.append(
             {
                 "id": animal.id,

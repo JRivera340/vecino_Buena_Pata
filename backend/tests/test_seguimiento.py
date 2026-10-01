@@ -9,6 +9,7 @@ from app.models.animal import Animal
 from app.models.comunidad import Comunidad
 from app.models.enums import EstadoAnimalEnum, EstadoSaludEnum, RolUsuarioEnum, SexoEnum, TamanoEnum, TipoComunidadEnum
 from app.models.evento_historial import EventoHistorial
+from app.models.notificacion_interna import NotificacionInterna
 from app.models.usuario import Usuario
 from app.services.seguimiento import registrar_visita
 from app.services.seguimiento_estado import calcular_estado_seguimiento
@@ -70,6 +71,46 @@ def test_registrar_visita_en_animal_vbp_activo(db_session):
 
     eventos = db_session.query(EventoHistorial).filter_by(animal_id=animal.id).all()
     assert any(e.tipo_evento == "VISITA_SEGUIMIENTO" for e in eventos)
+
+
+def test_registrar_visita_con_salud_regular_genera_notificacion(db_session):
+    _token(db_session, "maria.comunidad", RolUsuarioEnum.COMUNIDAD)
+    animal = _crear_animal(db_session)
+
+    visita = registrar_visita(
+        db_session,
+        animal_id=animal.id,
+        responsable="dr.rojas",
+        estado_salud=EstadoSaludEnum.REGULAR,
+        estado_comportamiento="Nervioso",
+        peso_kg=14.0,
+    )
+
+    notificaciones = (
+        db_session.query(NotificacionInterna)
+        .filter_by(animal_id=animal.id, origen_tipo="VISITA_PREOCUPANTE", origen_id=visita.id)
+        .all()
+    )
+    assert len(notificaciones) > 0
+
+
+def test_registrar_visita_con_salud_buena_no_genera_notificacion(db_session):
+    _token(db_session, "maria.comunidad", RolUsuarioEnum.COMUNIDAD)
+    animal = _crear_animal(db_session)
+
+    registrar_visita(
+        db_session,
+        animal_id=animal.id,
+        responsable="dr.rojas",
+        estado_salud=EstadoSaludEnum.BUENO,
+        estado_comportamiento="Tranquilo",
+        peso_kg=14.0,
+    )
+
+    notificaciones = (
+        db_session.query(NotificacionInterna).filter_by(animal_id=animal.id, origen_tipo="VISITA_PREOCUPANTE").all()
+    )
+    assert len(notificaciones) == 0
 
 
 def test_no_se_puede_registrar_visita_a_un_candidato(db_session):
@@ -196,3 +237,36 @@ def test_listar_seguimiento_incluye_estado(db_session):
     assert respuesta.status_code == 200
     cuerpo = respuesta.json()
     assert cuerpo[0]["estado_seguimiento"] == "VENCIDO"
+
+
+def test_listar_seguimiento_notifica_vencido_sin_duplicar(db_session):
+    comunidad = Comunidad(
+        nombre="Patitas", tipo=TipoComunidadEnum.PROTECCION_ANIMAL,
+        barrio="X", telefono_contacto="300", email_contacto="c@c.org",
+    )
+    db_session.add(comunidad)
+    db_session.commit()
+    animal = Animal(
+        nombre="Rocky", sexo=SexoEnum.MACHO, tamano=TamanoEnum.MEDIANO,
+        barrio="X", latitud=4.6, longitud=-74.1, comunidad_id=comunidad.id,
+        estado=EstadoAnimalEnum.VBP_ACTIVO, inscrito_por="maria.comunidad",
+        fecha_inscripcion=datetime.now(timezone.utc) - timedelta(days=200),
+    )
+    db_session.add(animal)
+    db_session.commit()
+
+    token = _token(db_session, "unidad.especial", RolUsuarioEnum.UNIDAD_ESPECIAL)
+
+    respuesta = client.get("/api/v1/animales/seguimiento", headers={"Authorization": f"Bearer {token}"})
+    assert respuesta.status_code == 200
+    assert respuesta.json()[0]["estado_seguimiento"] == "VENCIDO"
+
+    respuesta_otra_vez = client.get("/api/v1/animales/seguimiento", headers={"Authorization": f"Bearer {token}"})
+    assert respuesta_otra_vez.status_code == 200
+
+    notificaciones = (
+        db_session.query(NotificacionInterna)
+        .filter_by(animal_id=animal.id, origen_tipo="VISITA_VENCIDA")
+        .all()
+    )
+    assert len(notificaciones) == 1
