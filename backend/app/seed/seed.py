@@ -91,8 +91,21 @@ def ejecutar_seed() -> None:
             db.flush()
             comunidades[comunidad.barrio] = comunidad
 
+        usuarios_creados = {}
         for datos in _USUARIOS:
-            db.add(Usuario(**datos, password_hash=hash_password(_PASSWORD_SEMILLA)))
+            usuario = Usuario(**datos, password_hash=hash_password(_PASSWORD_SEMILLA))
+            db.add(usuario)
+            usuarios_creados[datos["username"]] = usuario
+        db.flush()
+
+        # El lider de campo representa a La Esperanza; maria.comunidad tambien
+        # pertenece a esa comunidad, para que "Mis perritos" y las
+        # notificaciones de lider muestren datos de verdad en desarrollo.
+        comunidad_esperanza = comunidades["La Esperanza"]
+        comunidad_esperanza.lider_id = usuarios_creados["lider.campo"].id
+        usuarios_creados["lider.campo"].comunidad_id = comunidad_esperanza.id
+        usuarios_creados["maria.comunidad"].comunidad_id = comunidad_esperanza.id
+        db.flush()
 
         barrios = list(_BARRIOS_COORDENADAS.keys())
 

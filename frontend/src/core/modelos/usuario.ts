@@ -36,3 +36,9 @@ export interface UsuarioEditar {
   numero_documento?: string;
   password?: string;
 }
+
+export interface MiembroComunidadCrear {
+  nombre: string;
+  username: string;
+  password: string;
+}
