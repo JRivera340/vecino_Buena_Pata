@@ -134,3 +134,42 @@ def test_edita_el_documento_sin_chocar_con_otro_usuario(db_session):
 
     assert choque.status_code == 409
     assert libre.status_code == 200 and libre.json()["numero_documento"] == "80123457"
+
+
+def test_lider_agrega_un_miembro_a_su_comunidad(db_session):
+    encabezados_admin = _encabezados(db_session)
+    lider = client.post("/api/v1/usuarios", json=_lider(), headers=encabezados_admin).json()
+    token_lider = create_access_token(subject="luis.lider", rol="LIDER")
+
+    respuesta = client.post(
+        "/api/v1/comunidades/mis-miembros",
+        json={"nombre": "Ana Vecina", "username": "ana.vecina", "password": "clave-segura-1"},
+        headers={"Authorization": f"Bearer {token_lider}"},
+    )
+
+    assert respuesta.status_code == 201
+    cuerpo = respuesta.json()
+    assert cuerpo["rol"] == "COMUNIDAD"
+    assert cuerpo["comunidad_id"] == lider["comunidad_id"]
+
+
+def test_comunidad_no_puede_agregar_miembros(db_session):
+    encabezados_admin = _encabezados(db_session)
+    client.post("/api/v1/usuarios", json=_lider(), headers=encabezados_admin)
+    db_session.add(
+        Usuario(
+            nombre="Ana Vecina",
+            rol=RolUsuarioEnum.COMUNIDAD,
+            username="ana.vecina",
+            password_hash=hash_password("clave-segura-1"),
+        )
+    )
+    db_session.commit()
+    token_comunidad = create_access_token(subject="ana.vecina", rol="COMUNIDAD")
+
+    respuesta = client.post(
+        "/api/v1/comunidades/mis-miembros",
+        json={"nombre": "Otro", "username": "otro", "password": "clave-segura-1"},
+        headers={"Authorization": f"Bearer {token_comunidad}"},
+    )
+    assert respuesta.status_code == 403

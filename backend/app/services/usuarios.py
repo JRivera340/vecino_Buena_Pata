@@ -4,7 +4,7 @@ from app.core.security import hash_password
 from app.models.comunidad import Comunidad
 from app.models.enums import RolUsuarioEnum, TipoDocumentoEnum
 from app.models.usuario import Usuario
-from app.schemas.usuario import UsuarioCrear, UsuarioEditar, UsuarioSchema
+from app.schemas.usuario import MiembroComunidadCrear, UsuarioCrear, UsuarioEditar, UsuarioSchema
 from app.services.documentos import normalizar_numero_documento
 
 
@@ -85,6 +85,25 @@ def crear_usuario(db: Session, datos: UsuarioCrear) -> UsuarioSchema:
     db.commit()
     db.refresh(usuario)
     return a_esquema(db, usuario)
+
+
+def agregar_miembro(db: Session, lider: Usuario, datos: MiembroComunidadCrear) -> UsuarioSchema:
+    if lider.comunidad_id is None:
+        raise UsuarioInvalido("Tu cuenta no tiene una comunidad asignada.", 409)
+    if db.query(Usuario).filter_by(username=datos.username).first():
+        raise UsuarioInvalido("Ya existe un usuario con ese nombre de usuario.", 409)
+
+    miembro = Usuario(
+        nombre=datos.nombre.strip(),
+        username=datos.username,
+        rol=RolUsuarioEnum.COMUNIDAD,
+        password_hash=hash_password(datos.password),
+        comunidad_id=lider.comunidad_id,
+    )
+    db.add(miembro)
+    db.commit()
+    db.refresh(miembro)
+    return a_esquema(db, miembro)
 
 
 def editar_usuario(db: Session, usuario_id: int, datos: UsuarioEditar) -> UsuarioSchema:
