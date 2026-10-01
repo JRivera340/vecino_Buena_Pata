@@ -1,10 +1,28 @@
-import pytest
+from datetime import datetime, timedelta, timezone
 
+import pytest
+from fastapi.testclient import TestClient
+
+from app.core.security import create_access_token, hash_password
+from app.main import app
 from app.models.animal import Animal
 from app.models.comunidad import Comunidad
-from app.models.enums import EstadoAnimalEnum, EstadoSaludEnum, SexoEnum, TamanoEnum, TipoComunidadEnum
+from app.models.enums import EstadoAnimalEnum, EstadoSaludEnum, RolUsuarioEnum, SexoEnum, TamanoEnum, TipoComunidadEnum
 from app.models.evento_historial import EventoHistorial
+from app.models.usuario import Usuario
 from app.services.seguimiento import registrar_visita
+from app.services.seguimiento_estado import calcular_estado_seguimiento
+
+client = TestClient(app)
+
+AHORA = datetime(2026, 9, 30, tzinfo=timezone.utc)
+
+
+def _token(db_session, username: str, rol: RolUsuarioEnum) -> str:
+    usuario = Usuario(nombre=username, rol=rol, username=username, password_hash=hash_password("vbp2026"))
+    db_session.add(usuario)
+    db_session.commit()
+    return create_access_token(subject=username, rol=rol.value)
 
 
 def _crear_animal(db_session, estado=EstadoAnimalEnum.VBP_ACTIVO) -> Animal:
@@ -115,3 +133,66 @@ def test_marcar_en_camino_y_que_se_limpie_al_visitar(db_session):
     )
     db_session.refresh(animal)
     assert animal.visita_en_camino_por is None
+
+
+def test_estado_al_dia_recien_formalizado():
+    estado = calcular_estado_seguimiento(
+        fecha_formalizacion=AHORA - timedelta(days=10),
+        fecha_ultima_visita=None,
+        en_camino_por=None,
+        ahora=AHORA,
+    )
+    assert estado == "AL_DIA"
+
+
+def test_estado_proximo_a_vencer():
+    estado = calcular_estado_seguimiento(
+        fecha_formalizacion=AHORA - timedelta(days=110),
+        fecha_ultima_visita=None,
+        en_camino_por=None,
+        ahora=AHORA,
+    )
+    assert estado == "PROXIMO"
+
+
+def test_estado_vencido():
+    estado = calcular_estado_seguimiento(
+        fecha_formalizacion=AHORA - timedelta(days=200),
+        fecha_ultima_visita=None,
+        en_camino_por=None,
+        ahora=AHORA,
+    )
+    assert estado == "VENCIDO"
+
+
+def test_estado_en_camino_tiene_prioridad():
+    estado = calcular_estado_seguimiento(
+        fecha_formalizacion=AHORA - timedelta(days=200),
+        fecha_ultima_visita=None,
+        en_camino_por="unidad.especial",
+        ahora=AHORA,
+    )
+    assert estado == "EN_CAMINO"
+
+
+def test_listar_seguimiento_incluye_estado(db_session):
+    comunidad = Comunidad(
+        nombre="Patitas", tipo=TipoComunidadEnum.PROTECCION_ANIMAL,
+        barrio="X", telefono_contacto="300", email_contacto="c@c.org",
+    )
+    db_session.add(comunidad)
+    db_session.commit()
+    animal = Animal(
+        nombre="Rocky", sexo=SexoEnum.MACHO, tamano=TamanoEnum.MEDIANO,
+        barrio="X", latitud=4.6, longitud=-74.1, comunidad_id=comunidad.id,
+        estado=EstadoAnimalEnum.VBP_ACTIVO, inscrito_por="maria.comunidad",
+        fecha_inscripcion=datetime.now(timezone.utc) - timedelta(days=200),
+    )
+    db_session.add(animal)
+    db_session.commit()
+
+    token = _token(db_session, "unidad.especial", RolUsuarioEnum.UNIDAD_ESPECIAL)
+    respuesta = client.get("/api/v1/animales/seguimiento", headers={"Authorization": f"Bearer {token}"})
+    assert respuesta.status_code == 200
+    cuerpo = respuesta.json()
+    assert cuerpo[0]["estado_seguimiento"] == "VENCIDO"

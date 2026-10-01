@@ -1,16 +1,19 @@
+from datetime import datetime, timedelta, timezone
+
 from fastapi import APIRouter, BackgroundTasks, Depends, HTTPException, status
 from sqlalchemy.orm import Session
 
 from app.core.db import get_db
 from app.core.deps import get_current_user, requiere_rol
 from app.models.animal import Animal
-from app.models.enums import RolUsuarioEnum
+from app.models.enums import EstadoAnimalEnum, RolUsuarioEnum
 from app.models.evento_historial import EventoHistorial
 from app.models.usuario import Usuario
 from app.models.validacion import Validacion
 from app.models.visita_seguimiento import VisitaSeguimiento
 from app.schemas.animal import AnimalCrear, AnimalSchema
 from app.schemas.historial import EventoHistorialSchema
+from app.schemas.seguimiento import AnimalSeguimientoSchema
 from app.schemas.validacion import ValidacionSchema
 from app.schemas.visita import VisitaSchema
 from app.services.documentos import normalizar_numero_documento
@@ -18,6 +21,7 @@ from app.services.inscripcion import inscribir_animal as inscribir_animal_servic
 from app.services.inscriptores import obtener_o_crear_persona
 from app.services.localidades import localidad_de_punto
 from app.services.notificaciones import procesar_notificaciones, registrar_notificaciones
+from app.services.seguimiento_estado import DIAS_CADENCIA, calcular_estado_seguimiento
 
 router = APIRouter(prefix="/animales", tags=["animales"])
 
@@ -32,6 +36,53 @@ _ROLES_INSCRIBEN = (
 @router.get("", response_model=list[AnimalSchema])
 def listar_animales(db: Session = Depends(get_db), _=Depends(get_current_user)) -> list[Animal]:
     return db.query(Animal).order_by(Animal.fecha_inscripcion.desc()).all()
+
+
+@router.get("/seguimiento", response_model=list[AnimalSeguimientoSchema])
+def listar_seguimiento(
+    db: Session = Depends(get_db),
+    _=Depends(requiere_rol(RolUsuarioEnum.UNIDAD_ESPECIAL, RolUsuarioEnum.ADMIN)),
+) -> list[dict]:
+    ahora = datetime.now(timezone.utc)
+    animales = db.query(Animal).filter_by(estado=EstadoAnimalEnum.VBP_ACTIVO).all()
+    resultado = []
+    for animal in animales:
+        ultima_visita = (
+            db.query(VisitaSeguimiento)
+            .filter_by(animal_id=animal.id)
+            .order_by(VisitaSeguimiento.fecha.desc())
+            .first()
+        )
+        if ultima_visita is not None:
+            base = ultima_visita.fecha
+        else:
+            evento_formalizacion = (
+                db.query(EventoHistorial)
+                .filter_by(animal_id=animal.id, tipo_evento="FORMALIZACION")
+                .order_by(EventoHistorial.fecha.desc())
+                .first()
+            )
+            base = evento_formalizacion.fecha if evento_formalizacion else animal.fecha_inscripcion
+        estado = calcular_estado_seguimiento(
+            fecha_formalizacion=base,
+            fecha_ultima_visita=None,
+            en_camino_por=animal.visita_en_camino_por,
+            ahora=ahora,
+        )
+        resultado.append(
+            {
+                "id": animal.id,
+                "nombre": animal.nombre,
+                "barrio": animal.barrio,
+                "comunidad_id": animal.comunidad_id,
+                "latitud": animal.latitud,
+                "longitud": animal.longitud,
+                "estado_seguimiento": estado,
+                "visita_en_camino_por": animal.visita_en_camino_por,
+                "proxima_visita_vence": base + timedelta(days=DIAS_CADENCIA),
+            }
+        )
+    return resultado
 
 
 @router.get("/{animal_id}", response_model=AnimalSchema)
