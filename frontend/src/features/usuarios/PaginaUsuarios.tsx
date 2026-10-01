@@ -26,6 +26,7 @@ import {
 const NOMBRE_ROL: Record<string, string> = {
   COMUNIDAD: 'Comunidad',
   VETERINARIO: 'Veterinario',
+  UNIDAD_ESPECIAL: 'Unidad Especial',
   LIDER: 'Líder',
   ADMIN: 'Administrador',
 };

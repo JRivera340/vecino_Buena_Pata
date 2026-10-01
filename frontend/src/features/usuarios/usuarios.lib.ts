@@ -32,6 +32,7 @@ const USUARIO = /^[a-z0-9._-]{3,60}$/;
 export const ROLES_CREABLES: { valor: RolUsuario; texto: string }[] = [
   { valor: 'LIDER', texto: 'Líder de comunidad' },
   { valor: 'VETERINARIO', texto: 'Veterinario' },
+  { valor: 'UNIDAD_ESPECIAL', texto: 'Unidad Especial' },
   { valor: 'ADMIN', texto: 'Administrador' },
 ];
 
