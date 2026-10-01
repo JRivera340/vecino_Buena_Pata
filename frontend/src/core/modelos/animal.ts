@@ -8,6 +8,7 @@ export interface Animal {
   edad_estimada: number | null;
   tamano: Tamano;
   descripcion: string | null;
+  observacion_comportamiento: string | null;
   foto_principal: string | null;
   estado: EstadoAnimal;
   esterilizado: boolean;

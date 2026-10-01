@@ -10,6 +10,7 @@ function crearAnimal(datos: Partial<Animal>): Animal {
     edad_estimada: null,
     tamano: 'MEDIANO',
     descripcion: null,
+    observacion_comportamiento: null,
     foto_principal: null,
     estado: 'VBP_ACTIVO',
     esterilizado: true,

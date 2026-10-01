@@ -14,6 +14,7 @@ vi.mock('@/core/api/animales', () => ({
     edad_estimada: 0,
     tamano: 'PEQUENO',
     descripcion: 'Cachorro de bulldog.',
+    observacion_comportamiento: 'Se asusta con ruidos fuertes.',
     foto_principal: 'foto.jpg',
     estado: 'CANDIDATO',
     esterilizado: false,
@@ -60,6 +61,7 @@ describe('PaginaFichaInterna', () => {
     expect(await screen.findByRole('heading', { name: 'Bruno', level: 1 })).toBeInTheDocument();
     expect(screen.getByText('Todavía no tiene visitas.')).toBeInTheDocument();
     expect(screen.getByText('Inscripción')).toBeInTheDocument();
+    expect(screen.getByText('Se asusta con ruidos fuertes.')).toBeInTheDocument();
   });
 
   it('abre el formulario de reporte al hacer clic en Reportar novedad', async () => {

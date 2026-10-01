@@ -150,6 +150,12 @@ export default function PaginaFichaInterna() {
               <Dato etiqueta="Esterilizado" valor={animal.esterilizado ? 'Sí' : 'No'} />
               <Dato etiqueta="Microchip" valor={animal.numero_microchip ?? 'Sin microchip'} />
             </dl>
+            {animal.observacion_comportamiento && (
+              <p className="mt-4 max-w-[62ch] text-pequeno text-tinta-suave">
+                <span className="font-semibold text-tinta">Comportamiento al inscribir: </span>
+                {animal.observacion_comportamiento}
+              </p>
+            )}
           </section>
 
           <section aria-labelledby="titulo-validaciones" className="space-y-3">
