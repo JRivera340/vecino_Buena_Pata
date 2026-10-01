@@ -24,3 +24,4 @@ class ComunidadSchema(BaseModel):
     email_contacto: str
     activa: bool
     fecha_registro: datetime
+    lider_id: int | None = None

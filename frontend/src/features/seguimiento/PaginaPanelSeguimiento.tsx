@@ -1,7 +1,6 @@
 import { useMemo, useState } from 'react';
 import { cancelarEnCamino, listarSeguimiento, marcarEnCamino } from '@/core/api/seguimiento-estado';
 import { listarComunidades } from '@/core/api/comunidades';
-import { listarUsuarios } from '@/core/api/usuarios';
 import { useCarga } from '@/core/api/useCarga';
 import { formatearFecha } from '@/core/formato.lib';
 import type { AnimalSeguimiento } from '@/core/modelos/seguimiento-estado';
@@ -38,7 +37,6 @@ export default function PaginaPanelSeguimiento() {
 
   const seguimiento = useCarga(listarSeguimiento, []);
   const comunidades = useCarga(listarComunidades, []);
-  const usuarios = useCarga(listarUsuarios, []);
 
   const [busqueda, setBusqueda] = useState('');
   const [comunidadId, setComunidadId] = useState<number | 'TODAS'>('TODAS');
@@ -47,19 +45,19 @@ export default function PaginaPanelSeguimiento() {
 
   const lista: AnimalSeguimiento[] = useMemo(() => seguimiento.datos ?? [], [seguimiento.datos]);
 
-  const lideres = useMemo(
-    () => (usuarios.datos ?? []).filter((usuario) => usuario.rol === 'LIDER'),
-    [usuarios.datos],
+  // listarUsuarios() es solo-ADMIN, así que las opciones de líder y el mapa comunidad -> líder
+  // salen de listarComunidades() (sin restricción de rol), usando su lider_id.
+  const comunidadesConLider = useMemo(
+    () => (comunidades.datos ?? []).filter((comunidad) => comunidad.lider_id != null),
+    [comunidades.datos],
   );
   const comunidadALider = useMemo(() => {
     const mapa = new Map<number, number>();
-    for (const lider of lideres) {
-      if (lider.comunidad_id !== null) {
-        mapa.set(lider.comunidad_id, lider.id);
-      }
+    for (const comunidad of comunidadesConLider) {
+      mapa.set(comunidad.id, comunidad.lider_id as number);
     }
     return mapa;
-  }, [lideres]);
+  }, [comunidadesConLider]);
 
   const visibles = useMemo(() => {
     const porFiltrosBase = filtrarSeguimiento(lista, { busqueda, comunidadId, liderId });
@@ -149,9 +147,9 @@ export default function PaginaPanelSeguimiento() {
                   }
                 >
                   <option value="TODOS">Todos</option>
-                  {lideres.map((lider) => (
-                    <option key={lider.id} value={lider.id}>
-                      {lider.nombre}
+                  {comunidadesConLider.map((comunidad) => (
+                    <option key={comunidad.id} value={comunidad.lider_id as number}>
+                      Líder de {comunidad.nombre}
                     </option>
                   ))}
                 </Selector>
