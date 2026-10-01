@@ -59,6 +59,16 @@ def test_crea_un_lider_con_documento_normalizado_y_su_comunidad(db_session):
     assert comunidad.lider_id == cuerpo["id"]
 
 
+def test_crear_lider_deja_comunidad_id_en_el_usuario(db_session):
+    encabezados = _encabezados(db_session)
+    respuesta = client.post("/api/v1/usuarios", json=_lider(), headers=encabezados)
+    cuerpo = respuesta.json()
+
+    usuario = db_session.query(Usuario).filter_by(username="luis.lider").one()
+    assert usuario.comunidad_id is not None
+    assert cuerpo["comunidad_id"] == usuario.comunidad_id
+
+
 def test_el_lider_puede_iniciar_sesion(db_session):
     encabezados = _encabezados(db_session)
     client.post("/api/v1/usuarios", json=_lider(), headers=encabezados)

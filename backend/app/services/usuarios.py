@@ -34,10 +34,10 @@ def _verificar_documento_libre(db: Session, tipo, numero, excepto_id: int | None
 
 
 def a_esquema(db: Session, usuario: Usuario) -> UsuarioSchema:
-    comunidad = db.query(Comunidad).filter_by(lider_id=usuario.id).first()
     esquema = UsuarioSchema.model_validate(usuario)
-    esquema.comunidad_id = comunidad.id if comunidad else None
-    esquema.comunidad_nombre = comunidad.nombre if comunidad else None
+    if usuario.comunidad_id is not None:
+        comunidad = db.get(Comunidad, usuario.comunidad_id)
+        esquema.comunidad_nombre = comunidad.nombre if comunidad else None
     return esquema
 
 
@@ -81,6 +81,7 @@ def crear_usuario(db: Session, datos: UsuarioCrear) -> UsuarioSchema:
     db.flush()
     if comunidad is not None:
         comunidad.lider_id = usuario.id
+        usuario.comunidad_id = comunidad.id
     db.commit()
     db.refresh(usuario)
     return a_esquema(db, usuario)

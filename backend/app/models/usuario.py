@@ -1,4 +1,4 @@
-from sqlalchemy import String, UniqueConstraint
+from sqlalchemy import ForeignKey, String, UniqueConstraint
 from sqlalchemy.orm import Mapped, mapped_column
 
 from app.core.db import Base
@@ -16,3 +16,6 @@ class Usuario(Base):
     password_hash: Mapped[str] = mapped_column(String(255))
     tipo_documento: Mapped[TipoDocumentoEnum | None] = mapped_column(nullable=True)
     numero_documento: Mapped[str | None] = mapped_column(String(30), nullable=True)
+    comunidad_id: Mapped[int | None] = mapped_column(
+        ForeignKey("comunidad.id", name="fk_usuario_comunidad_id", use_alter=True), nullable=True
+    )
