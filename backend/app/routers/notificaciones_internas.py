@@ -1,7 +1,6 @@
 from datetime import datetime, timezone
 
 from fastapi import APIRouter, Depends, HTTPException, status
-from sqlalchemy import or_
 from sqlalchemy.orm import Session
 
 from app.core.db import get_db
@@ -19,7 +18,7 @@ def listar_notificaciones(
 ) -> list[NotificacionInterna]:
     return (
         db.query(NotificacionInterna)
-        .filter(or_(NotificacionInterna.usuario_id == usuario.id, NotificacionInterna.rol == usuario.rol.value))
+        .filter(NotificacionInterna.usuario_id == usuario.id)
         .order_by(NotificacionInterna.creada_en.desc())
         .all()
     )
@@ -32,7 +31,7 @@ def marcar_leida(
     notificacion = db.get(NotificacionInterna, notificacion_id)
     if notificacion is None:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Notificacion no encontrada.")
-    if notificacion.usuario_id != usuario.id and notificacion.rol != usuario.rol.value:
+    if notificacion.usuario_id != usuario.id:
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="No autorizado.")
     notificacion.leida_en = datetime.now(timezone.utc)
     db.commit()

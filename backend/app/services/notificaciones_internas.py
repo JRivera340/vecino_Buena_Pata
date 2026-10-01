@@ -15,9 +15,12 @@ def crear_notificaciones(
     notificaciones: list[NotificacionInterna] = []
 
     for rol in ROLES_BROADCAST:
-        if db.query(Usuario).filter_by(rol=rol).first() is not None:
+        usuarios_rol = db.query(Usuario).filter_by(rol=rol).all()
+        for usuario_rol in usuarios_rol:
             notificaciones.append(
-                NotificacionInterna(animal_id=animal.id, origen_tipo=origen_tipo, origen_id=origen_id, rol=rol.value)
+                NotificacionInterna(
+                    animal_id=animal.id, origen_tipo=origen_tipo, origen_id=origen_id, usuario_id=usuario_rol.id
+                )
             )
 
     comunidad = db.get(Comunidad, animal.comunidad_id)
