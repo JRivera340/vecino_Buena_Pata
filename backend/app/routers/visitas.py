@@ -54,6 +54,11 @@ def cancelar_ir_en_camino(
     usuario: Usuario = Depends(requiere_rol(RolUsuarioEnum.UNIDAD_ESPECIAL, RolUsuarioEnum.ADMIN)),
 ) -> None:
     try:
-        cancelar_en_camino(db, animal_id=animal_id, responsable=usuario.username)
+        cancelar_en_camino(
+            db,
+            animal_id=animal_id,
+            responsable=usuario.username,
+            es_admin=usuario.rol == RolUsuarioEnum.ADMIN,
+        )
     except ValueError as error:
         raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail=str(error)) from error

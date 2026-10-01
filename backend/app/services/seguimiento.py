@@ -71,11 +71,11 @@ def marcar_en_camino(db: Session, animal_id: int, responsable: str) -> Animal:
     return animal
 
 
-def cancelar_en_camino(db: Session, animal_id: int, responsable: str) -> Animal:
+def cancelar_en_camino(db: Session, animal_id: int, responsable: str, es_admin: bool = False) -> Animal:
     animal = db.get(Animal, animal_id)
     if animal is None:
         raise ValueError("Animal no encontrado.")
-    if animal.visita_en_camino_por != responsable:
+    if animal.visita_en_camino_por != responsable and not es_admin:
         raise ValueError("No marcaste tu ir en camino a este animal.")
     animal.visita_en_camino_por = None
     animal.visita_en_camino_desde = None

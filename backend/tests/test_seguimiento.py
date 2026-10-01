@@ -176,6 +176,29 @@ def test_marcar_en_camino_y_que_se_limpie_al_visitar(db_session):
     assert animal.visita_en_camino_por is None
 
 
+def test_admin_puede_cancelar_en_camino_de_otro(db_session):
+    from app.services.seguimiento import cancelar_en_camino, marcar_en_camino
+
+    animal = _crear_animal(db_session)
+    marcar_en_camino(db_session, animal_id=animal.id, responsable="unidad.especial")
+
+    cancelar_en_camino(db_session, animal_id=animal.id, responsable="admin.principal", es_admin=True)
+    db_session.refresh(animal)
+    assert animal.visita_en_camino_por is None
+
+
+def test_no_admin_no_puede_cancelar_en_camino_de_otro(db_session):
+    from app.services.seguimiento import cancelar_en_camino, marcar_en_camino
+
+    animal = _crear_animal(db_session)
+    marcar_en_camino(db_session, animal_id=animal.id, responsable="unidad.especial")
+
+    with pytest.raises(ValueError):
+        cancelar_en_camino(db_session, animal_id=animal.id, responsable="otra.persona", es_admin=False)
+    db_session.refresh(animal)
+    assert animal.visita_en_camino_por == "unidad.especial"
+
+
 def test_estado_al_dia_recien_formalizado():
     estado = calcular_estado_seguimiento(
         fecha_formalizacion=AHORA - timedelta(days=10),
