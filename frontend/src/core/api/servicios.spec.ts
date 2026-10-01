@@ -79,6 +79,9 @@ describe('servicios de la API', () => {
       latitud: 4.6,
       longitud: -74.1,
       comunidad_id: 1,
+      tipo_documento: 'CC',
+      numero_documento: '1234567',
+      observacion_comportamiento: null,
     });
     expect(ultimaLlamada()).toMatchObject({ url: `${BASE}/animales`, metodo: 'POST' });
   });

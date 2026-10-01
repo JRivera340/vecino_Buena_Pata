@@ -5,7 +5,8 @@ import { listarComunidades } from '@/core/api/comunidades';
 import { subirArchivo } from '@/core/api/medios';
 import { mensajeError } from '@/core/api/mensaje-error';
 import { useCarga } from '@/core/api/useCarga';
-import type { Especie, Sexo, Tamano } from '@/core/modelos/enums';
+import type { Especie, Sexo, Tamano, TipoDocumento } from '@/core/modelos/enums';
+import { TIPOS_DOCUMENTO } from '@/features/publico/inscripcion/documento.lib';
 import { ChipLocalidad } from '@/shared/mapa/ChipLocalidad';
 import { MapaTerritorio, type UbicacionSeleccionada } from '@/shared/mapa/MapaTerritorio';
 import { Alerta } from '@/shared/ui/Alerta';
@@ -28,6 +29,9 @@ export default function PaginaInscribir() {
   const [barrio, setBarrio] = useState('');
   const [comunidadId, setComunidadId] = useState<number | null>(null);
   const [descripcion, setDescripcion] = useState('');
+  const [tipoDocumento, setTipoDocumento] = useState<TipoDocumento>('CC');
+  const [numeroDocumento, setNumeroDocumento] = useState('');
+  const [observacionComportamiento, setObservacionComportamiento] = useState('');
   const [foto, setFoto] = useState<File | null>(null);
   const [ubicacion, setUbicacion] = useState<UbicacionSeleccionada | null>(null);
   const [errores, setErrores] = useState<ErroresInscripcion>({});
@@ -43,6 +47,8 @@ export default function PaginaInscribir() {
       ubicacion,
       foto,
       edadEstimada: edad,
+      tipoDocumento,
+      numeroDocumento,
     });
     setErrores(nuevos);
     if (Object.keys(nuevos).length > 0 || !foto || !ubicacion || comunidadId === null) {
@@ -64,6 +70,10 @@ export default function PaginaInscribir() {
         latitud: ubicacion.lat,
         longitud: ubicacion.lng,
         comunidad_id: comunidadId,
+        tipo_documento: tipoDocumento,
+        numero_documento: numeroDocumento.trim(),
+        observacion_comportamiento:
+          observacionComportamiento.trim() === '' ? null : observacionComportamiento.trim(),
       });
       navegar(`/animales/${animal.id}`);
     } catch (error) {
@@ -178,6 +188,51 @@ export default function PaginaInscribir() {
               />
             )}
           </Campo>
+          <Campo
+            id="ins-observacion-comportamiento"
+            etiqueta="Observación de comportamiento inicial"
+            ayuda="Opcional. Señales de agresividad, miedo u otro comportamiento a tener en cuenta."
+          >
+            {(props) => (
+              <AreaTexto
+                {...props}
+                value={observacionComportamiento}
+                onChange={(e) => setObservacionComportamiento(e.target.value)}
+              />
+            )}
+          </Campo>
+          <div className="grid gap-4 sm:grid-cols-[auto,1fr]">
+            <Campo id="ins-tipo-documento" etiqueta="Tipo de documento" obligatorio>
+              {(props) => (
+                <Selector
+                  {...props}
+                  value={tipoDocumento}
+                  onChange={(e) => setTipoDocumento(e.target.value as TipoDocumento)}
+                >
+                  {TIPOS_DOCUMENTO.map((tipo) => (
+                    <option key={tipo.valor} value={tipo.valor}>
+                      {tipo.texto}
+                    </option>
+                  ))}
+                </Selector>
+              )}
+            </Campo>
+            <Campo
+              id="ins-numero-documento"
+              etiqueta="Número de documento de quien inscribe"
+              obligatorio
+              error={errores.numeroDocumento}
+              ayuda="De la persona que está diligenciando el formulario."
+            >
+              {(props) => (
+                <Entrada
+                  {...props}
+                  value={numeroDocumento}
+                  onChange={(e) => setNumeroDocumento(e.target.value)}
+                />
+              )}
+            </Campo>
+          </div>
           <Campo
             id="ins-foto"
             etiqueta="Foto"

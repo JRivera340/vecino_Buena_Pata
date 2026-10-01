@@ -8,6 +8,8 @@ function formulario(datos: Partial<FormularioInscripcion> = {}): FormularioInscr
     ubicacion: { lat: 4.6, lng: -74.1 },
     foto: new File(['x'], 'foto.jpg', { type: 'image/jpeg' }),
     edadEstimada: '',
+    tipoDocumento: 'CC',
+    numeroDocumento: '1234567',
     ...datos,
   };
 }
@@ -24,6 +26,11 @@ describe('validarInscripcion', () => {
     expect(validarInscripcion(formulario({ nombre: '   ' })).nombre).toBe(
       'Escribe el nombre del animal.',
     );
+  });
+
+  it('exige numero de documento', () => {
+    const errores = validarInscripcion(formulario({ numeroDocumento: '' }));
+    expect(errores.numeroDocumento).toBeDefined();
   });
 
   it('pide el barrio', () => {

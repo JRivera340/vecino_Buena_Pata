@@ -1,3 +1,5 @@
+import type { TipoDocumento } from '@/core/modelos/enums';
+import { validarDocumento } from '@/features/publico/inscripcion/documento.lib';
 import type { UbicacionSeleccionada } from '@/shared/mapa/MapaTerritorio';
 
 export interface FormularioInscripcion {
@@ -7,6 +9,8 @@ export interface FormularioInscripcion {
   ubicacion: UbicacionSeleccionada | null;
   foto: File | null;
   edadEstimada: string;
+  tipoDocumento: TipoDocumento;
+  numeroDocumento: string;
 }
 
 export interface ErroresInscripcion {
@@ -16,6 +20,7 @@ export interface ErroresInscripcion {
   ubicacion?: string;
   foto?: string;
   edad?: string;
+  numeroDocumento?: string;
 }
 
 const MAXIMO_FOTO_BYTES = 10 * 1024 * 1024;
@@ -50,6 +55,11 @@ export function validarInscripcion(formulario: FormularioInscripcion): ErroresIn
   const edad = formulario.edadEstimada.trim();
   if (edad !== '' && (!EDAD_ENTERA.test(edad) || Number(edad) > 30)) {
     errores.edad = 'La edad debe ser un número entero de años entre 0 y 30.';
+  }
+
+  const errorDocumento = validarDocumento(formulario.numeroDocumento);
+  if (errorDocumento !== null) {
+    errores.numeroDocumento = errorDocumento;
   }
 
   return errores;

@@ -1,4 +1,4 @@
-import { CausalSalida, Especie, EstadoAnimal, Sexo, Tamano } from './enums';
+import { CausalSalida, Especie, EstadoAnimal, Sexo, Tamano, TipoDocumento } from './enums';
 
 export interface Animal {
   id: number;
@@ -36,4 +36,7 @@ export interface AnimalCrear {
   latitud: number;
   longitud: number;
   comunidad_id: number;
+  tipo_documento: TipoDocumento;
+  numero_documento: string;
+  observacion_comportamiento: string | null;
 }
