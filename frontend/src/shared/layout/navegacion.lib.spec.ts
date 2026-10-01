@@ -71,4 +71,8 @@ describe('enlacesGestion', () => {
     expect(rutas('COMUNIDAD')).not.toContain('/seguimiento/panel');
     expect(rutas('LIDER')).not.toContain('/seguimiento/panel');
   });
+
+  it('no da a UNIDAD_ESPECIAL el enlace para inscribir', () => {
+    expect(rutas('UNIDAD_ESPECIAL')).not.toContain('/animales/inscribir');
+  });
 });

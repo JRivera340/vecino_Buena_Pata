@@ -14,7 +14,9 @@ export const ENLACES_PUBLICOS: EnlaceNavegacion[] = [
 export function enlacesGestion(rol: RolUsuario): EnlaceNavegacion[] {
   const enlaces: EnlaceNavegacion[] = [{ a: '/mapa', texto: 'Mapa' }];
 
-  enlaces.push({ a: '/animales/inscribir', texto: 'Inscribir' });
+  if (rol !== 'UNIDAD_ESPECIAL') {
+    enlaces.push({ a: '/animales/inscribir', texto: 'Inscribir' });
+  }
   if (rol === 'COMUNIDAD' || rol === 'LIDER') {
     enlaces.push({ a: '/mis-perritos', texto: 'Mis perritos' });
   }
