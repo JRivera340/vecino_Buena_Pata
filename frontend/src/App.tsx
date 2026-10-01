@@ -8,6 +8,7 @@ const PaginaInicio = lazy(() => import('@/features/publico/PaginaInicio'));
 const PaginaFicha = lazy(() => import('@/features/publico/PaginaFicha'));
 const PaginaQr = lazy(() => import('@/features/publico/PaginaQr'));
 const PaginaIngreso = lazy(() => import('@/features/publico/PaginaIngreso'));
+const PaginaMisInscripciones = lazy(() => import('@/features/publico/PaginaMisInscripciones'));
 const PaginaNoEncontrada = lazy(() => import('@/features/publico/PaginaNoEncontrada'));
 const PaginaMapaGestion = lazy(() => import('@/features/mapa/PaginaMapaGestion'));
 const PaginaFichaInterna = lazy(() => import('@/features/animales/PaginaFichaInterna'));
@@ -35,6 +36,7 @@ export default function App() {
             <Route path="/vbp/:id" element={<PaginaFicha />} />
             <Route path="/v/:codigo" element={<PaginaQr />} />
             <Route path="/ingreso" element={<PaginaIngreso />} />
+            <Route path="/mis-inscripciones" element={<PaginaMisInscripciones />} />
             <Route path="/politica-de-datos" element={<PaginaPoliticaDatos />} />
             <Route element={<RutaProtegida />}>
               <Route path="/mapa" element={<PaginaMapaGestion />} />

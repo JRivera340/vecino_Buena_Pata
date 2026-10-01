@@ -8,6 +8,7 @@ export interface EnlaceNavegacion {
 export const ENLACES_PUBLICOS: EnlaceNavegacion[] = [
   { a: '/', texto: 'Inicio' },
   { a: '/#como-funciona', texto: 'Cómo funciona' },
+  { a: '/mis-inscripciones', texto: 'Mis inscripciones' },
 ];
 
 export function enlacesGestion(rol: RolUsuario): EnlaceNavegacion[] {
