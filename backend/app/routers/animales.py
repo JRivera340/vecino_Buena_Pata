@@ -6,6 +6,7 @@ from sqlalchemy.orm import Session
 from app.core.db import get_db
 from app.core.deps import get_current_user, requiere_rol
 from app.models.animal import Animal
+from app.models.collar_qr import CollarQr
 from app.models.enums import EstadoAnimalEnum, RolUsuarioEnum
 from app.models.evento_historial import EventoHistorial
 from app.models.notificacion_interna import NotificacionInterna
@@ -112,11 +113,14 @@ def mis_perritos(
 
 
 @router.get("/{animal_id}", response_model=AnimalSchema)
-def obtener_animal(animal_id: int, db: Session = Depends(get_db), _=Depends(get_current_user)) -> Animal:
+def obtener_animal(animal_id: int, db: Session = Depends(get_db), _=Depends(get_current_user)) -> AnimalSchema:
     animal = db.get(Animal, animal_id)
     if animal is None:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Animal no encontrado")
-    return animal
+    collar = db.query(CollarQr).filter_by(animal_id=animal_id, activo=True).first()
+    datos = AnimalSchema.model_validate(animal)
+    datos.codigo_collar = collar.codigo if collar else None
+    return datos
 
 
 @router.post("", response_model=AnimalSchema, status_code=201)

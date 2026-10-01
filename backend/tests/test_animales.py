@@ -4,8 +4,17 @@ from app.core.security import create_access_token, hash_password
 from app.main import app
 from app.models.animal import Animal
 from app.models.comunidad import Comunidad
-from app.models.enums import RolUsuarioEnum, SexoEnum, TamanoEnum, TipoComunidadEnum
+from app.models.enums import (
+    EstadoAnimalEnum,
+    RolUsuarioEnum,
+    SexoEnum,
+    TamanoEnum,
+    TipoComunidadEnum,
+    VeredictoValidacionEnum,
+)
 from app.models.usuario import Usuario
+from app.models.validacion import Validacion
+from app.services.formalizacion import formalizar_vbp
 
 client = TestClient(app)
 
@@ -275,3 +284,65 @@ def test_mis_perritos_filtra_por_comunidad_del_usuario(db_session):
     datos = respuesta.json()
     assert len(datos) == 1
     assert all(a["comunidad_id"] == comunidad_1 for a in datos)
+
+
+def test_obtener_animal_incluye_codigo_collar_si_esta_formalizado(db_session):
+    comunidad_id = _crear_comunidad(db_session)
+    token = _token_para(db_session, "dr.rojas", RolUsuarioEnum.VETERINARIO)
+    animal = Animal(
+        nombre="Canela",
+        sexo=SexoEnum.HEMBRA,
+        tamano=TamanoEnum.PEQUENO,
+        barrio="El Poblado",
+        latitud=4.65,
+        longitud=-74.1,
+        comunidad_id=comunidad_id,
+        inscrito_por="maria.comunidad",
+        estado=EstadoAnimalEnum.EN_PROCESO,
+        esterilizado=True,
+        numero_microchip="985141900003",
+    )
+    db_session.add(animal)
+    db_session.commit()
+    db_session.add(
+        Validacion(
+            animal_id=animal.id,
+            veterinario="dr.rojas",
+            veredicto=VeredictoValidacionEnum.APROBADO,
+            pendientes=[],
+            observaciones="Cumple todo.",
+        )
+    )
+    db_session.commit()
+    _, collar = formalizar_vbp(db_session, animal_id=animal.id, lider="lider.campo")
+
+    respuesta = client.get(
+        f"/api/v1/animales/{animal.id}", headers={"Authorization": f"Bearer {token}"}
+    )
+
+    assert respuesta.status_code == 200
+    assert respuesta.json()["codigo_collar"] == collar.codigo
+
+
+def test_obtener_animal_sin_formalizar_no_tiene_codigo_collar(db_session):
+    comunidad_id = _crear_comunidad(db_session)
+    token = _token_para(db_session, "dr.rojas", RolUsuarioEnum.VETERINARIO)
+    animal = Animal(
+        nombre="Tribilin",
+        sexo=SexoEnum.MACHO,
+        tamano=TamanoEnum.MEDIANO,
+        barrio="El Poblado",
+        latitud=4.65,
+        longitud=-74.1,
+        comunidad_id=comunidad_id,
+        inscrito_por="maria.comunidad",
+    )
+    db_session.add(animal)
+    db_session.commit()
+
+    respuesta = client.get(
+        f"/api/v1/animales/{animal.id}", headers={"Authorization": f"Bearer {token}"}
+    )
+
+    assert respuesta.status_code == 200
+    assert respuesta.json()["codigo_collar"] is None

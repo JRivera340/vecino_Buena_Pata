@@ -22,6 +22,7 @@ export interface Animal {
   notas_salida: string | null;
   fecha_inscripcion: string;
   inscrito_por: string;
+  codigo_collar?: string | null;
 }
 
 export interface AnimalCrear {

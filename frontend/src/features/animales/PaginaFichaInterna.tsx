@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { useParams } from 'react-router-dom';
 import { ErrorApi } from '@/core/api/cliente';
 import {
@@ -18,13 +19,15 @@ import {
 } from '@/core/formato.lib';
 import type { EstadoSalud } from '@/core/modelos/enums';
 import { etiquetaSalud } from '@/features/publico/etiqueta-salud.lib';
+import { FormularioReporte } from '@/features/publico/FormularioReporte';
 import { AccionesAnimal } from '@/features/seguimiento/AccionesAnimal';
-import { BotonEnlace } from '@/shared/ui/Boton';
+import { Boton, BotonEnlace } from '@/shared/ui/Boton';
 import { EncabezadoPagina } from '@/shared/ui/EncabezadoPagina';
 import { ErrorCarga } from '@/shared/ui/ErrorCarga';
 import { Esqueleto } from '@/shared/ui/Esqueleto';
 import { Etiqueta, EtiquetaEstado, type TonoEtiqueta } from '@/shared/ui/Etiqueta';
 import { FotoAnimal } from '@/shared/ui/FotoAnimal';
+import { Modal } from '@/shared/ui/Modal';
 import { Tarjeta, TarjetaCuerpo, TarjetaEncabezado } from '@/shared/ui/Tarjeta';
 import { useTitulo } from '@/shared/ui/useTitulo';
 import { describirEvento } from './nombre-evento.lib';
@@ -48,6 +51,7 @@ export default function PaginaFichaInterna() {
   const { id } = useParams();
   const numero = Number(id);
   const idValido = Number.isInteger(numero) && numero > 0;
+  const [reporteAbierto, setReporteAbierto] = useState(false);
 
   const ficha = useCarga(async () => {
     if (!idValido) {
@@ -117,6 +121,15 @@ export default function PaginaFichaInterna() {
             <BotonEnlace to={`/vbp/${animal.id}`} variante="secundario" anchoCompleto>
               Ver ficha pública
             </BotonEnlace>
+          )}
+          {animal.codigo_collar && (
+            <Boton
+              variante="secundario"
+              anchoCompleto
+              onClick={() => setReporteAbierto(true)}
+            >
+              Reportar novedad
+            </Boton>
           )}
         </div>
 
@@ -219,6 +232,16 @@ export default function PaginaFichaInterna() {
           </section>
         </div>
       </div>
+
+      {animal.codigo_collar && (
+        <Modal
+          abierto={reporteAbierto}
+          titulo="Reportar novedad"
+          alCerrar={() => setReporteAbierto(false)}
+        >
+          <FormularioReporte codigo={animal.codigo_collar} animal={animal.nombre} />
+        </Modal>
+      )}
     </div>
   );
 }

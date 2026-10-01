@@ -1,4 +1,5 @@
 import { render, screen } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
 import { MemoryRouter, Route, Routes } from 'react-router-dom';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { useSesion } from '@/core/sesion/sesion.store';
@@ -26,6 +27,7 @@ vi.mock('@/core/api/animales', () => ({
     notas_salida: null,
     fecha_inscripcion: '2026-09-25T20:43:30.334759Z',
     inscrito_por: 'demo',
+    codigo_collar: 'vbp-abc123',
   }),
   obtenerHistorial: vi.fn().mockResolvedValue([
     {
@@ -58,5 +60,22 @@ describe('PaginaFichaInterna', () => {
     expect(await screen.findByRole('heading', { name: 'Bruno', level: 1 })).toBeInTheDocument();
     expect(screen.getByText('Todavía no tiene visitas.')).toBeInTheDocument();
     expect(screen.getByText('Inscripción')).toBeInTheDocument();
+  });
+
+  it('abre el formulario de reporte al hacer clic en Reportar novedad', async () => {
+    const usuario = userEvent.setup();
+    render(
+      <MemoryRouter initialEntries={['/animales/17']}>
+        <Routes>
+          <Route path="/animales/:id" element={<PaginaFichaInterna />} />
+        </Routes>
+      </MemoryRouter>,
+    );
+
+    const boton = await screen.findByRole('button', { name: 'Reportar novedad' });
+    await usuario.click(boton);
+
+    expect(await screen.findByRole('dialog', { name: 'Reportar novedad' })).toBeInTheDocument();
+    expect(screen.getByText(/Si ves a Bruno enfermo/)).toBeInTheDocument();
   });
 });

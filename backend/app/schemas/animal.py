@@ -50,3 +50,4 @@ class AnimalSchema(BaseModel):
     inscrito_por: str
     visita_en_camino_por: str | None = None
     visita_en_camino_desde: datetime | None = None
+    codigo_collar: str | None = None
