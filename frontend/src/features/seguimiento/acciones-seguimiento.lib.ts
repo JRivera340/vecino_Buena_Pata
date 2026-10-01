@@ -1,7 +1,7 @@
 import { Animal } from '@/core/modelos/animal';
 
 export function puedeRegistrarVisita(animal: Animal, rol: string | undefined): boolean {
-  return animal.estado === 'VBP_ACTIVO' && (rol === 'VETERINARIO' || rol === 'ADMIN');
+  return animal.estado === 'VBP_ACTIVO' && (rol === 'UNIDAD_ESPECIAL' || rol === 'ADMIN');
 }
 
 export function puedeRegistrarSalida(animal: Animal, rol: string | undefined): boolean {

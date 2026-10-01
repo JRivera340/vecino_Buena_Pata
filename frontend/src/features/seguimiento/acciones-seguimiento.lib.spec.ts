@@ -10,6 +10,7 @@ function crearAnimal(datos: Partial<Animal>): Animal {
     edad_estimada: null,
     tamano: 'MEDIANO',
     descripcion: null,
+    observacion_comportamiento: null,
     foto_principal: null,
     estado: 'VBP_ACTIVO',
     esterilizado: true,
@@ -28,14 +29,19 @@ function crearAnimal(datos: Partial<Animal>): Animal {
 }
 
 describe('puedeRegistrarVisita', () => {
-  it('permite a VETERINARIO cuando el animal esta VBP_ACTIVO', () => {
+  it('permite a UNIDAD_ESPECIAL cuando el animal esta VBP_ACTIVO', () => {
     const animal = crearAnimal({ estado: 'VBP_ACTIVO' });
-    expect(puedeRegistrarVisita(animal, 'VETERINARIO')).toBe(true);
+    expect(puedeRegistrarVisita(animal, 'UNIDAD_ESPECIAL')).toBe(true);
   });
 
   it('permite a ADMIN cuando el animal esta VBP_ACTIVO', () => {
     const animal = crearAnimal({ estado: 'VBP_ACTIVO' });
     expect(puedeRegistrarVisita(animal, 'ADMIN')).toBe(true);
+  });
+
+  it('rechaza a VETERINARIO', () => {
+    const animal = crearAnimal({ estado: 'VBP_ACTIVO' });
+    expect(puedeRegistrarVisita(animal, 'VETERINARIO')).toBe(false);
   });
 
   it('rechaza a LIDER', () => {
@@ -45,7 +51,7 @@ describe('puedeRegistrarVisita', () => {
 
   it('rechaza si el animal no esta VBP_ACTIVO', () => {
     const animal = crearAnimal({ estado: 'CANDIDATO' });
-    expect(puedeRegistrarVisita(animal, 'VETERINARIO')).toBe(false);
+    expect(puedeRegistrarVisita(animal, 'UNIDAD_ESPECIAL')).toBe(false);
   });
 });
 
