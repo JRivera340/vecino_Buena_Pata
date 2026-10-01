@@ -10,6 +10,7 @@ from app.routers import comunidades as comunidades_router
 from app.routers import formalizacion as formalizacion_router
 from app.routers import indicadores as indicadores_router
 from app.routers import media as media_router
+from app.routers import notificaciones_internas as notificaciones_router
 from app.routers import publico as publico_router
 from app.routers import reactivacion as reactivacion_router
 from app.routers import reportes as reportes_router
@@ -46,6 +47,7 @@ api_router.include_router(reactivacion_router.router)
 api_router.include_router(reportes_router.router)
 api_router.include_router(usuarios_router.router)
 api_router.include_router(indicadores_router.router)
+api_router.include_router(notificaciones_router.router)
 
 
 @api_router.get("/salud")

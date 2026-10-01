@@ -20,7 +20,11 @@ export function enlacesGestion(rol: RolUsuario): EnlaceNavegacion[] {
   if (rol === 'LIDER' || rol === 'ADMIN') {
     enlaces.push({ a: '/formalizacion', texto: 'Formalizar' });
   }
-  enlaces.push({ a: '/reportes', texto: 'Reportes' }, { a: '/indicadores', texto: 'Indicadores' });
+  enlaces.push(
+    { a: '/reportes', texto: 'Reportes' },
+    { a: '/indicadores', texto: 'Indicadores' },
+    { a: '/notificaciones', texto: 'Notificaciones' },
+  );
   if (rol === 'UNIDAD_ESPECIAL' || rol === 'ADMIN') {
     enlaces.push({ a: '/seguimiento/panel', texto: 'Seguimiento' });
   }

@@ -1,7 +1,8 @@
-import { LogOut, Menu, X } from 'lucide-react';
+import { Bell, LogOut, Menu, X } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { Link, NavLink, useLocation, useNavigate } from 'react-router-dom';
 import { cerrarSesion } from '@/core/api/autenticacion';
+import { useContadorNotificaciones } from '@/core/notificaciones/contador-notificaciones.lib';
 import { useSesion } from '@/core/sesion/sesion.store';
 import { Boton, BotonEnlace } from '@/shared/ui/Boton';
 import { cx } from '@/shared/ui/clases';
@@ -13,6 +14,25 @@ const ENLACE =
   'relative flex min-h-[44px] items-center border-b-2 border-transparent px-1 text-cuerpo font-medium ' +
   'text-tinta transition-colors hover:text-verde-profundo lg:min-h-0 lg:py-[22px]';
 const ENLACE_ACTIVO = '!border-verde !text-verde-profundo';
+
+function CampanaNotificaciones() {
+  const contador = useContadorNotificaciones();
+
+  return (
+    <Link
+      to="/notificaciones"
+      aria-label={contador > 0 ? `Notificaciones, ${contador} sin leer` : 'Notificaciones'}
+      className="relative flex h-11 w-11 items-center justify-center rounded text-tinta hover:bg-lienzo-gris"
+    >
+      <Bell className="h-5 w-5" aria-hidden="true" />
+      {contador > 0 && (
+        <span className="absolute right-1.5 top-1.5 flex h-4 min-w-[1rem] items-center justify-center rounded-full bg-peligro px-1 text-[10px] font-semibold leading-none text-white">
+          {contador > 9 ? '9+' : contador}
+        </span>
+      )}
+    </Link>
+  );
+}
 
 export function Encabezado() {
   const sesion = useSesion((estado) => estado.sesion);
@@ -75,7 +95,10 @@ export function Encabezado() {
           {listaEnlaces}
         </nav>
 
-        <div className="hidden lg:block">{accion}</div>
+        <div className="hidden items-center gap-3 lg:flex">
+          {sesion && <CampanaNotificaciones />}
+          {accion}
+        </div>
 
         <button
           type="button"
@@ -120,6 +143,12 @@ export function Encabezado() {
               </button>
             </div>
             <nav aria-label="Principal">{listaEnlaces}</nav>
+            {sesion && (
+              <div className="flex items-center gap-2">
+                <CampanaNotificaciones />
+                <span className="text-pequeno text-tinta-suave">Notificaciones</span>
+              </div>
+            )}
             <div className="mt-auto">{accion}</div>
           </div>
         </div>

@@ -11,6 +11,7 @@ describe('enlacesGestion', () => {
       '/formalizacion',
       '/reportes',
       '/indicadores',
+      '/notificaciones',
       '/seguimiento/panel',
       '/usuarios',
     ]);
@@ -26,8 +27,14 @@ describe('enlacesGestion', () => {
     expect(rutas('LIDER')).not.toContain('/validacion');
   });
 
-  it('da a COMUNIDAD solo mapa, inscripción, reportes e indicadores', () => {
-    expect(rutas('COMUNIDAD')).toEqual(['/mapa', '/animales/inscribir', '/reportes', '/indicadores']);
+  it('da a COMUNIDAD solo mapa, inscripción, reportes, indicadores y notificaciones', () => {
+    expect(rutas('COMUNIDAD')).toEqual([
+      '/mapa',
+      '/animales/inscribir',
+      '/reportes',
+      '/indicadores',
+      '/notificaciones',
+    ]);
   });
 
   it('nombra cada enlace en español claro', () => {
@@ -39,6 +46,7 @@ describe('enlacesGestion', () => {
       'Formalizar',
       'Reportes',
       'Indicadores',
+      'Notificaciones',
       'Seguimiento',
       'Usuarios',
     ]);
