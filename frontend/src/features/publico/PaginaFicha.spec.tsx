@@ -24,6 +24,7 @@ const HOJA: HojaVidaPublica = {
   fecha_inscripcion: '2026-09-25T15:00:00Z',
   esterilizado: true,
   tiene_microchip: true,
+  codigo_collar: 'vbp-abc123',
   ultima_visita: { fecha: '2026-09-20T15:00:00Z', estado_salud: 'BUENO', peso_kg: 22.5 },
 };
 
@@ -108,12 +109,16 @@ describe('PaginaFicha', () => {
     expect(screen.queryByText(/Pesó/)).not.toBeInTheDocument();
   });
 
-  it('indica que se reporta con el QR y no ofrece un formulario', async () => {
+  it('abre el formulario de reporte al hacer clic en Reportar una novedad', async () => {
     hojaMock.mockResolvedValue(HOJA);
     montar('/vbp/2');
 
-    expect(await screen.findByText(/escanea el código QR de su collar/)).toBeInTheDocument();
-    expect(screen.queryByRole('textbox')).not.toBeInTheDocument();
+    const boton = await screen.findByRole('button', { name: 'Reportar una novedad' });
+    expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
+
+    await userEvent.click(boton);
+
+    expect(await screen.findByRole('dialog', { name: 'Reportar novedad' })).toBeInTheDocument();
   });
 
   it('dice que el animal no está disponible cuando el servidor responde 404', async () => {

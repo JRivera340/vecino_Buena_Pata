@@ -64,6 +64,7 @@ class HojaVidaPublicaSchema(BaseModel):
     fecha_inscripcion: datetime
     esterilizado: bool
     tiene_microchip: bool
+    codigo_collar: str
     ultima_visita: UltimaVisitaPublicaSchema | None
 
 

@@ -104,6 +104,7 @@ def test_hoja_de_vida_de_un_animal_activo(db_session):
     assert hoja["foto_principal"] == "lulu.jpg"
     assert hoja["esterilizado"] is True
     assert hoja["tiene_microchip"] is True
+    assert hoja["codigo_collar"]
 
 
 def test_hoja_de_vida_no_expone_el_numero_de_microchip_ni_datos_internos(db_session):
@@ -114,7 +115,7 @@ def test_hoja_de_vida_no_expone_el_numero_de_microchip_ni_datos_internos(db_sess
     assert set(hoja.keys()) == {
         "id", "nombre", "especie", "sexo", "tamano", "edad_estimada", "descripcion",
         "foto_principal", "barrio", "localidad", "fecha_inscripcion", "esterilizado", "tiene_microchip",
-        "ultima_visita",
+        "codigo_collar", "ultima_visita",
     }
     assert "985112345678901" not in str(hoja)
 

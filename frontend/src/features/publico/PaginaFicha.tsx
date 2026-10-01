@@ -1,4 +1,5 @@
 import { CircleAlert, CircleCheck } from 'lucide-react';
+import { useState } from 'react';
 import { useParams } from 'react-router-dom';
 import { ErrorApi } from '@/core/api/cliente';
 import { obtenerHojaVida } from '@/core/api/publico';
@@ -13,12 +14,14 @@ import {
 } from '@/core/formato.lib';
 import type { EstadoSalud } from '@/core/modelos/enums';
 import type { HojaVidaPublica } from '@/core/modelos/publico';
+import { FormularioReporte } from '@/features/publico/FormularioReporte';
 import { Alerta } from '@/shared/ui/Alerta';
 import { Boton, BotonEnlace } from '@/shared/ui/Boton';
 import { Esqueleto } from '@/shared/ui/Esqueleto';
 import { Etiqueta, EtiquetaEstado, type TonoEtiqueta } from '@/shared/ui/Etiqueta';
 import { FotoAnimal } from '@/shared/ui/FotoAnimal';
 import { Migas } from '@/shared/ui/Migas';
+import { Modal } from '@/shared/ui/Modal';
 import { Tarjeta, TarjetaCuerpo } from '@/shared/ui/Tarjeta';
 import { useTitulo } from '@/shared/ui/useTitulo';
 import { etiquetaSalud } from './etiqueta-salud.lib';
@@ -85,6 +88,7 @@ function UltimaVisita({ hoja }: { hoja: HojaVidaPublica }) {
 
 function Ficha({ hoja }: { hoja: HojaVidaPublica }) {
   const especie = etiquetaEspecie(hoja.especie);
+  const [reporteAbierto, setReporteAbierto] = useState(false);
   return (
     <>
       <Migas items={[{ texto: 'Inicio', a: '/' }, { texto: hoja.nombre }]} />
@@ -143,10 +147,17 @@ function Ficha({ hoja }: { hoja: HojaVidaPublica }) {
             <UltimaVisita hoja={hoja} />
           </section>
 
-          <Alerta tipo="info">
-            ¿Notas algo raro en {hoja.nombre}? Para reportar una novedad, escanea el código QR de su
-            collar.
-          </Alerta>
+          <Boton tamano="grande" anchoCompleto onClick={() => setReporteAbierto(true)}>
+            Reportar una novedad
+          </Boton>
+
+          <Modal
+            abierto={reporteAbierto}
+            titulo="Reportar novedad"
+            alCerrar={() => setReporteAbierto(false)}
+          >
+            <FormularioReporte codigo={hoja.codigo_collar} animal={hoja.nombre} />
+          </Modal>
         </div>
       </article>
     </>

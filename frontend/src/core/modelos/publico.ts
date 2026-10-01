@@ -30,6 +30,7 @@ export interface HojaVidaPublica {
   fecha_inscripcion: string;
   esterilizado: boolean;
   tiene_microchip: boolean;
+  codigo_collar: string;
   ultima_visita: UltimaVisitaPublica | null;
 }
 

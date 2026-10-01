@@ -45,6 +45,8 @@ def obtener_hoja_vida_publica(db: Session, animal_id: int) -> dict | None:
     if animal is None:
         return None
 
+    collar = db.query(CollarQr).filter_by(animal_id=animal.id, activo=True).first()
+
     visita = (
         db.query(VisitaSeguimiento)
         .filter_by(animal_id=animal.id)
@@ -73,5 +75,6 @@ def obtener_hoja_vida_publica(db: Session, animal_id: int) -> dict | None:
         "fecha_inscripcion": animal.fecha_inscripcion,
         "esterilizado": animal.esterilizado,
         "tiene_microchip": bool(animal.numero_microchip),
+        "codigo_collar": collar.codigo,
         "ultima_visita": ultima_visita,
     }
