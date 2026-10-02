@@ -51,7 +51,7 @@ export default function PaginaInscribir() {
       numeroDocumento,
     });
     setErrores(nuevos);
-    if (Object.keys(nuevos).length > 0 || !foto || !ubicacion || comunidadId === null) {
+    if (Object.keys(nuevos).length > 0 || !foto || !ubicacion) {
       return;
     }
     setEnviando(true);
@@ -155,7 +155,7 @@ export default function PaginaInscribir() {
           <Campo
             id="ins-comunidad"
             etiqueta="Comunidad que lo cuida"
-            obligatorio
+            ayuda="Opcional. Si no aparece la comunidad, pide al admin que la cree."
             error={errores.comunidad}
           >
             {(props) => (
@@ -166,7 +166,7 @@ export default function PaginaInscribir() {
                   setComunidadId(e.target.value === '' ? null : Number(e.target.value))
                 }
               >
-                <option value="">Elige una comunidad</option>
+                <option value="">Sin definir por ahora</option>
                 {(comunidades.datos ?? []).map((comunidad) => (
                   <option key={comunidad.id} value={comunidad.id}>
                     {comunidad.nombre}

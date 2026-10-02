@@ -29,7 +29,7 @@ class Animal(Base):
     latitud: Mapped[float] = mapped_column(Float)
     longitud: Mapped[float] = mapped_column(Float)
 
-    comunidad_id: Mapped[int] = mapped_column(ForeignKey("comunidad.id"))
+    comunidad_id: Mapped[int | None] = mapped_column(ForeignKey("comunidad.id"), nullable=True)
 
     causal_salida: Mapped[CausalSalidaEnum | None] = mapped_column(nullable=True)
     fecha_salida: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)

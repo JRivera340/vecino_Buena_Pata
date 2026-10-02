@@ -20,7 +20,9 @@ def listar_comunidades(db: Session = Depends(get_db), _=Depends(get_current_user
 
 @router.post("", response_model=ComunidadSchema, status_code=201)
 def crear_comunidad(
-    datos: ComunidadCrear, db: Session = Depends(get_db), _=Depends(get_current_user)
+    datos: ComunidadCrear,
+    db: Session = Depends(get_db),
+    _=Depends(requiere_rol(RolUsuarioEnum.ADMIN)),
 ) -> Comunidad:
     comunidad = Comunidad(**datos.model_dump())
     db.add(comunidad)

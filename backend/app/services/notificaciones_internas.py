@@ -23,7 +23,7 @@ def crear_notificaciones(
                 )
             )
 
-    comunidad = db.get(Comunidad, animal.comunidad_id)
+    comunidad = db.get(Comunidad, animal.comunidad_id) if animal.comunidad_id is not None else None
     if comunidad is not None and comunidad.lider_id is not None:
         notificaciones.append(
             NotificacionInterna(animal_id=animal.id, origen_tipo=origen_tipo, origen_id=origen_id, usuario_id=comunidad.lider_id)

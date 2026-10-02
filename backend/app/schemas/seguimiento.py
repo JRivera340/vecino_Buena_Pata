@@ -7,7 +7,7 @@ class AnimalSeguimientoSchema(BaseModel):
     id: int
     nombre: str
     barrio: str
-    comunidad_id: int
+    comunidad_id: int | None
     latitud: float
     longitud: float
     estado_seguimiento: str

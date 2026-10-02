@@ -16,7 +16,7 @@ class AnimalCrear(BaseModel):
     barrio: str
     latitud: float
     longitud: float
-    comunidad_id: int
+    comunidad_id: int | None = None
     tipo_documento: TipoDocumentoEnum
     numero_documento: str
     observacion_comportamiento: str | None = None
@@ -40,7 +40,7 @@ class AnimalSchema(BaseModel):
     localidad: str | None = None
     latitud: float
     longitud: float
-    comunidad_id: int
+    comunidad_id: int | None
     persona_id: int | None
     observacion_comportamiento: str | None
     causal_salida: CausalSalidaEnum | None

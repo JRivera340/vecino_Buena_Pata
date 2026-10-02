@@ -17,7 +17,7 @@ export interface Animal {
   localidad?: string | null;
   latitud: number;
   longitud: number;
-  comunidad_id: number;
+  comunidad_id: number | null;
   causal_salida: CausalSalida | null;
   fecha_salida: string | null;
   notas_salida: string | null;
@@ -37,7 +37,7 @@ export interface AnimalCrear {
   barrio: string;
   latitud: number;
   longitud: number;
-  comunidad_id: number;
+  comunidad_id: number | null;
   tipo_documento: TipoDocumento;
   numero_documento: string;
   observacion_comportamiento: string | null;

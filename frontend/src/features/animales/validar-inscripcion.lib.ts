@@ -35,9 +35,6 @@ export function validarInscripcion(formulario: FormularioInscripcion): ErroresIn
   if (formulario.barrio.trim() === '') {
     errores.barrio = 'Escribe el barrio donde vive.';
   }
-  if (formulario.comunidadId === null) {
-    errores.comunidad = 'Elige la comunidad que lo cuida.';
-  }
   if (formulario.ubicacion === null) {
     errores.ubicacion = 'Toca el mapa para marcar dónde vive.';
   } else if (formulario.ubicacion.localidad === null) {

@@ -39,10 +39,8 @@ describe('validarInscripcion', () => {
     );
   });
 
-  it('pide elegir una comunidad', () => {
-    expect(validarInscripcion(formulario({ comunidadId: null })).comunidad).toBe(
-      'Elige la comunidad que lo cuida.',
-    );
+  it('no exige comunidad, es opcional', () => {
+    expect(validarInscripcion(formulario({ comunidadId: null })).comunidad).toBeUndefined();
   });
 
   it('pide marcar la ubicación en el mapa', () => {
@@ -92,13 +90,7 @@ describe('validarInscripcion', () => {
       formulario({ nombre: '', barrio: '', comunidadId: null, ubicacion: null, foto: null }),
     );
 
-    expect(Object.keys(errores).sort()).toEqual([
-      'barrio',
-      'comunidad',
-      'foto',
-      'nombre',
-      'ubicacion',
-    ]);
+    expect(Object.keys(errores).sort()).toEqual(['barrio', 'foto', 'nombre', 'ubicacion']);
   });
 
   it('rechaza un punto marcado fuera de Bogotá y acepta uno dentro o aún sin clasificar', () => {
