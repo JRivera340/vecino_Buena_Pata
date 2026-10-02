@@ -12,7 +12,7 @@ export interface ErroresMiembro {
   password?: string;
 }
 
-const USUARIO = /^[a-z0-9._-]{3,60}$/;
+const USUARIO = /^[a-zA-Z0-9._-]{3,60}$/;
 
 export function validarMiembro(f: FormularioMiembro): ErroresMiembro {
   const errores: ErroresMiembro = {};
@@ -21,7 +21,7 @@ export function validarMiembro(f: FormularioMiembro): ErroresMiembro {
   }
   if (!USUARIO.test(f.username)) {
     errores.username =
-      'Usa entre 3 y 60 caracteres: minúsculas, números, punto, guion o guion bajo.';
+      'Usa entre 3 y 60 caracteres: letras, números, punto, guion o guion bajo.';
   }
   if (f.password.length < 8) {
     errores.password = 'La contraseña debe tener al menos 8 caracteres.';

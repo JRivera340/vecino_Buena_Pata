@@ -6,7 +6,7 @@ from app.schemas.comunidad import ComunidadCrear
 
 class UsuarioCrear(BaseModel):
     nombre: str = Field(min_length=1, max_length=120)
-    username: str = Field(min_length=3, max_length=60, pattern=r"^[a-z0-9._-]+$")
+    username: str = Field(min_length=3, max_length=60, pattern=r"^[a-zA-Z0-9._-]+$")
     password: str = Field(min_length=8, max_length=72)
     rol: RolUsuarioEnum
     tipo_documento: TipoDocumentoEnum | None = None
@@ -18,7 +18,7 @@ class UsuarioCrear(BaseModel):
 
 class MiembroComunidadCrear(BaseModel):
     nombre: str = Field(min_length=1, max_length=120)
-    username: str = Field(min_length=3, max_length=60, pattern=r"^[a-z0-9._-]+$")
+    username: str = Field(min_length=3, max_length=60, pattern=r"^[a-zA-Z0-9._-]+$")
     password: str = Field(min_length=8, max_length=72)
 
 
