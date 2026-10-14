@@ -21,6 +21,7 @@ const PaginaNotificaciones = lazy(() => import('@/features/notificaciones/Pagina
 const PaginaIndicadores = lazy(() => import('@/features/indicadores/PaginaIndicadores'));
 const PaginaPoliticaDatos = lazy(() => import('@/features/publico/PaginaPoliticaDatos'));
 const PaginaUsuarios = lazy(() => import('@/features/usuarios/PaginaUsuarios'));
+const PaginaImportarAnimales = lazy(() => import('@/features/importacion/PaginaImportarAnimales'));
 const PaginaPanelSeguimiento = lazy(() => import('@/features/seguimiento/PaginaPanelSeguimiento'));
 const PaginaEstilos = import.meta.env.DEV
   ? lazy(() => import('@/features/estilos/PaginaEstilos'))
@@ -58,6 +59,7 @@ export default function App() {
             </Route>
             <Route element={<RutaProtegida roles={['ADMIN']} />}>
               <Route path="/usuarios" element={<PaginaUsuarios />} />
+              <Route path="/animales/importar" element={<PaginaImportarAnimales />} />
             </Route>
             <Route element={<RutaProtegida roles={['LIDER', 'ADMIN']} />}>
               <Route path="/formalizacion" element={<PaginaFormalizacion />} />

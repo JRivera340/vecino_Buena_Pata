@@ -1,6 +1,6 @@
 from datetime import datetime
 
-from pydantic import BaseModel, ConfigDict
+from pydantic import BaseModel, ConfigDict, model_validator
 
 from app.models.enums import CausalSalidaEnum, EspecieEnum, EstadoAnimalEnum, SexoEnum, TamanoEnum, TipoDocumentoEnum
 
@@ -17,8 +17,20 @@ class AnimalCrear(BaseModel):
     latitud: float
     longitud: float
     comunidad_id: int | None = None
-    tipo_documento: TipoDocumentoEnum
-    numero_documento: str
+    tipo_documento: TipoDocumentoEnum | None = None
+    numero_documento: str | None = None
+    nombre_inscriptor: str | None = None
+    observacion_comportamiento: str | None = None
+
+
+class AnimalActualizar(BaseModel):
+    comunidad_id: int | None = None
+    tipo_documento: TipoDocumentoEnum | None = None
+    numero_documento: str | None = None
+    nombre_inscriptor: str | None = None
+    barrio: str | None = None
+    latitud: float | None = None
+    longitud: float | None = None
     observacion_comportamiento: str | None = None
 
 
@@ -51,3 +63,9 @@ class AnimalSchema(BaseModel):
     visita_en_camino_por: str | None = None
     visita_en_camino_desde: datetime | None = None
     codigo_collar: str | None = None
+    incompleto: bool = False
+
+    @model_validator(mode="after")
+    def _calcular_incompleto(self) -> "AnimalSchema":
+        self.incompleto = self.comunidad_id is None or self.persona_id is None
+        return self

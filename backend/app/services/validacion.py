@@ -38,8 +38,7 @@ def registrar_validacion(
     if numero_microchip is not None:
         animal.numero_microchip = numero_microchip
 
-    if veredicto == VeredictoValidacionEnum.CON_PENDIENTES:
-        animal.estado = EstadoAnimalEnum.EN_PROCESO
+    animal.estado = EstadoAnimalEnum.EN_PROCESO
 
     db.commit()
     db.refresh(validacion)

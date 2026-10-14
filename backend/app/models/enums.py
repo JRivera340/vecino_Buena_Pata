@@ -30,6 +30,7 @@ class CausalSalidaEnum(str, enum.Enum):
     ADOPCION = "ADOPCION"
     PERDIDA = "PERDIDA"
     FALLECIMIENTO = "FALLECIMIENTO"
+    OTRO = "OTRO"
 
 
 class TipoComunidadEnum(str, enum.Enum):

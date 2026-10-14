@@ -36,6 +36,7 @@ export function enlacesGestion(rol: RolUsuario): EnlaceNavegacion[] {
   }
   if (rol === 'ADMIN') {
     enlaces.push({ a: '/usuarios', texto: 'Usuarios' });
+    enlaces.push({ a: '/animales/importar', texto: 'Importar' });
   }
 
   return enlaces;

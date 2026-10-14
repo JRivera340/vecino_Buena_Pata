@@ -14,6 +14,7 @@ describe('enlacesGestion', () => {
       '/notificaciones',
       '/seguimiento/panel',
       '/usuarios',
+      '/animales/importar',
     ]);
   });
 
@@ -56,6 +57,7 @@ describe('enlacesGestion', () => {
       'Notificaciones',
       'Seguimiento',
       'Usuarios',
+      'Importar',
     ]);
   });
 

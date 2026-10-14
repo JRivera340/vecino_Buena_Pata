@@ -1,4 +1,4 @@
-import type { Animal, AnimalCrear } from '@/core/modelos/animal';
+import type { Animal, AnimalActualizar, AnimalCrear } from '@/core/modelos/animal';
 import type { EventoHistorial } from '@/core/modelos/historial';
 import type { Validacion } from '@/core/modelos/validacion';
 import type { Visita } from '@/core/modelos/visita';
@@ -12,6 +12,9 @@ export const obtenerAnimal = (id: number) => solicitar<Animal>(`/animales/${id}`
 
 export const crearAnimal = (datos: AnimalCrear) =>
   solicitar<Animal>('/animales', { metodo: 'POST', cuerpo: { ...datos } });
+
+export const actualizarAnimal = (id: number, datos: AnimalActualizar) =>
+  solicitar<Animal>(`/animales/${id}`, { metodo: 'PATCH', cuerpo: { ...datos } });
 
 export const obtenerHistorial = (id: number) =>
   solicitar<EventoHistorial[]>(`/animales/${id}/historial`);

@@ -210,7 +210,7 @@ def test_inscripcion_interna_rechaza_un_punto_fuera_de_bogota(db_session):
     assert "fuera de Bogota" in respuesta.json()["detail"]
 
 
-def test_inscribir_exige_cedula_de_quien_diligencia(db_session):
+def test_inscribir_sin_documento_de_quien_diligencia_queda_incompleto(db_session):
     token = _token_para(db_session, "maria.comunidad", RolUsuarioEnum.COMUNIDAD)
     comunidad = Comunidad(
         nombre="Patitas del Sur", tipo=TipoComunidadEnum.PROTECCION_ANIMAL,
@@ -229,7 +229,9 @@ def test_inscribir_exige_cedula_de_quien_diligencia(db_session):
         },
         headers={"Authorization": f"Bearer {token}"},
     )
-    assert respuesta.status_code == 422
+    assert respuesta.status_code == 201
+    assert respuesta.json()["persona_id"] is None
+    assert respuesta.json()["incompleto"] is True
 
     respuesta_ok = client.post(
         "/api/v1/animales",
@@ -244,6 +246,7 @@ def test_inscribir_exige_cedula_de_quien_diligencia(db_session):
     )
     assert respuesta_ok.status_code == 201
     assert respuesta_ok.json()["persona_id"] is not None
+    assert respuesta_ok.json()["incompleto"] is False
 
 
 def test_mis_perritos_filtra_por_comunidad_del_usuario(db_session):

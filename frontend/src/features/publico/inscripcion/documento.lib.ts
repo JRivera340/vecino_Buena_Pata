@@ -3,7 +3,7 @@ import type { TipoDocumento } from '@/core/modelos/enums';
 export const TIPOS_DOCUMENTO: { valor: TipoDocumento; texto: string }[] = [
   { valor: 'CC', texto: 'Cédula de ciudadanía' },
   { valor: 'CE', texto: 'Cédula de extranjería' },
-  { valor: 'NIT', texto: 'NIT' },
+  { valor: 'NIT', texto: 'NIT (organización o institución)' },
   { valor: 'OTRO', texto: 'Otro documento' },
 ];
 

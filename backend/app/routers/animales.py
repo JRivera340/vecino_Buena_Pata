@@ -13,17 +13,17 @@ from app.models.notificacion_interna import NotificacionInterna
 from app.models.usuario import Usuario
 from app.models.validacion import Validacion
 from app.models.visita_seguimiento import VisitaSeguimiento
-from app.schemas.animal import AnimalCrear, AnimalSchema
+from app.schemas.animal import AnimalActualizar, AnimalCrear, AnimalSchema
 from app.schemas.historial import EventoHistorialSchema
 from app.schemas.seguimiento import AnimalSeguimientoSchema
 from app.schemas.validacion import ValidacionSchema
 from app.schemas.visita import VisitaSchema
 from app.services.documentos import normalizar_numero_documento
-from app.services.inscripcion import inscribir_animal as inscribir_animal_servicio
+from app.services.inscripcion import es_incompleto, inscribir_animal as inscribir_animal_servicio
 from app.services.inscriptores import obtener_o_crear_persona
 from app.services.localidades import localidad_de_punto
 from app.services.notificaciones import procesar_notificaciones, registrar_notificaciones
-from app.services.notificaciones_internas import crear_notificaciones
+from app.services.notificaciones_internas import crear_notificaciones, notificar_incompleto
 from app.services.seguimiento_estado import DIAS_CADENCIA, calcular_estado_seguimiento
 
 router = APIRouter(prefix="/animales", tags=["animales"])
@@ -135,19 +135,30 @@ def inscribir_animal(
             status_code=422,
             detail="El punto marcado esta fuera de Bogota. Marca un lugar dentro de la ciudad.",
         )
-    try:
-        normalizar_numero_documento(datos.numero_documento)
-    except ValueError as error:
-        raise HTTPException(status_code=422, detail=str(error)) from error
-    persona = obtener_o_crear_persona(
-        db, datos.tipo_documento, datos.numero_documento,
-        nombre=usuario.nombre, telefono="", correo="", barrio=datos.barrio,
-    )
+    persona_id = None
+    if datos.tipo_documento is not None and datos.numero_documento is not None:
+        try:
+            normalizar_numero_documento(datos.numero_documento)
+        except ValueError as error:
+            raise HTTPException(status_code=422, detail=str(error)) from error
+        persona = obtener_o_crear_persona(
+            db, datos.tipo_documento, datos.numero_documento,
+            nombre=datos.nombre_inscriptor or usuario.nombre, telefono="", correo="", barrio=datos.barrio,
+        )
+        persona_id = persona.id
     animal = inscribir_animal_servicio(
         db,
-        datos={**datos.model_dump(exclude={"tipo_documento", "numero_documento"}), "persona_id": persona.id},
+        datos={
+            **datos.model_dump(exclude={"tipo_documento", "numero_documento", "nombre_inscriptor"}),
+            "persona_id": persona_id,
+        },
         inscrito_por=usuario.username,
     )
+    if es_incompleto(animal):
+        try:
+            notificar_incompleto(db, animal)
+        except Exception:  # noqa: BLE001 - anotar el correo no debe tumbar la inscripcion
+            db.rollback()
     try:
         ids = registrar_notificaciones(db, animal, None)
     except Exception:  # noqa: BLE001 - anotar el correo no debe tumbar la inscripcion
@@ -155,6 +166,37 @@ def inscribir_animal(
         ids = []
     if ids:
         tareas.add_task(procesar_notificaciones, ids)
+    return animal
+
+
+@router.patch("/{animal_id}", response_model=AnimalSchema)
+def actualizar_animal(
+    animal_id: int,
+    datos: AnimalActualizar,
+    db: Session = Depends(get_db),
+    usuario: Usuario = Depends(requiere_rol(RolUsuarioEnum.LIDER, RolUsuarioEnum.ADMIN, RolUsuarioEnum.COMUNIDAD)),
+) -> Animal:
+    animal = db.get(Animal, animal_id)
+    if animal is None:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Animal no encontrado")
+
+    cambios = datos.model_dump(exclude_unset=True, exclude={"tipo_documento", "numero_documento", "nombre_inscriptor"})
+    for campo, valor in cambios.items():
+        setattr(animal, campo, valor)
+
+    if datos.tipo_documento is not None and datos.numero_documento is not None:
+        try:
+            normalizar_numero_documento(datos.numero_documento)
+        except ValueError as error:
+            raise HTTPException(status_code=422, detail=str(error)) from error
+        persona = obtener_o_crear_persona(
+            db, datos.tipo_documento, datos.numero_documento,
+            nombre=datos.nombre_inscriptor or usuario.nombre, telefono="", correo="", barrio=animal.barrio,
+        )
+        animal.persona_id = persona.id
+
+    db.commit()
+    db.refresh(animal)
     return animal
 
 

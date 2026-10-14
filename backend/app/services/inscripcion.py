@@ -11,6 +11,10 @@ def radicado_de(animal: Animal) -> str:
     return f"VBP-{animal.fecha_inscripcion.year}-{animal.id:06d}"
 
 
+def es_incompleto(animal: Animal) -> bool:
+    return animal.comunidad_id is None or animal.persona_id is None
+
+
 def inscribir_animal(db: Session, datos: dict, inscrito_por: str) -> Animal:
     datos = dict(datos)
     if "posible_duplicado_de_id" not in datos:

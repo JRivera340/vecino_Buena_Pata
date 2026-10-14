@@ -1,12 +1,9 @@
-import { useState } from 'react';
+import { useState, type FormEvent } from 'react';
 import { useParams } from 'react-router-dom';
+import { actualizarAnimal, obtenerAnimal, obtenerHistorial, obtenerValidaciones, obtenerVisitas } from '@/core/api/animales';
 import { ErrorApi } from '@/core/api/cliente';
-import {
-  obtenerAnimal,
-  obtenerHistorial,
-  obtenerValidaciones,
-  obtenerVisitas,
-} from '@/core/api/animales';
+import { listarComunidades } from '@/core/api/comunidades';
+import { mensajeError } from '@/core/api/mensaje-error';
 import { useCarga } from '@/core/api/useCarga';
 import {
   etiquetaEspecie,
@@ -17,11 +14,15 @@ import {
   formatearFecha,
   formatearPeso,
 } from '@/core/formato.lib';
-import type { EstadoSalud } from '@/core/modelos/enums';
+import type { Animal } from '@/core/modelos/animal';
+import type { EstadoSalud, TipoDocumento } from '@/core/modelos/enums';
+import { TIPOS_DOCUMENTO } from '@/features/publico/inscripcion/documento.lib';
 import { etiquetaSalud } from '@/features/publico/etiqueta-salud.lib';
 import { FormularioReporte } from '@/features/publico/FormularioReporte';
 import { AccionesAnimal } from '@/features/seguimiento/AccionesAnimal';
+import { Alerta } from '@/shared/ui/Alerta';
 import { Boton, BotonEnlace } from '@/shared/ui/Boton';
+import { Campo, Entrada, Selector } from '@/shared/ui/Campo';
 import { EncabezadoPagina } from '@/shared/ui/EncabezadoPagina';
 import { ErrorCarga } from '@/shared/ui/ErrorCarga';
 import { Esqueleto } from '@/shared/ui/Esqueleto';
@@ -31,6 +32,107 @@ import { Modal } from '@/shared/ui/Modal';
 import { Tarjeta, TarjetaCuerpo, TarjetaEncabezado } from '@/shared/ui/Tarjeta';
 import { useTitulo } from '@/shared/ui/useTitulo';
 import { describirEvento } from './nombre-evento.lib';
+
+function CompletarInformacion({
+  animal,
+  alCompletar,
+}: {
+  animal: Animal;
+  alCompletar: () => void;
+}) {
+  const comunidades = useCarga(listarComunidades, []);
+  const [comunidadId, setComunidadId] = useState<number | null>(animal.comunidad_id);
+  const [tipoDocumento, setTipoDocumento] = useState<TipoDocumento>('CC');
+  const [numeroDocumento, setNumeroDocumento] = useState('');
+  const [enviando, setEnviando] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  async function enviar(evento: FormEvent) {
+    evento.preventDefault();
+    setEnviando(true);
+    setError(null);
+    try {
+      await actualizarAnimal(animal.id, {
+        comunidad_id: comunidadId,
+        tipo_documento: numeroDocumento.trim() === '' ? null : tipoDocumento,
+        numero_documento: numeroDocumento.trim() === '' ? null : numeroDocumento.trim(),
+      });
+      alCompletar();
+    } catch (err) {
+      setError(mensajeError(err, 'No pudimos guardar los cambios. Inténtalo de nuevo.'));
+      setEnviando(false);
+    }
+  }
+
+  return (
+    <Tarjeta destacada className="mb-8">
+      <TarjetaEncabezado>
+        <span className="font-semibold">Completar información</span>
+      </TarjetaEncabezado>
+      <TarjetaCuerpo>
+        <form onSubmit={enviar} noValidate className="space-y-4">
+          <p className="text-pequeno text-tinta-suave">
+            Este registro quedó incompleto al cargarse. Completa lo que falte.
+          </p>
+          {animal.comunidad_id === null && (
+            <Campo id="completar-comunidad" etiqueta="Comunidad que lo cuida">
+              {(props) => (
+                <Selector
+                  {...props}
+                  value={comunidadId ?? ''}
+                  onChange={(e) =>
+                    setComunidadId(e.target.value === '' ? null : Number(e.target.value))
+                  }
+                >
+                  <option value="">Sin definir por ahora</option>
+                  {(comunidades.datos ?? []).map((comunidad) => (
+                    <option key={comunidad.id} value={comunidad.id}>
+                      {comunidad.nombre}
+                    </option>
+                  ))}
+                </Selector>
+              )}
+            </Campo>
+          )}
+          <div className="grid gap-4 sm:grid-cols-[auto,1fr]">
+            <Campo id="completar-tipo-documento" etiqueta="Tipo de documento">
+              {(props) => (
+                <Selector
+                  {...props}
+                  value={tipoDocumento}
+                  onChange={(e) => setTipoDocumento(e.target.value as TipoDocumento)}
+                >
+                  {TIPOS_DOCUMENTO.map((tipo) => (
+                    <option key={tipo.valor} value={tipo.valor}>
+                      {tipo.texto}
+                    </option>
+                  ))}
+                </Selector>
+              )}
+            </Campo>
+            <Campo
+              id="completar-numero-documento"
+              etiqueta="Número de documento de quien inscribe"
+              ayuda="De la persona u organización responsable."
+            >
+              {(props) => (
+                <Entrada
+                  {...props}
+                  value={numeroDocumento}
+                  onChange={(e) => setNumeroDocumento(e.target.value)}
+                />
+              )}
+            </Campo>
+          </div>
+          {error && <Alerta tipo="error">{error}</Alerta>}
+          <Boton type="submit" cargando={enviando}>
+            Guardar
+          </Boton>
+        </form>
+      </TarjetaCuerpo>
+    </Tarjeta>
+  );
+}
 
 const TONO_SALUD: Record<EstadoSalud, TonoEtiqueta> = {
   BUENO: 'exito',
@@ -106,6 +208,10 @@ export default function PaginaFichaInterna() {
         migas={[{ texto: 'Mapa', a: '/mapa' }, { texto: animal.nombre }]}
         acciones={<AccionesAnimal animal={animal} alActualizar={ficha.recargar} />}
       />
+
+      {animal.incompleto && (
+        <CompletarInformacion animal={animal} alCompletar={ficha.recargar} />
+      )}
 
       <div className="grid gap-10 lg:grid-cols-[minmax(0,360px)_1fr]">
         <div className="space-y-4">

@@ -38,3 +38,18 @@ def crear_notificaciones(
     db.add_all(notificaciones)
     db.commit()
     return notificaciones
+
+
+ROLES_REVISAN_INCOMPLETOS = (RolUsuarioEnum.ADMIN, RolUsuarioEnum.LIDER)
+
+
+def notificar_incompleto(db: Session, animal: Animal, origen_tipo: str = "IMPORTACION_INCOMPLETA") -> list[NotificacionInterna]:
+    notificaciones: list[NotificacionInterna] = []
+    for rol in ROLES_REVISAN_INCOMPLETOS:
+        for usuario_rol in db.query(Usuario).filter_by(rol=rol).all():
+            notificaciones.append(
+                NotificacionInterna(animal_id=animal.id, origen_tipo=origen_tipo, origen_id=None, usuario_id=usuario_rol.id)
+            )
+    db.add_all(notificaciones)
+    db.commit()
+    return notificaciones

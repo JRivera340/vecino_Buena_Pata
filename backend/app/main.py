@@ -8,6 +8,7 @@ from app.routers import auth as auth_router
 from app.routers import collar as collar_router
 from app.routers import comunidades as comunidades_router
 from app.routers import formalizacion as formalizacion_router
+from app.routers import importacion as importacion_router
 from app.routers import indicadores as indicadores_router
 from app.routers import media as media_router
 from app.routers import notificaciones_internas as notificaciones_router
@@ -48,6 +49,7 @@ api_router.include_router(reportes_router.router)
 api_router.include_router(usuarios_router.router)
 api_router.include_router(indicadores_router.router)
 api_router.include_router(notificaciones_router.router)
+api_router.include_router(importacion_router.router)
 
 
 @api_router.get("/salud")

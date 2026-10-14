@@ -53,7 +53,7 @@ def test_validacion_con_pendientes_pasa_a_en_proceso(db_session):
     assert any(e.tipo_evento == "VALIDACION" for e in eventos)
 
 
-def test_validacion_aprobada_no_cambia_estado_pero_actualiza_esterilizado_y_chip(db_session):
+def test_validacion_aprobada_actualiza_esterilizado_y_chip(db_session):
     animal = _crear_animal(db_session, estado=EstadoAnimalEnum.EN_PROCESO)
 
     registrar_validacion(
@@ -71,6 +71,24 @@ def test_validacion_aprobada_no_cambia_estado_pero_actualiza_esterilizado_y_chip
     assert animal.estado == EstadoAnimalEnum.EN_PROCESO
     assert animal.esterilizado is True
     assert animal.numero_microchip == "985141900002"
+
+
+def test_validacion_aprobada_en_primera_pasada_pasa_a_en_proceso(db_session):
+    animal = _crear_animal(db_session, estado=EstadoAnimalEnum.CANDIDATO)
+
+    registrar_validacion(
+        db_session,
+        animal_id=animal.id,
+        veterinario="dr.rojas",
+        veredicto=VeredictoValidacionEnum.APROBADO,
+        pendientes=[],
+        observaciones="Cumple todo.",
+        esterilizado=True,
+        numero_microchip="985141900003",
+    )
+
+    db_session.refresh(animal)
+    assert animal.estado == EstadoAnimalEnum.EN_PROCESO
 
 
 def test_no_se_puede_validar_un_animal_vbp_activo(db_session):

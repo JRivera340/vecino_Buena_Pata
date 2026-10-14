@@ -24,6 +24,7 @@ export interface Animal {
   fecha_inscripcion: string;
   inscrito_por: string;
   codigo_collar?: string | null;
+  incompleto?: boolean;
 }
 
 export interface AnimalCrear {
@@ -38,7 +39,19 @@ export interface AnimalCrear {
   latitud: number;
   longitud: number;
   comunidad_id: number | null;
-  tipo_documento: TipoDocumento;
-  numero_documento: string;
+  tipo_documento: TipoDocumento | null;
+  numero_documento: string | null;
+  nombre_inscriptor?: string | null;
   observacion_comportamiento: string | null;
+}
+
+export interface AnimalActualizar {
+  comunidad_id?: number | null;
+  tipo_documento?: TipoDocumento | null;
+  numero_documento?: string | null;
+  nombre_inscriptor?: string | null;
+  barrio?: string;
+  latitud?: number;
+  longitud?: number;
+  observacion_comportamiento?: string | null;
 }

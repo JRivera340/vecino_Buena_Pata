@@ -28,8 +28,13 @@ describe('validarInscripcion', () => {
     );
   });
 
-  it('exige numero de documento', () => {
+  it('no exige numero de documento, es opcional', () => {
     const errores = validarInscripcion(formulario({ numeroDocumento: '' }));
+    expect(errores.numeroDocumento).toBeUndefined();
+  });
+
+  it('si se escribe un numero de documento, lo valida', () => {
+    const errores = validarInscripcion(formulario({ numeroDocumento: 'ab' }));
     expect(errores.numeroDocumento).toBeDefined();
   });
 

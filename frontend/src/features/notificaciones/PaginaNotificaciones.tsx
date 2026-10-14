@@ -16,6 +16,7 @@ const ORIGENES: Record<NotificacionInterna['origen_tipo'], string> = {
   REPORTE: 'Reporte',
   VISITA_PREOCUPANTE: 'Visita preocupante',
   VISITA_VENCIDA: 'Visita vencida',
+  IMPORTACION_INCOMPLETA: 'Registro incompleto',
 };
 
 export default function PaginaNotificaciones() {

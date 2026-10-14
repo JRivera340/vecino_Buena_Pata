@@ -54,9 +54,11 @@ export function validarInscripcion(formulario: FormularioInscripcion): ErroresIn
     errores.edad = 'La edad debe ser un número entero de años entre 0 y 30.';
   }
 
-  const errorDocumento = validarDocumento(formulario.numeroDocumento);
-  if (errorDocumento !== null) {
-    errores.numeroDocumento = errorDocumento;
+  if (formulario.numeroDocumento.trim() !== '') {
+    const errorDocumento = validarDocumento(formulario.numeroDocumento);
+    if (errorDocumento !== null) {
+      errores.numeroDocumento = errorDocumento;
+    }
   }
 
   return errores;

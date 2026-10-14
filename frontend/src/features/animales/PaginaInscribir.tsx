@@ -31,6 +31,7 @@ export default function PaginaInscribir() {
   const [descripcion, setDescripcion] = useState('');
   const [tipoDocumento, setTipoDocumento] = useState<TipoDocumento>('CC');
   const [numeroDocumento, setNumeroDocumento] = useState('');
+  const [nombreOrganizacion, setNombreOrganizacion] = useState('');
   const [observacionComportamiento, setObservacionComportamiento] = useState('');
   const [foto, setFoto] = useState<File | null>(null);
   const [ubicacion, setUbicacion] = useState<UbicacionSeleccionada | null>(null);
@@ -70,8 +71,12 @@ export default function PaginaInscribir() {
         latitud: ubicacion.lat,
         longitud: ubicacion.lng,
         comunidad_id: comunidadId,
-        tipo_documento: tipoDocumento,
-        numero_documento: numeroDocumento.trim(),
+        tipo_documento: numeroDocumento.trim() === '' ? null : tipoDocumento,
+        numero_documento: numeroDocumento.trim() === '' ? null : numeroDocumento.trim(),
+        nombre_inscriptor:
+          tipoDocumento === 'NIT' && nombreOrganizacion.trim() !== ''
+            ? nombreOrganizacion.trim()
+            : null,
         observacion_comportamiento:
           observacionComportamiento.trim() === '' ? null : observacionComportamiento.trim(),
       });
@@ -202,7 +207,7 @@ export default function PaginaInscribir() {
             )}
           </Campo>
           <div className="grid gap-4 sm:grid-cols-[auto,1fr]">
-            <Campo id="ins-tipo-documento" etiqueta="Tipo de documento" obligatorio>
+            <Campo id="ins-tipo-documento" etiqueta="Tipo de documento">
               {(props) => (
                 <Selector
                   {...props}
@@ -220,9 +225,8 @@ export default function PaginaInscribir() {
             <Campo
               id="ins-numero-documento"
               etiqueta="Número de documento de quien inscribe"
-              obligatorio
               error={errores.numeroDocumento}
-              ayuda="De la persona que está diligenciando el formulario."
+              ayuda="Opcional. De la persona u organización que está diligenciando el formulario."
             >
               {(props) => (
                 <Entrada
@@ -233,12 +237,27 @@ export default function PaginaInscribir() {
               )}
             </Campo>
           </div>
+          {tipoDocumento === 'NIT' && (
+            <Campo
+              id="ins-nombre-organizacion"
+              etiqueta="Nombre de la organización"
+              ayuda="Opcional. Razón social de quien inscribe."
+            >
+              {(props) => (
+                <Entrada
+                  {...props}
+                  value={nombreOrganizacion}
+                  onChange={(e) => setNombreOrganizacion(e.target.value)}
+                />
+              )}
+            </Campo>
+          )}
           <Campo
             id="ins-foto"
             etiqueta="Foto"
             obligatorio
             error={errores.foto}
-            ayuda="JPG, PNG o WEBP de hasta 10 MB."
+            ayuda="Toma la foto con el animal despierto y el rostro visible. JPG, PNG o WEBP de hasta 10 MB."
           >
             {(props) => (
               <Entrada
